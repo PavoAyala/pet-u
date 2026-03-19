@@ -1,24 +1,89 @@
 ---
-import Layout from '~/layouts/Layout.astro';
-import { getHomePermalink } from '~/utils/permalinks';
+import Layout from '~/layouts/PageLayout.astro';
+import TubelightNavbar from '~/components/TubelightNavbar.astro';
 
-const title = `Error 404`;
+const metadata = {
+  title: 'Error 404 | PET-U Daycare & Hotel',
+  ignoreTitleTemplate: true,
+};
 ---
 
-<Layout metadata={{ title }}>
-  <section class="flex items-center h-full p-16">
-    <div class="container flex flex-col items-center justify-center px-5 mx-auto my-8">
-      <div class="max-w-md text-center">
-        <h2 class="mb-8 font-bold text-9xl">
-          <span class="sr-only">Error</span>
-          <span class="text-primary">404</span>
-        </h2>
-        <p class="text-3xl font-semibold md:text-3xl">Sorry, we couldn't find this page.</p>
-        <p class="mt-4 mb-8 text-lg text-muted dark:text-slate-400">
-          But dont worry, you can find plenty of other things on our homepage.
-        </p>
-        <a rel="noopener noreferrer" href={getHomePermalink()} class="btn ml-4">Back to homepage</a>
+<Layout metadata={metadata}>
+  
+  <Fragment slot="header">
+    <TubelightNavbar currentPath="/404" />
+  </Fragment>
+
+  <!-- ERROR 404 BODY -->
+  <section class="w-full bg-[#fdfbf7] min-h-[70vh] flex flex-col items-center justify-center px-6 relative z-20 text-center pt-32 pb-24">
+    <div class="max-w-2xl mx-auto flex flex-col items-center">
+      
+      <div class="relative w-48 h-48 sm:w-64 sm:h-64 mb-6">
+        <img 
+          src="/images/depositphotos_12879103-stock-photo-confused-dog.jpg" 
+          alt="Perrito confundido de PET-U" 
+          class="w-full h-full object-cover rounded-full shadow-md border-8 border-white"
+        />
+        <div class="absolute -right-2 top-2 bg-[#f0e6d2] text-[#3C4F35] w-14 h-14 flex items-center justify-center rounded-full shadow-lg rotate-12 font-bold font-serif text-3xl border-4 border-white pointer-events-none">
+          ?
+        </div>
       </div>
+      
+      <h1 class="text-8xl md:text-9xl font-serif font-black text-[#3C4F35]/10 drop-shadow-sm absolute top-32 md:top-24 -z-10 tracking-widest pointer-events-none">
+        404
+      </h1>
+      
+      <h2 class="text-3xl md:text-5xl font-serif font-bold text-[#3C4F35] mb-6">¡Ups! Un perrito se escapó con tu página.</h2>
+      
+      <p class="text-lg text-gray-600 mb-12 max-w-lg">
+        La dirección electrónica que buscas no existe o fue movida. No te preocupes, el camino a nuestra guardería segura está a solo un clic de distancia.
+      </p>
+      
+      <a href="/" class="inline-flex items-center gap-2 bg-[#3C4F35] text-[#fdfbf7] font-bold text-lg px-8 py-4 rounded-full shadow-[0_10px_30px_rgb(60,79,53,0.25)] hover:shadow-[0_15px_40px_rgb(60,79,53,0.4)] hover:-translate-y-1 transition-all duration-300">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14l11 -11"></path><path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5"></path></svg>
+        Regresar a Casa
+      </a>
+
     </div>
   </section>
+
+  <!-- OVERRIDE FOOTER -->
+  <Fragment slot="footer">
+    <footer class="py-16 md:py-24 bg-[#fdfbf7]">
+      <div class="mx-auto max-w-5xl px-6">
+        <a href="/" aria-label="go home" class="mx-auto block w-fit text-3xl font-serif font-extrabold tracking-tight text-[#3C4F35] hover:opacity-90 transition">
+          PET-U
+        </a>
+
+        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm font-medium">
+          <a href="/historia" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Historia</span></a>
+          <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
+          <a href="/instalaciones" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
+          <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
+          <a href="/tienda" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
+        </div>
+        
+        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Share" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><line x1="8.7" y1="10.7" x2="15.3" y2="7.3"></line><line x1="8.7" y1="13.3" x2="15.3" y2="16.7"></line></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Message" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 9h8"></path><path d="M8 13h6"></path><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Globe" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="9"></circle><line x1="3.6" y1="9" x2="20.4" y2="9"></line><line x1="3.6" y1="15" x2="20.4" y2="15"></line><path d="M11.5 3a17 17 0 0 0 0 18"></path><path d="M12.5 3a17 17 0 0 1 0 18"></path></svg>
+          </a>
+          <a href="https://www.instagram.com/pet.uhotel/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="4" width="16" height="16" rx="4"></rect><circle cx="12" cy="12" r="3"></circle><line x1="16.5" y1="7.5" x2="16.5" y2="7.501"></line></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Send" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14l11 -11"></path><path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5"></path></svg>
+          </a>
+        </div>
+        
+        <span class="text-gray-400 block text-center text-sm"> © {new Date().getFullYear()} PET-U Daycare & Hotel, Todos los derechos reservados.</span>
+      </div>
+    </footer>
+  </Fragment>
+
 </Layout>
