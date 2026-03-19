@@ -1,0 +1,150 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import TubelightNavbar from '~/components/TubelightNavbar.astro';
+
+const metadata = {
+  title: 'Servicios | PET-U Daycare & Hotel',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  
+  <Fragment slot="header">
+    <TubelightNavbar currentPath="/servicios" />
+  </Fragment>
+
+  <!-- SECCIÓN SERVICIOS Y PLANES -->
+  <section class="w-full bg-[#f6f5f0] pt-32 pb-24 px-6 min-h-screen relative z-20">
+    <div class="max-w-6xl mx-auto">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#3C4F35] mb-4">Nuestros Servicios y Planes</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Membresías, hospedaje y transporte diseñados exclusivamente para la comodidad, socialización y felicidad de tu mascota.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Fun Day -->
+        <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col h-full">
+          <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-2">Fun Day <span class="text-sm font-sans font-normal text-gray-500 block">Guardería por día</span></h3>
+          <p class="text-gray-600 text-sm mb-6 flex-grow">¡Día lleno de juegos y socialización en un ambiente súper seguro!</p>
+          <ul class="text-sm text-gray-700 space-y-3 mb-8">
+            <li class="flex items-center justify-between border-b border-gray-50 pb-2">
+              <span>0 a 30 kg:</span> <strong class="text-[#3C4F35] text-lg">$220 MXN</strong>
+            </li>
+            <li class="flex items-center justify-between border-b border-gray-50 pb-2">
+              <span>30 kg o más:</span> <strong class="text-[#3C4F35] text-lg">$300 MXN</strong>
+            </li>
+            <li class="pt-2 text-xs text-gray-500">
+              🕒 L-V: 8:00 AM - 7:00 PM<br/>🕒 Sáb: 8:00 AM - 4:00 PM
+            </li>
+          </ul>
+          <a href="https://wa.me/528145493733" target="_blank" class="block text-center bg-[#3C4F35] text-white py-3 rounded-full font-semibold hover:bg-[#2A3825] shadow-md hover:shadow-lg transition-all">Agendar Fun Day</a>
+        </div>
+
+        <!-- Funny Days (Membresías Daycare) -->
+        <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col h-full relative overflow-hidden">
+          <div class="absolute top-0 right-0 bg-[#f0e6d2] text-[#3C4F35] text-xs font-bold px-3 py-1 rounded-bl-xl">-10% en cargo recurrente</div>
+          <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-2 mt-4">Paquetes Funny</h3>
+          <p class="text-gray-600 text-sm mb-6 flex-grow">Daycare fijo semanal con beneficios. Incluye 30% de descuento en transporte.</p>
+          <ul class="text-sm text-gray-700 space-y-4 mb-8">
+            <li class="border-b border-gray-100 pb-3">
+              <strong class="text-[#3C4F35] font-serif block text-lg">Funny Days 2</strong>
+              <span class="text-gray-500 block mb-1">2 días a la semana</span>
+              <strong>$1,760 MXN</strong> / mes
+            </li>
+            <li class="pb-2">
+              <strong class="text-[#3C4F35] font-serif block text-lg">Extra Funny Days 3</strong>
+              <span class="text-gray-500 block mb-1">3 días a la semana</span>
+              <strong>$2,640 MXN</strong> / mes
+            </li>
+          </ul>
+          <a href="https://wa.me/528145493733" target="_blank" class="block text-center border-2 border-[#3C4F35] text-[#3C4F35] py-3 rounded-full font-semibold hover:bg-[#3C4F35] hover:text-white transition-all mt-auto">Consultar suscripción</a>
+        </div>
+
+        <!-- Happy & Royal Pets -->
+        <div class="bg-[#3C4F35] text-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.1)] flex flex-col h-full relative overflow-hidden">
+          <div class="absolute -right-6 -top-6 text-white/5">
+             <svg xmlns="http://www.w3.org/2000/svg" class="w-32 h-32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path><path d="M12 14l0 7"></path><path d="M10 14l-2 7"></path><path d="M14 14l2 7"></path></svg>
+          </div>
+          <h3 class="text-2xl font-serif font-bold mb-2 relative z-10 text-[#f0e6d2]">Planes Elite</h3>
+          <p class="text-white/80 text-sm mb-6 flex-grow relative z-10">Fusión de Daycare y Hotel para máxima comodidad y prioridad.</p>
+          <ul class="text-sm text-white/90 space-y-4 mb-8 relative z-10">
+            <li class="border-b border-white/20 pb-3">
+              <strong class="text-[#f0e6d2] font-serif block text-lg">Happy Pets</strong>
+              <span class="text-white/70 block mb-1">L-V Daycare + 4 noches + 1 baño gratis</span>
+              <strong>$3,600 MXN</strong> / mes
+            </li>
+            <li class="pb-2">
+              <strong class="text-[#f0e6d2] font-serif block text-lg">Royal Pets</strong>
+              <span class="text-white/70 block mb-1">Ilimitado + Reservación preferencial + acceso 24/7</span>
+              <strong>$26,910 MXN</strong> / semestral
+            </li>
+          </ul>
+          <a href="https://wa.me/528145493733" target="_blank" class="block text-center bg-[#f0e6d2] text-[#3C4F35] py-3 rounded-full font-bold hover:bg-white shadow-md hover:shadow-lg transition-all mt-auto relative z-10">Solicitar plan Elite</a>
+        </div>
+
+        <!-- Happy Bus -->
+        <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col h-full md:col-span-1 lg:col-span-1 border-l-4 border-l-[#d2a265]">
+          <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-2">Happy Bus</h3>
+          <p class="text-gray-600 text-sm mb-6">Pasamos por él. Precios viaje ida y vuelta.</p>
+          <ul class="text-sm text-gray-700 space-y-3 mb-6 flex-grow">
+            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona A (UDEM...)</span> <strong class="text-[#3C4F35]">$100</strong></li>
+            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona B (Huasteca...)</span> <strong class="text-[#3C4F35]">$150</strong></li>
+            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona C (San Jerónimo...)</span> <strong class="text-[#3C4F35]">$200</strong></li>
+          </ul>
+          <p class="text-[10px] text-gray-400 leading-tight">Gozarás de descuentos adicionales en transporte al adquirir membresías.</p>
+        </div>
+        
+        <!-- Social Club -->
+        <div class="bg-gradient-to-br from-[#f8efe0] to-[#e8decb] rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col justify-center items-center text-center md:col-span-1 lg:col-span-2 relative overflow-hidden">
+           <svg xmlns="http://www.w3.org/2000/svg" class="absolute -left-10 -bottom-10 w-48 h-48 opacity-10 text-[#3C4F35]" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0"></path><path d="M12 12m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path></svg>
+           <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#3C4F35] mb-4" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M12 17.75l-6.172 3.245l1.179 -6.873l-5 -4.867l6.9 -1l3.086 -6.253l3.086 6.253l6.9 1l-5 4.867l1.179 6.873z"></path></svg>
+          <h3 class="text-3xl font-serif font-bold text-[#3C4F35] mb-3 relative z-10">Membresía Social Club PET-U</h3>
+          <p class="text-gray-700 max-w-lg mb-6 relative z-10 font-medium">Disfruta de promociones exclusivas, eventos gratuitos y descuentos durante todo el año. ¡Forma parte de nuestro programa de recompensas!</p>
+          <a href="https://wa.me/528145493733" target="_blank" class="border-b-2 border-[#3C4F35] text-[#3C4F35] font-bold pb-1 hover:text-[#2A3825] hover:border-[#2A3825] transition-all uppercase tracking-wider text-sm relative z-10">Únete al club</a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="footer">
+    <footer class="py-16 md:py-24 bg-[#fdfbf7]">
+      <div class="mx-auto max-w-5xl px-6">
+        <a href="/" aria-label="go home" class="mx-auto block w-fit text-3xl font-serif font-extrabold tracking-tight text-[#3C4F35]">
+          PET-U
+        </a>
+
+        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm font-medium">
+          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Historia</span></a>
+          <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
+          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
+          <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
+          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
+        </div>
+        
+        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Share" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><line x1="8.7" y1="10.7" x2="15.3" y2="7.3"></line><line x1="8.7" y1="13.3" x2="15.3" y2="16.7"></line></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Message" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 9h8"></path><path d="M8 13h6"></path><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Globe" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="9"></circle><line x1="3.6" y1="9" x2="20.4" y2="9"></line><line x1="3.6" y1="15" x2="20.4" y2="15"></line><path d="M11.5 3a17 17 0 0 0 0 18"></path><path d="M12.5 3a17 17 0 0 1 0 18"></path></svg>
+          </a>
+          <a href="https://www.instagram.com/pet.uhotel/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="4" width="16" height="16" rx="4"></rect><circle cx="12" cy="12" r="3"></circle><line x1="16.5" y1="7.5" x2="16.5" y2="7.501"></line></svg>
+          </a>
+          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Send" class="text-gray-400 hover:text-[#3C4F35] block transition">
+            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14l11 -11"></path><path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5"></path></svg>
+          </a>
+        </div>
+        
+        <span class="text-gray-400 block text-center text-sm"> © {new Date().getFullYear()} PET-U Daycare & Hotel, Todos los derechos reservados.</span>
+      </div>
+    </footer>
+  </Fragment>
+
+</Layout>
