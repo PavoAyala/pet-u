@@ -3,7 +3,7 @@ import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
 
 const metadata = {
-  title: 'Error 404 | PET-U Daycare & Hotel',
+  title: 'Contacto | PET-U Daycare & Hotel',
   ignoreTitleTemplate: true,
 };
 ---
@@ -11,39 +11,51 @@ const metadata = {
 <Layout metadata={metadata}>
   
   <Fragment slot="header">
-    <TubelightNavbar currentPath="/404" />
+    <TubelightNavbar currentPath="/contacto" />
   </Fragment>
 
-  <!-- ERROR 404 BODY -->
-  <section class="w-full bg-[#fdfbf7] min-h-[70vh] flex flex-col items-center justify-center px-6 relative z-20 text-center pt-32 pb-24">
-    <div class="max-w-2xl mx-auto flex flex-col items-center">
-      
-      <div class="relative w-48 h-48 sm:w-64 sm:h-64 mb-6">
-        <img 
-          src="/images/perrito-confundido.jpg" 
-          alt="Perrito confundido de PET-U" 
-          class="w-full h-full object-cover rounded-full shadow-md border-8 border-white"
-        />
-        <div class="absolute -right-2 top-2 bg-[#f0e6d2] text-[#3C4F35] w-14 h-14 flex items-center justify-center rounded-full shadow-lg rotate-12 font-bold font-serif text-3xl border-4 border-white pointer-events-none">
-          ?
-        </div>
+  <!-- SECCIÓN CONTACTO -->
+  <section class="w-full bg-[#f6f5f0] pt-32 pb-24 px-6 min-h-screen relative z-20 overflow-hidden">
+    <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548199973-03cce0bbc87b?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center opacity-5"></div>
+    <div class="max-w-6xl mx-auto relative z-10">
+      <div class="text-center mb-16">
+        <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#3C4F35] mb-4">Ponte en Contacto</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">Visítanos o escríbenos directamente por WhatsApp para agendar el lugar de tu mascota.</p>
       </div>
       
-      <h1 class="text-8xl md:text-9xl font-serif font-black text-[#3C4F35]/10 drop-shadow-sm absolute top-32 md:top-24 -z-10 tracking-widest pointer-events-none">
-        404
-      </h1>
-      
-      <h2 class="text-3xl md:text-5xl font-serif font-bold text-[#3C4F35] mb-6">¡Ups! Un perrito se escapó con tu página.</h2>
-      
-      <p class="text-lg text-gray-600 mb-12 max-w-lg">
-        La dirección electrónica que buscas no existe o fue movida. No te preocupes, el camino a nuestra guardería segura está a solo un clic de distancia.
-      </p>
-      
-      <a href="/" class="inline-flex items-center gap-2 bg-[#3C4F35] text-[#fdfbf7] font-bold text-lg px-8 py-4 rounded-full shadow-[0_10px_30px_rgb(60,79,53,0.25)] hover:shadow-[0_15px_40px_rgb(60,79,53,0.4)] hover:-translate-y-1 transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14l11 -11"></path><path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5"></path></svg>
-        Regresar a Casa
-      </a>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+        
+        <!-- Info Cards -->
+        <div class="flex flex-col justify-center gap-6 h-full">
+          <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-start gap-5 hover:shadow-md transition">
+            <div class="bg-[#f0e6d2] p-4 rounded-full text-[#3C4F35]">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"></path><path d="M15 7a2 2 0 0 1 2 2"></path><path d="M15 3a6 6 0 0 1 6 6"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-1">WhatsApp</h3>
+              <p class="text-gray-600 mb-3 text-sm">Respuesta rápida para agendas y dudas operativas diarias.</p>
+              <a href="https://wa.me/528145493733" target="_blank" class="inline-block text-xl font-bold bg-[#f0e6d2] text-[#3C4F35] px-4 py-2 rounded-xl hover:bg-[#3C4F35] hover:text-[#f0e6d2] transition-colors">(81) 4549-3733 📱</a>
+            </div>
+          </div>
 
+          <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex items-start gap-5 hover:shadow-md transition">
+            <div class="bg-[#f0e6d2] p-4 rounded-full text-[#3C4F35]">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="11" r="3"></circle><path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z"></path></svg>
+            </div>
+            <div>
+              <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-1">Ubicación</h3>
+              <p class="text-gray-600 mb-3 text-sm">El spot ideal y céntrico donde consentiremos a tus peludos.</p>
+              <a href="https://www.google.com/maps/place/PET-U+DayCare+%26+Hotel/@25.6653039,-100.4079843,17z" target="_blank" class="inline-block text-xl font-bold bg-[#f0e6d2] text-[#3C4F35] px-4 py-2 rounded-xl hover:bg-[#3C4F35] hover:text-[#f0e6d2] transition-colors">📍 SPGG, NL Casco Urbano ⛰️</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Maps iframe -->
+        <div class="rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.1)] border-4 border-white bg-gray-100 min-h-[400px] h-full">
+          <iframe width="100%" height="100%" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?q=PET-U%20DayCare%20%26%20Hotel%2C%20San%20Pedro%20Garza%20Garcia&t=&z=16&ie=UTF8&iwloc=&output=embed" style="min-height:400px;"></iframe>
+        </div>
+
+      </div>
     </div>
   </section>
 
@@ -60,7 +72,7 @@ const metadata = {
           <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
           <a href="/instalaciones" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
           <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
-          <a href="/tienda" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
+          <a href="#tienda" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
         </div>
         
         <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">

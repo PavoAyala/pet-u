@@ -1,302 +1,199 @@
-# 🚀 AstroWind
+# PET-U Daycare & Hotel 🐶
 
-<img src="https://raw.githubusercontent.com/arthelokyo/.github/main/resources/astrowind/lighthouse-score.png" align="right"
-     alt="AstroWind Lighthouse Score" width="100" height="358">
+Bienvenido al repositorio oficial del sitio web de **PET-U Daycare & Hotel**, la guardería y hotel boutique donde los consentidos de cuatro patas descansan "#JustLikeHome".
 
-🌟 _Most *starred* & *forked* Astro theme in 2022, 2023 & 2024_. 🌟
+Este proyecto ha sido desarrollado como una **Aplicación Astro moderna** con estética de marca personalizada y un sistema de rutas optimizadas (Multi-Page Application ultra veloz).
 
-**AstroWind** is a free and open-source template to make your website using **[Astro 5.0](https://astro.build/) + [Tailwind CSS](https://tailwindcss.com/)**. Ready to start a new project and designed taking into account web best practices.
+## 🚀 Tecnologías Principales
 
-- ✅ **Production-ready** scores in **PageSpeed Insights** reports.
-- ✅ Integration with **Tailwind CSS** supporting **Dark mode** and **_RTL_**.
-- ✅ **Fast and SEO friendly blog** with automatic **RSS feed**, **MDX** support, **Categories & Tags**, **Social Share**, ...
-- ✅ **Image Optimization** (using new **Astro Assets** and **Unpic** for Universal image CDN).
-- ✅ Generation of **project sitemap** based on your routes.
-- ✅ **Open Graph tags** for social media sharing.
-- ✅ **Analytics** built-in Google Analytics, and Splitbee integration.
-
-<br>
-
-![AstroWind Theme Screenshot](https://raw.githubusercontent.com/arthelokyo/.github/main/resources/astrowind/screenshot-astrowind-1.0.png)
-
-[![arthelokyo](https://custom-icon-badges.demolab.com/badge/made%20by%20-arthelokyo-556bf2?style=flat-square&logo=arthelokyo&logoColor=white&labelColor=101827)](https://github.com/arthelokyo)
-[![License](https://img.shields.io/github/license/arthelokyo/astrowind?style=flat-square&color=dddddd&labelColor=000000)](https://github.com/arthelokyo/astrowind/blob/main/LICENSE.md)
-[![Maintained](https://img.shields.io/badge/maintained%3F-yes-brightgreen.svg?style=flat-square)](https://github.com/arthelokyo)
-[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat-square)](https://github.com/arthelokyo/astrowind#contributing)
-[![Known Vulnerabilities](https://snyk.io/test/github/arthelokyo/astrowind/badge.svg?style=flat-square)](https://snyk.io/test/github/arthelokyo/astrowind)
-[![Stars](https://img.shields.io/github/stars/arthelokyo/astrowind.svg?style=social&label=stars&maxAge=86400&color=ff69b4)](https://github.com/arthelokyo/astrowind)
-[![Forks](https://img.shields.io/github/forks/arthelokyo/astrowind.svg?style=social&label=forks&maxAge=86400&color=ff69b4)](https://github.com/arthelokyo/astrowind)
-
-<br>
-
-<details open>
-<summary>Table of Contents</summary>
-
-- [Demo](#demo)
-- [Upcoming: AstroWind 2.0 – We Need Your Vision!](#-upcoming-astrowind-20--we-need-your-vision)
-- [TL;DR](#tldr)
-- [Getting started](#getting-started)
-  - [Project structure](#project-structure)
-  - [Commands](#commands)
-  - [Configuration](#configuration)
-  - [Deploy](#deploy)
-- [Frequently Asked Questions](#frequently-asked-questions)
-- [Related Projects](#related-projects)
-- [Contributing](#contributing)
-- [Acknowledgements](#acknowledgements)
-- [License](#license)
-
-</details>
-
-<br>
-
-## Demo
-
-📌 [https://astrowind.vercel.app/](https://astrowind.vercel.app/)
-
-<br>
-
-## 🔔 Upcoming: AstroWind 2.0 – We Need Your Vision!
-
-We're embarking on an exciting journey with **AstroWind 2.0**, and we want you to be a part of it! We're currently taking the first steps in developing this new version and your insights are invaluable. Join the discussion and share your feedback, ideas, and suggestions to help shape the future of **AstroWind**. Let's make **AstroWind 2.0** even better, together!
-
-[Share Your Feedback in Our Discussion!](https://github.com/arthelokyo/astrowind/discussions/392)
-
-<br>
-
-## TL;DR
-
-```shell
-npm create astro@latest -- --template arthelokyo/astrowind
-```
-
-## Getting started
-
-**AstroWind** tries to give you quick access to creating a website using [Astro 5.0](https://astro.build/) + [Tailwind CSS](https://tailwindcss.com/). It's a free theme which focuses on simplicity, good practices and high performance.
-
-Very little vanilla javascript is used only to provide basic functionality so that each developer decides which framework (React, Vue, Svelte, Solid JS...) to use and how to approach their goals.
-
-In this version the template supports all the options in the `output` configuration, `static`, `hybrid` and `server`, but the blog only works with `prerender = true`. We are working on the next version and aim to make it fully compatible with SSR.
-
-### Project structure
-
-Inside **AstroWind** template, you'll see the following folders and files:
-
-```
-/
-├── public/
-│   ├── _headers
-│   └── robots.txt
-├── src/
-│   ├── assets/
-│   │   ├── favicons/
-│   │   ├── images/
-│   │   └── styles/
-│   │       └── tailwind.css
-│   ├── components/
-│   │   ├── blog/
-│   │   ├── common/
-│   │   ├── ui/
-│   │   ├── widgets/
-│   │   │   ├── Header.astro
-│   │   │   └── ...
-│   │   ├── CustomStyles.astro
-│   │   ├── Favicons.astro
-│   │   └── Logo.astro
-│   ├── content/
-│   │   ├── post/
-│   │   │   ├── post-slug-1.md
-│   │   │   ├── post-slug-2.mdx
-│   │   │   └── ...
-│   │   └-- config.ts
-│   ├── layouts/
-│   │   ├── Layout.astro
-│   │   ├── MarkdownLayout.astro
-│   │   └── PageLayout.astro
-│   ├── pages/
-│   │   ├── [...blog]/
-│   │   │   ├── [category]/
-│   │   │   ├── [tag]/
-│   │   │   ├── [...page].astro
-│   │   │   └── index.astro
-│   │   ├── index.astro
-│   │   ├── 404.astro
-│   │   ├-- rss.xml.ts
-│   │   └── ...
-│   ├── utils/
-│   ├── config.yaml
-│   └── navigation.js
-├── package.json
-├── astro.config.ts
-└── ...
-```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory if they do not require any transformation or in the `assets/` directory if they are imported directly.
-
-[![Edit AstroWind on CodeSandbox](https://codesandbox.io/static/img/play-codesandbox.svg)](https://githubbox.com/arthelokyo/astrowind/tree/main) [![Open in Gitpod](https://svgshare.com/i/xdi.svg)](https://gitpod.io/?on=gitpod#https://github.com/arthelokyo/astrowind) [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/arthelokyo/astrowind)
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file `README.md`. Update `src/config.yaml` and contents. Have fun!
-
-<br>
-
-### Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command             | Action                                             |
-| :------------------ | :------------------------------------------------- |
-| `npm install`       | Installs dependencies                              |
-| `npm run dev`       | Starts local dev server at `localhost:4321`        |
-| `npm run build`     | Build your production site to `./dist/`            |
-| `npm run preview`   | Preview your build locally, before deploying       |
-| `npm run check`     | Check your project for errors                      |
-| `npm run fix`       | Run Eslint and format codes with Prettier          |
-| `npm run astro ...` | Run CLI commands like `astro add`, `astro preview` |
-
-<br>
-
-### Configuration
-
-Basic configuration file: `./src/config.yaml`
-
-```yaml
-site:
-  name: 'Example'
-  site: 'https://example.com'
-  base: '/' # Change this if you need to deploy to Github Pages, for example
-  trailingSlash: false # Generate permalinks with or without "/" at the end
-
-  googleSiteVerificationId: false # Or some value,
-
-# Default SEO metadata
-metadata:
-  title:
-    default: 'Example'
-    template: '%s — Example'
-  description: 'This is the default meta description of Example website'
-  robots:
-    index: true
-    follow: true
-  openGraph:
-    site_name: 'Example'
-    images:
-      - url: '~/assets/images/default.png'
-        width: 1200
-        height: 628
-    type: website
-  twitter:
-    handle: '@twitter_user'
-    site: '@twitter_user'
-    cardType: summary_large_image
-
-i18n:
-  language: en
-  textDirection: ltr
-
-apps:
-  blog:
-    isEnabled: true # If the blog will be enabled
-    postsPerPage: 6 # Number of posts per page
+*   [Astro](https://astro.build/) - Framework web para entregar sitios con cero JavaScript innecesario.
+*   [Tailwind CSS](https://tailwindcss.com/) - Framework CSS para los estilos modernos y utilitarios.
+*   **Componentes Nativos Astro** - Toda la UI fue reensamblada en módulos estáticos (e.j. la barra `TubelightNavbar`) previniendo cuellos de botella e incompatibilidad de paquetes React pesados. 
 
-    post:
-      isEnabled: true
-      permalink: '/blog/%slug%' # Variables: %slug%, %year%, %month%, %day%, %hour%, %minute%, %second%, %category%
-      robots:
-        index: true
+## 🎨 Diseño y Branding
 
-    list:
-      isEnabled: true
-      pathname: 'blog' # Blog main path, you can change this to "articles" (/articles)
-      robots:
-        index: true
+La interfaz grafica e identidad visual utiliza la gama botánica de PET-U:
+- **Off-white / Hueso**: Tono cálido para todos los fondos orgánicos en vez de blanco médico puro. (#fdfbf7)
+- **Cream / Beige**: Usado sutilmente como tarjeta de contraste de diseño boutique. (#f0e6d2)
+- **Forest Green / Olive**: Identidad núcleo usada en fuentes, el fondo del encabezado y CTAs principales. (#3C4F35)
 
-    category:
-      isEnabled: true
-      pathname: 'category' # Category main path /category/some-category, you can change this to "group" (/group/some-category)
-      robots:
-        index: true
+## 📁 Estructura del Proyecto
 
-    tag:
-      isEnabled: true
-      pathname: 'tag' # Tag main path /tag/some-tag, you can change this to "topics" (/topics/some-category)
-      robots:
-        index: false
+El sitio consta actualmente del sistema modular limpiado:
+- `/` - **Portada (Index)**: El "Hero section" con el branding principal de ingreso rápido.
+- `/servicios` - **Nuestros Planes**: El desglose tabular en diseño Grid con precios (Fun Day, Funny Days, Happy Bus, Social Club y VIP).
+- `/contacto` - **Ruta Directa**: Conexión real con WhatsApp al (81) 4549-3733 y ubicación anclada con Google Maps en San Pedro Garza Garcia.
 
-    isRelatedPostsEnabled: true # If a widget with related posts is to be displayed below each post
-    relatedPostsCount: 4 # Number of related posts to display
+## 🧞 Comandos Locales (Desarrollo)
 
-analytics:
-  vendors:
-    googleAnalytics:
-      id: null # or "G-XXXXXXXXXX"
+Asegúrate de ejecutar tus comandos de compilación usando `pnpm`, el gestor predilecto actual:
 
-ui:
-  theme: 'system' # Values: "system" | "light" | "dark" | "light:only" | "dark:only"
-```
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `pnpm install`            | Instala y sincroniza las dependencias.           |
+| `pnpm run dev`            | Lanza el servidor local en modo desarrollo.      |
+| `pnpm run build`          | Empaqueta y minifica tu proyecto para producción.|
+| `pnpm run preview`        | Crea una vista previa rápida del build final.    |
+| `pnpm run astro ...`      | Invoca el analizador de línea de Astro directo.  |
 
-<br>
+## 📝 Notas de Versión
+*   Todo el material visual perteneciente a la plantilla generadora inicial (AstroWind) ha sido depurado. Únicamente se conservan las bases tecnológicas y los layout nativos. Todo elemento es totalmente personalizado.
 
-#### Customize Design
+## 📄 Servicios, Precios, Términos y Condiciones (Extraído del PDF 2026)
 
-To customize Font families, Colors or more Elements refer to the following files:
+**VIVIR COMO EQUIPO. UN TIEMPO PARA SÍ MISMO.**
+Hola, llevas una vida de constante trabajo, salidas de la ciudad, compromisos, viajes. Pero como nosotros adoras a tus mascotas y te gustaría que las cuidaran en un lugar que les den cariño, amor y que te de confianza. Te presentamos a PET-U !
 
-- `src/components/CustomStyles.astro`
-- `src/assets/styles/tailwind.css`
+PET-U ofrece servicios de Hotel y Daycare y Grooming para tus perrunos, contamos con personal altamente capacitado y con instalaciones de primer nivel adecuadas y seguras para que cada día que tu mascota este en PET-U sea un día especial.
 
-### Deploy
+**Enfocados en la felicidad de tu mascota**
+En PET-U Sabemos que nada es más importante que el bienestar de tu compañero . Por eso ofrecemos un lugar donde sean ellos mismos , jueguen, convivan e interactúen siempre supervisados por nuestro personal.
 
-#### Deploy to production (manual)
+**Together our way**
+Nos mueve el amor por los animales. Ponernos en el lugar de toda mascota. Toda nuestra atención y dedicación es para lograr que para ellos PET-U también sea su hogar.
 
-You can create an optimized production build with:
+Todo el que acude a PET-U sabe lo importante que es dedicarle el cuidado y tiempo a su mascota, por eso nos sentimos honrados de que nos elijas y compartas de ese tiempo. Te garantizamos que tu mascota te lo agradecerá.
 
-```shell
-npm run build
-```
+### Horarios
+- **Lunes a Viernes:** 8:00 AM a 7:00 PM
+- **Sábado:** 8:00 AM a 4:00 PM
 
-Now, your website is ready to be deployed. All generated files are located at
-`dist` folder, which you can deploy the folder to any hosting service you
-prefer.
+---
 
-#### Deploy to Netlify
+### Funday (Daycare)
+*Dale a tu mascota un día lleno de juegos y socialización en un ambiente seguro!*
 
-Clone this repository on your own GitHub account and deploy it to Netlify:
+En nuestro espacio, tu mascota vivirá una experiencia inolvidable, como si estuviera contigo. Ofrecemos paseos por el parque, juegos emocionantes y la oportunidad de socializar con otros amigos peludos. Además, contamos con acogedoras salas de TV para esos momentos relax. Aquí, cada día está lleno de diversiones, amor y descanso. Porque en nuestro hogar, tu mascota es parte de la familia y vive la experiencia. "Just Like Home".
 
-[![Netlify Deploy button](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/arthelokyo/astrowind)
+**Costos por día:**
+- Mascotas de 0 a 30 kg: **$220**
+- Mascotas de 30 kg o más: **$300**
 
-#### Deploy to Vercel
+---
 
-Clone this repository on your own GitHub account and deploy to Vercel:
+### Hotel
+*Nos encargamos de cuidar a tu mascota en un ambiente cómodo, seguro y amigable para que disfrutes de tus compromisos.*
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Farthelokyo%2Fastrowind)
+La misión de nuestro hotel es cuidar a los peludos de la mejor manera posible mientras cumples con tus compromisos, nosotros les brindaremos amor, diversión, atención y tranquilidad a cada uno de ellos para que esperen felizmente tu regreso. Tu confianza en nosotros será la tranquilidad en tus viajes.
 
-<br>
+**Precios por Noche:**
 
-## Frequently Asked Questions
+| Tamaño (Peso) | Temporada Baja | Temporada Alta |
+| :--- | :--- | :--- |
+| Chica (0 a 15 kg) | $280 | $380 |
+| Mediana (15 a 25 kg) | $350 | $450 |
+| Grande (25 a 50 kg) | $430 | $500 |
+| XL (50 kg o más) | $520 | $620 |
 
-- Why?
--
--
+**Horarios de Hotel:**
+- **Check-in:** 11:00 AM a 7:00 PM
+- **Check-out:** 10:00 AM a 2:00 PM
+- *Early check in o late check out tendrá un costo de $100 pesos extra.*
 
-<br>
-
-## Related projects
-
-- [TailNext](https://tailnext.vercel.app/) - Free template using Next.js 14 and Tailwind CSS with the new App Router.
-- [Qwind](https://qwind.pages.dev/) - Free template to make your website using Qwik + Tailwind CSS.
-
-## Contributing
-
-If you have any ideas, suggestions or find any bugs, feel free to open a discussion, an issue or create a pull request.
-That would be very useful for all of us and we would be happy to listen and take action.
-
-## Acknowledgements
-
-Initially created by **Arthelokyo** and maintained by a community of [contributors](https://github.com/arthelokyo/astrowind/graphs/contributors).
-
-## License
-
-**AstroWind** is licensed under the MIT license — see the [LICENSE](./LICENSE.md) file for details.
+**Requisitos para ingreso:**
+- **Obligatorio:**
+  - Bravecto
+  - Vacunas (séxtuple, giardia, bordatella, rabia)
+  - Desparasitación interna
+  - Collar
+  - Platos
+  - Comida
+  - Prenda con olor al dueño
+- **Sugerido:**
+  - Cama
+  - Cobija
+  - Juguetes
+  - Correa
+  - Premios
+  - Ropa
+
+> **Nota:** Costo adicional de $100 MXN por incumplimiento de horarios. Estancias de 6 noches o más se agregará un baño obligatorio con costo.
+
+---
+
+### Paquetes de Daycare
+
+#### Happy Tails Pass
+*Mañanas y tardes llenas de diversión, amor y cuidado para tu mascota. En PET-U tenemos todo lo que tu mascota necesita para que tus días ocupados se conviertan en uno de los mejores días de su vida!*
+
+**Mascota chica:**
+- Daycare 2 días a la semana: **$1,496 al mes.**
+- Daycare 3 días a la semana: **$2,244 al mes.**
+- Daycare 5 días a la semana: **$3,740 al mes.**
+
+**Mascota grande:**
+- Daycare 2 días a la semana: **$2,040 al mes.**
+- Daycare 3 días a la semana: **$3,060 al mes.**
+- Daycare 5 días a la semana: **$5,100 al mes.**
+
+> **Beneficios:** Descuento del 20% en transporte al contratar cualquiera de estos paquetes.
+
+#### Pawtastic Days
+*Incluye: DAYCARE de Lunes a Viernes, 4 noches de hotel (temporada baja), 1 baño gratis.*
+
+**Costo Mensual:**
+- **Mascota Chica:** $5,185 ($4,880 con cargo domiciliado TDC)
+- **Mascota Grande:** $6,945 ($6,536 con cargo domiciliado TDC)
+
+> **Beneficios:** Descuento del 30% en transporte y 20% en servicios adicionales.
+
+#### Pawflex Days
+*Un paquete hecho a tu medida. Días de daycare que puedes usar durante todo el mes, el día que sea de tu agrado!*
+
+**Costos mascota chica:**
+- 5 días: $950
+- 10 días: $1,900
+- 15 días: $2,805
+
+**Costos mascota grande:**
+- 5 días: $1,275
+- 10 días: $2,550
+- 15 días: $3,825
+
+> **Beneficios:** Descuento del 30% en transporte y 20% en servicios adicionales.
+
+---
+
+### Adicionales y Cuidados Especiales
+
+#### Vacunas
+- Séxtuple: $350
+- Bordatella: $350
+- Rabia: $350
+- Giardia: $430
+
+#### Bravecto
+- 112.5mg (2-4.5kg): $730
+- 250mg (4.5-10kg): $770
+- 500mg (10-20kg): $800
+- 1000mg (20-40kg): $850
+- 1400mg (40-56kg): $1,230
+
+#### Grooming & Spa
+- Raza chica pelo corto: $150
+- Raza mediana pelo corto: $250
+- Raza grande pelo corto: $400
+- Raza chica pelo largo: $200
+- Raza mediana pelo largo: $350
+- Raza grande pelo largo: $450
+- Corte de uñas: $100
+- Lavado dental: $100
+- Corte higiénico: $100
+- Deslanado: $100
+- Corte de pelo: desde $100
+
+#### Adiestramiento Canino
+- Adiestramiento básico (3 clases): $3,500
+- Clases de educación en casa (3 clases): $3,500
+- Adiestramiento avanzado (3 clases): $4,000
+
+---
+
+### 📞 Contacto
+
+**¡Ven y conoce todos los servicios que tenemos para ti y tu mejor amigo!**
+*Pregunta por nuestras promociones mensuales y precios especiales para nuestros clientes distinguidos.*
+
+- **WhatsApp:** 81 4549 3733
+- **Instagram:** @pet.uhotel
+- **Ubicación:** Hidalgo 316, Casco Urbano, 66200 San Pedro Garza García, N.L.
