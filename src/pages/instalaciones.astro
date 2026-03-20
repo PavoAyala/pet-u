@@ -3,65 +3,49 @@ import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
 
 const metadata = {
-  title: 'PET-U Daycare & Hotel',
+  title: 'Instalaciones | PET-U Daycare & Hotel',
   ignoreTitleTemplate: true,
 };
+
+// El código del widget de Instagram externo se inyectará en la sección de abajo.
+
 ---
 
 <Layout metadata={metadata}>
   
   <Fragment slot="header">
-    <TubelightNavbar currentPath="/" />
+    <TubelightNavbar currentPath="/instalaciones" />
   </Fragment>
 
-  <!-- SECCIÓN HERO (CUERPO PRINCIPAL) -->
-  <section class="relative w-full h-[100vh] bg-[#fdfbf7] flex items-center overflow-hidden pt-16">
-    <div class="w-full max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 relative z-10 text-[#3C4F35]">
-      
-      <!-- CONTENIDO IZQUIERDA (Alineado relativo al centro en desktop) -->
-      <div class="flex flex-col justify-center text-left md:col-start-1 mt-10 md:mt-0 xl:ml-20">
-        <h1 class="text-5xl md:text-6xl font-serif font-bold tracking-tight mb-4 drop-shadow-sm text-[#3C4F35]">
-          #JustLike<br/>Home
-        </h1>
-        <p class="text-xl mb-8 opacity-90 leading-snug font-medium text-gray-600">
-          La guardería y hotel boutique donde tu consentido de cuatro patas descansará como en casa.
-        </p>
-        
-        <div class="flex flex-wrap items-center gap-4">
-          <a href="#reservar" class="bg-[#3C4F35] shadow-lg hover:bg-[#2A3825] text-white px-8 py-2.5 rounded-full font-bold transition-all duration-200">
-            Agendar cita
-          </a>
-          <a href="#tienda" class="border-2 border-[#3C4F35] hover:bg-[#3C4F35] hover:text-white text-[#3C4F35] px-8 py-2.5 rounded-full font-bold flex items-center gap-2 transition-all duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 opacity-90" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-              <circle cx="6" cy="19" r="2"></circle>
-              <circle cx="17" cy="19" r="2"></circle>
-              <path d="M17 17h-11v-14h-2"></path>
-              <path d="M6 5l14 1l-1 7h-13"></path>
-            </svg>
-            Tienda
-          </a>
-        </div>
+  <!-- GALERÍA DE INSTALACIONES -->
+  <section class="w-full bg-[#fdfbf7] px-4 pb-24 pt-32 relative z-20">
+    <div class="max-w-6xl mx-auto">
+    <!-- Pestañas simuladas -->
+    <div class="flex justify-center border-t border-gray-200 mb-8 pt-4 gap-12 text-sm font-semibold text-gray-400">
+      <div class="flex items-center gap-2 text-[#3C4F35] border-t-2 border-[#3C4F35] -mt-[17px] pt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><rect x="4" y="4" width="16" height="16" rx="2" /><line x1="4" y1="12" x2="20" y2="12" /><line x1="12" y1="4" x2="12" y2="20" /></svg>
+        NUESTRAS INSTALACIONES
       </div>
-
     </div>
 
-    <!-- IMAGEN DEL PERRO (ESQUINA INFERIOR DERECHA) -->
-    <div class="absolute bottom-0 right-[5%] md:right-[15%] w-64 md:w-80 lg:w-96 z-0 mix-blend-normal object-bottom flex justify-end">
-        <img 
-          src="/images/perrito-hero.png" 
-          alt="Perrito feliz PET-U" 
-          class="w-full object-contain -mb-1"
-          style="filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1));"
-        />
+    <!-- ELFSIGHT INSTAGRAM WIDGET -->
+    <div class="w-full mb-8 relative z-20">
+      <!-- Elfsight Instagram Feed | Untitled Instagram Feed -->
+      <script src="https://elfsightcdn.com/platform.js" async is:inline></script>
+      <div class="elfsight-app-d474ed9a-72a7-4567-834e-35cb05a33cf9" data-elfsight-app-lazy></div>
+    </div>
+    
+    <div class="text-center mt-12 bg-[#f0e6d2]/30 p-8 rounded-3xl border border-[#f0e6d2]">
+      <h3 class="font-serif text-2xl font-bold text-[#3C4F35] mb-2">¿Quieres ver más de nuestro día a día?</h3>
+      <p class="text-sm text-gray-600 mb-6">Sigue nuestras historias y publicaciones en vivo en nuestro perfil interactivo de Instagram. ¡No te pierdas las aventuras de tus peludos!</p>
+      <a href="https://www.instagram.com/pet.uhotel/" target="_blank" class="inline-block bg-[#3C4F35] text-white font-bold px-8 py-3 rounded-full hover:bg-[#2A3825] hover:shadow-lg transition-all">Ir al perfil @pet.uhotel</a>
+    </div>
     </div>
   </section>
 
-
-
-  <!-- OVERRIDE FOOTER PARA INTEGRAR EL COMPONENTE SOLICITADO (Nativo en Astro) -->
+  <!-- OVERRIDE FOOTER -->
   <Fragment slot="footer">
-    <footer class="py-8 md:py-16 bg-[#fdfbf7] relative z-10">
+    <footer class="py-16 md:py-24 bg-[#fdfbf7] border-t border-gray-100">
       <div class="mx-auto max-w-5xl px-6">
         <a href="/" aria-label="go home" class="mx-auto block w-fit">
           <img src="/images/logo.png" alt="PET-U Logo" class="h-20 w-auto" />
@@ -70,7 +54,7 @@ const metadata = {
         <div class="my-8 flex flex-wrap justify-center gap-6 text-sm font-medium">
           <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Historia</span></a>
           <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
+          <a href="/instalaciones" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
           <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
           <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
         </div>
