@@ -1,7 +1,7 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
-import { Icon } from 'astro-icon/components';
+import Footer from '~/components/Footer.astro';
 
 const metadata = {
   title: 'PET-U Daycare & Hotel',
@@ -63,42 +63,7 @@ const metadata = {
 
   <!-- OVERRIDE FOOTER PARA INTEGRAR EL COMPONENTE SOLICITADO (Nativo en Astro) -->
   <Fragment slot="footer">
-    <footer class="py-8 md:py-16 bg-[#fdfbf7] relative z-10">
-      <div class="mx-auto max-w-5xl px-6">
-        <a href="/" aria-label="go home" class="mx-auto block w-fit">
-          <img src="/images/logo.png" alt="PET-U Logo" class="h-20 w-auto" />
-        </a>
-
-        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm font-medium">
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Historia</span></a>
-          <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
-          <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
-        </div>
-        
-        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
-          <!-- WhatsApp -->
-          <a href="https://wa.me/5211234567890" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <Icon name="tabler:brand-whatsapp" class="w-6 h-6" />
-          </a>
-          <!-- Instagram -->
-          <a href="https://www.instagram.com/pet.uhotel/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <Icon name="tabler:brand-instagram" class="w-6 h-6" />
-          </a>
-          <!-- Facebook -->
-          <a href="https://www.facebook.com/profile.php?id=61563445343846" target="_blank" rel="noopener noreferrer" aria-label="Facebook" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <Icon name="tabler:brand-facebook" class="w-6 h-6" />
-          </a>
-          <!-- Email / Contacto -->
-          <a href="mailto:hola@petu.com" aria-label="Enviar Correo" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <Icon name="tabler:mail" class="w-6 h-6" />
-          </a>
-        </div>
-        
-        <span class="text-gray-400 block text-center text-sm"> © {new Date().getFullYear()} PET-U Daycare & Hotel, Todos los derechos reservados.</span>
-      </div>
-    </footer>
+    <Footer />
   </Fragment>
 
 </Layout>

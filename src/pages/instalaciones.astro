@@ -1,6 +1,7 @@
 ---
 import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
+import Footer from '~/components/Footer.astro';
 
 const metadata = {
   title: 'Instalaciones | PET-U Daycare & Hotel',
@@ -45,41 +46,7 @@ const metadata = {
 
   <!-- OVERRIDE FOOTER -->
   <Fragment slot="footer">
-    <footer class="py-16 md:py-24 bg-[#fdfbf7] border-t border-gray-100">
-      <div class="mx-auto max-w-5xl px-6">
-        <a href="/" aria-label="go home" class="mx-auto block w-fit">
-          <img src="/images/logo.png" alt="PET-U Logo" class="h-20 w-auto" />
-        </a>
-
-        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm font-medium">
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Historia</span></a>
-          <a href="/servicios" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Servicios</span></a>
-          <a href="/instalaciones" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Instalaciones</span></a>
-          <a href="/contacto" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Contacto</span></a>
-          <a href="#" class="text-gray-500 hover:text-[#3C4F35] block transition duration-150"><span>Tienda</span></a>
-        </div>
-        
-        <div class="my-8 flex flex-wrap justify-center gap-6 text-sm">
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Share" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="6" r="3"></circle><circle cx="18" cy="18" r="3"></circle><line x1="8.7" y1="10.7" x2="15.3" y2="7.3"></line><line x1="8.7" y1="13.3" x2="15.3" y2="16.7"></line></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Message" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M8 9h8"></path><path d="M8 13h6"></path><path d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z"></path></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Globe" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><circle cx="12" cy="12" r="9"></circle><line x1="3.6" y1="9" x2="20.4" y2="9"></line><line x1="3.6" y1="15" x2="20.4" y2="15"></line><path d="M11.5 3a17 17 0 0 0 0 18"></path><path d="M12.5 3a17 17 0 0 1 0 18"></path></svg>
-          </a>
-          <a href="https://www.instagram.com/pet.uhotel/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><rect x="4" y="4" width="16" height="16" rx="4"></rect><circle cx="12" cy="12" r="3"></circle><line x1="16.5" y1="7.5" x2="16.5" y2="7.501"></line></svg>
-          </a>
-          <a href="#" target="_blank" rel="noopener noreferrer" aria-label="Send" class="text-gray-400 hover:text-[#3C4F35] block transition">
-            <svg class="w-6 h-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 14l11 -11"></path><path d="M21 3l-6.5 18a0.55 .55 0 0 1 -1 0l-3.5 -7l-7 -3.5a0.55 .55 0 0 1 0 -1l18 -6.5"></path></svg>
-          </a>
-        </div>
-        
-        <span class="text-gray-400 block text-center text-sm"> © {new Date().getFullYear()} PET-U Daycare & Hotel, Todos los derechos reservados.</span>
-      </div>
-    </footer>
+    <Footer />
   </Fragment>
 
 </Layout>
