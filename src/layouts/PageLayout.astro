@@ -1,12 +1,14 @@
 ---
 import Layout from '~/layouts/Layout.astro';
 import type { MetaData } from '~/types';
+import CallToAction from '~/components/CallToAction.astro';
 
 export interface Props {
   metadata?: MetaData;
+  hideCta?: boolean;
 }
 
-const { metadata } = Astro.props;
+const { metadata, hideCta = false } = Astro.props;
 ---
 
 <Layout metadata={metadata}>
@@ -16,5 +18,7 @@ const { metadata } = Astro.props;
   <main>
     <slot />
   </main>
+  <!-- Llamada a la acción presente en todas las páginas antes del footer -->
+  {!hideCta && <CallToAction />}
   <slot name="footer" />
 </Layout>
