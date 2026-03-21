@@ -93,13 +93,30 @@ const metadata = {
         <!-- Happy Bus -->
         <div class="bg-white rounded-3xl p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 flex flex-col h-full md:col-span-1 lg:col-span-1 border-l-4 border-l-[#d2a265]">
           <h3 class="text-2xl font-serif font-bold text-[#3C4F35] mb-2">Happy Bus</h3>
-          <p class="text-gray-600 text-sm mb-6">Pasamos por él. Precios viaje ida y vuelta.</p>
-          <ul class="text-sm text-gray-700 space-y-3 mb-6 flex-grow">
-            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona A (UDEM...)</span> <strong class="text-[#3C4F35]">$100</strong></li>
-            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona B (Huasteca...)</span> <strong class="text-[#3C4F35]">$150</strong></li>
-            <li class="flex justify-between border-b border-gray-50 pb-2"><span class="text-gray-500">Zona C (San Jerónimo...)</span> <strong class="text-[#3C4F35]">$200</strong></li>
+          <p class="text-gray-600 text-sm mb-6">Transporte para tu mascota. Precios por día (ida y vuelta).</p>
+          <ul class="text-sm text-gray-700 space-y-4 mb-6 flex-grow">
+            <li class="border-b border-gray-50 pb-3">
+               <div class="flex justify-between items-center mb-1"><strong class="text-[#3C4F35] font-serif text-base">Zona A</strong> <strong class="text-[#3C4F35]">$100</strong></div>
+               <span class="text-xs text-gray-500 leading-tight block">UDEM, Bosques del Valle, Corregidora.</span>
+            </li>
+            <li class="border-b border-gray-50 pb-3">
+               <div class="flex justify-between items-center mb-1"><strong class="text-[#3C4F35] font-serif text-base">Zona B</strong> <strong class="text-[#3C4F35]">$150</strong></div>
+               <span class="text-xs text-gray-500 leading-tight block">Valle Poniente, Huasteca, Santa Catarina Centro.</span>
+            </li>
+            <li class="border-b border-gray-50 pb-2">
+               <div class="flex justify-between items-center mb-1"><strong class="text-[#3C4F35] font-serif text-base">Zona C</strong> <strong class="text-[#3C4F35]">$200</strong></div>
+               <span class="text-xs text-gray-500 leading-tight block">San Jerónimo, San Agustín, Loma Larga, Centrito Valle.</span>
+            </li>
           </ul>
-          <p class="text-[10px] text-gray-400 leading-tight">Gozarás de descuentos adicionales en transporte al adquirir membresías.</p>
+          
+          <!-- Notas Oficiales del Happy Bus -->
+          <div class="bg-gray-50 p-4 rounded-2xl border border-gray-100 mt-auto">
+            <ul class="text-xs md:text-[14px] text-gray-500 leading-relaxed space-y-2 list-disc pl-4">
+              <li>Limitado a las zonas indicadas en el mapa, tanto en estancia regular como en paquetes y membresías.</li>
+              <li>En 2 o más mascotas aplica el <strong class="text-gray-700">40% de descuento en la segunda mascota</strong>.</li>
+              <li>Los costos se aplican por día (ida y vuelta), no por viaje.</li>
+            </ul>
+          </div>
         </div>
         
         <!-- Pawflex Days -->
@@ -200,7 +217,7 @@ const metadata = {
                 <span><strong>Check-out:</strong> 10:00 AM a 2:00 PM</span>
               </li>
             </ul>
-            <p class="text-xs bg-white/50 p-3 rounded-lg border border-[#3C4F35]/10">* Early check-in o late check-out tendrá un costo de <strong>$100 pesos extra</strong>.</p>
+            <p class="text-xs bg-white/50 p-3 rounded-lg border border-[#3C4F35]/10"><strong>* Nota: Costo adicional de $100 MXN por incumplimiento de horarios.</strong></p>
           </div>
           
           <div class="bg-white/5 rounded-3xl p-6 border border-white/10 flex-grow">
@@ -216,7 +233,7 @@ const metadata = {
         </div>
       </div>
       
-      <p class="text-center text-sm text-white/60 mt-10">Nota: Estancias de 6 noches o más se agregará un baño obligatorio con costo.</p>
+      <p class="text-center text-sm text-white/90 mt-10"><strong>Nota: Estancias de 6 noches o más se agregará un baño obligatorio con costo.</strong></p>
     </div>
   </section>
 
