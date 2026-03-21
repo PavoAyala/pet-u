@@ -1,0 +1,133 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import TubelightNavbar from '~/components/TubelightNavbar.astro';
+import Footer from '~/components/Footer.astro';
+
+const metadata = {
+  title: 'Nosotros - PET-U',
+  ignoreTitleTemplate: true,
+};
+---
+
+<Layout metadata={metadata}>
+  <Fragment slot="header">
+    <TubelightNavbar currentPath="/nosotros" />
+  </Fragment>
+
+  <!-- SECCIÓN PRINCIPAL: FONDO CLARO -->
+  <section class="bg-[#f0ece1] min-h-screen pt-32 pb-24 relative overflow-hidden font-sans">
+    
+    <!-- Elementos decorativos de fondo (opcionales) -->
+    <div class="absolute -left-10 md:left-0 top-[20%] w-32 md:w-48 opacity-40 z-0">
+      <img src="/images/tree-decor.svg" alt="" onerror="this.style.display='none'" />
+    </div>
+
+    <!-- CONTENEDOR CENTRAL -->
+    <div class="max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center">
+      
+      <!-- TÍTULO PRINCIPAL -->
+      <h1 class="text-3xl md:text-5xl lg:text-[54px] font-black text-[#2e4c27] text-center uppercase leading-[1.1] mb-12 flex flex-col font-serif tracking-tight">
+        <span>Vivir como equipo.</span>
+        <span>Un tiempo para sí mismo.</span>
+      </h1>
+
+      <!-- BLOQUE 1: APRENDER A VIVIR EN EQUIPO -->
+      <div class="w-full relative mb-12 md:mb-16 mt-6">
+        <!-- Badge superior centrado -->
+        <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#5d7f46] text-white px-6 py-2 rounded-full font-bold text-lg md:text-xl shadow-md z-20 whitespace-nowrap">
+          Aprender a vivir en equipo.
+        </div>
+        
+        <!-- Tarjeta Verde -->
+        <div class="bg-[#6b8e51] text-white rounded-3xl p-8 pt-10 text-center shadow-lg relative z-10">
+          <p class="text-base md:text-lg font-medium leading-relaxed max-w-3xl mx-auto">
+            Hola, llevas una vida de constante trabajo, salidas de la ciudad, compromisos, viajes. Pero como nosotros adoras a tus mascotas y te gustaría que las cuidaran en un lugar que les den cariño, amor y que te de confianza.
+            <br/><br/>
+            Te presentamos a PET-U!
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2: SERVICIOS + IMAGEN ROTTWEILER -->
+      <div class="w-full relative mb-8 flex flex-col md:flex-row items-center gap-6">
+        <!-- Tarjeta Beige (Izquierda) -->
+        <div class="w-full md:w-3/5 bg-[#e4ded0] text-[#2e4c27] rounded-3xl p-8 md:p-10 shadow-md relative z-10 hidden md:block" style="margin-right: -40px;">
+          <p class="text-[17px] md:text-xl font-medium leading-snug">
+            PET-U ofrece servicios de Hotel y Daycare y Grooming para tus perrunos, contamos con personal altamente capacitado y con instalaciones de primer nivel adecuadas y seguras para que cada día que tu mascota este en PET-U sea un día especial.
+          </p>
+          <div class="mt-4 pt-4 border-t border-[#c5bfa8]">
+            <span class="inline-block bg-[#2e4c27] text-white text-xs font-bold px-3 py-1 rounded-full opacity-90">Fundado en 2024</span>
+          </div>
+        </div>
+        
+        <!-- Versión Tarjeta Beige (Mobile: full width) -->
+        <div class="w-full bg-[#e4ded0] text-[#2e4c27] rounded-3xl p-6 shadow-md relative z-10 md:hidden">
+          <p class="text-base font-medium leading-snug">
+            PET-U ofrece servicios de Hotel y Daycare y Grooming para tus perrunos, contamos con personal altamente capacitado y con instalaciones de primer nivel adecuadas y seguras para que cada día que tu mascota este en PET-U sea un día especial.
+          </p>
+          <div class="mt-4 pt-4 border-t border-[#c5bfa8]">
+            <span class="inline-block bg-[#2e4c27] text-white text-xs font-bold px-3 py-1 rounded-full opacity-90">Fundado en 2024</span>
+          </div>
+        </div>
+
+        <!-- Imagen del Rottweiler (Derecha) -->
+        <div class="w-full md:w-2/5 flex justify-center md:justify-end z-20">
+          <div class="relative w-64 h-64 md:w-80 md:h-80 bg-[#d9ab8b] rounded-3xl overflow-hidden shadow-lg border-4 border-[#e4ded0]">
+            <!-- Placeholder para Rottweiler -->
+            <img src="/images/cachorro_rottweiler.png" alt="Cachorro Rottweiler" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 3: ENFOCADOS EN LA FELICIDAD -->
+      <div class="w-full relative mb-12 md:mb-16 mt-8">
+        <!-- Badge -->
+        <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#6b8e51] text-white px-4 md:px-6 py-1.5 md:py-2 rounded-full font-bold text-[15px] md:text-lg shadow-md z-20 whitespace-nowrap">
+          Enfocados en la felicidad de tu mascota
+        </div>
+        
+        <!-- Tarjeta Beige -->
+        <div class="bg-[#e4ded0] text-[#2e4c27] rounded-3xl p-8 pt-10 text-center shadow-md border-2 border-[#fff9f0] relative z-10 w-full max-w-4xl mx-auto">
+          <p class="text-[17px] md:text-xl font-medium leading-snug">
+            En PET-U Sabemos que nada es más importante que el bienestar de tu compañero. Por eso ofrecemos un lugar donde sean ellos mismos, jueguen, convivan e interactúen siempre supervisados por nuestro personal.
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOQUE 4: IMAGEN GOLDENS + TOGETHER OUR WAY -->
+      <div class="w-full relative flex flex-col md:flex-row items-center gap-6 mt-8 pb-10">
+        
+        <!-- Imagen de los Goldens (Izquierda) -->
+        <div class="w-full md:w-[45%] flex justify-center md:justify-start z-20 order-2 md:order-1">
+          <div class="relative w-72 h-72 md:w-80 md:h-80 bg-[#d5aa8b] rounded-3xl overflow-hidden shadow-lg border-4 border-white/50">
+            <!-- Placeholder para Golden Retrievers -->
+            <img src="/images/cachorros_golden.png" alt="Cachorros Golden Retriever" class="w-full h-full object-cover" />
+          </div>
+        </div>
+
+        <!-- Tarjeta Derecha: Together our way -->
+        <div class="w-full md:w-[55%] relative mt-6 md:mt-0 order-1 md:order-2" style="margin-left: -20px;">
+          <!-- Badge -->
+          <div class="absolute -top-5 left-1/2 -translate-x-1/2 bg-[#5d7f46] text-white px-6 md:px-8 py-1.5 rounded-full font-bold text-lg shadow-md z-20 whitespace-normal text-center w-max max-w-[90%]">
+            Together our way
+          </div>
+
+          <!-- Tarjeta Beige -->
+          <div class="bg-[#eae4d6] text-[#2e4c27] rounded-3xl p-8 pt-10 shadow-md relative z-10">
+            <p class="text-[17px] md:text-[19px] font-medium leading-snug text-center md:text-left">
+              Nos mueve el amor por los animales. Ponernos en el lugar de toda mascota. Toda nuestra atención y dedicación es para lograr que para ellos PET-U también sea su hogar.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- OVERRIDE FOOTER PARA MANTENER EL ESTILO PERSONALIZADO -->
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+
+</Layout>

@@ -1,27 +1,24 @@
 ---
 import Layout from '~/layouts/Layout.astro';
-import Header from '~/components/widgets/Header.astro';
-import Footer from '~/components/widgets/Footer.astro';
-
-import { headerData, footerData } from '~/navigation';
-
 import type { MetaData } from '~/types';
+import CallToAction from '~/components/CallToAction.astro';
 
 export interface Props {
   metadata?: MetaData;
+  hideCta?: boolean;
 }
 
-const { metadata } = Astro.props;
+const { metadata, hideCta = false } = Astro.props;
 ---
 
 <Layout metadata={metadata}>
-  <slot name="header">
-    <Header {...headerData} isSticky showRssFeed showToggleTheme />
-  </slot>
+  <slot name="header" />
+  
+  <!-- Contenedor principal de la página -->
   <main>
     <slot />
   </main>
-  <slot name="footer">
-    <Footer {...footerData} />
-  </slot>
+  <!-- Llamada a la acción presente en todas las páginas antes del footer -->
+  {!hideCta && <CallToAction />}
+  <slot name="footer" />
 </Layout>

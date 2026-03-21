@@ -1,0 +1,59 @@
+---
+// src/components/CallToAction.astro
+---
+<section class="bg-[#f0ece1] py-8 md:py-10 px-6 font-sans">
+  <div class="max-w-5xl mx-auto bg-[#2e4c27] rounded-3xl p-6 md:p-8 md:px-10 shadow-xl relative overflow-hidden">
+    <!-- Decoración de fondo -->
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="cta-dots" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <circle fill="#ffffff" cx="2" cy="2" r="2"></circle>
+          </pattern>
+        </defs>
+        <rect x="0" y="0" width="100%" height="100%" fill="url(#cta-dots)"></rect>
+      </svg>
+    </div>
+    
+    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 text-center md:text-left">
+      
+      <!-- Lado Izquierdo: Icono + Texto -->
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-4 md:gap-6 flex-1">
+        <!-- Icono decorativo -->
+        <div class="w-14 h-14 bg-[#e4ded0] text-[#2e4c27] rounded-full flex items-center justify-center shrink-0 shadow-md">
+          <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 5.172C10 3.782 8.423 2.679 6.5 3c-2.823.47-4.113 6.006-4 7 .08.703 1.725 1.722 3.656 1 1.261-.472 1.96-1.45 2.344-2.5"/>
+            <path d="M14.267 5.172c0-1.39 1.577-2.493 3.5-2.172 2.823.47 4.113 6.006 4 7-.08.703-1.725 1.722-3.656 1-1.261-.472-1.955-1.45-2.344-2.5"/>
+            <path d="M8 14v.5"/>
+            <path d="M16 14v.5"/>
+            <path d="M11.25 16.25h1.5L12 17l-.75-.75Z"/>
+            <path d="M4.42 11.247A13.152 13.152 0 0 0 4 14.556C4 18.728 7.582 21 12 21s8-2.272 8-6.444c0-1.061-.162-2.2-.493-3.309m-9.243-6.082A8.801 8.801 0 0 1 12 5c.78 0 1.5.108 2.161.306"/>
+          </svg>
+        </div>
+
+        <div>
+          <h2 class="text-2xl md:text-3xl font-black text-white font-serif mb-2 drop-shadow-sm tracking-tight">
+            ¿Listo para darle lo mejor a tu mejor amigo?
+          </h2>
+          <p class="text-[#e4ded0] text-base md:text-lg font-medium leading-snug">
+            Reserva hoy su estadía, día de guardería o sesión de spa en PET-U.
+          </p>
+        </div>
+      </div>
+      
+      <!-- Lado Derecho: Botón -->
+      <div class="shrink-0 w-full md:w-auto">
+        <a 
+          href="#reservar" 
+          class="inline-flex w-full md:w-auto items-center justify-center bg-[#d9ab8b] hover:bg-[#c69a7c] text-[#2e4c27] font-bold text-lg px-8 py-3.5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg gap-2"
+        >
+          <span>Agendar Cita</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>

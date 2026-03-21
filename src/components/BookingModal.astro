@@ -1,0 +1,118 @@
+---
+// src/components/BookingModal.astro
+---
+
+<div id="booking-modal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity opacity-0">
+  <div class="relative w-full max-w-4xl max-h-[90vh] h-[800px] bg-white rounded-2xl shadow-2xl flex flex-col transform scale-95 transition-transform duration-300 overflow-hidden">
+    <!-- Header Modal -->
+    <div class="flex justify-between items-center p-4 border-b border-gray-100 bg-[#fdfbf7]">
+      <h3 class="text-xl font-serif font-bold text-[#3C4F35]">Reservar Cita - PET-U</h3>
+      <button id="close-booking" class="p-2 rounded-full hover:bg-gray-200 transition-colors" aria-label="Cerrar modal">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3C4F35" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Body Modal (iframe) -->
+    <div class="flex-grow w-full bg-white relative">
+      <!-- Loading indicator while iframe is loading -->
+      <div class="absolute inset-0 flex items-center justify-center bg-white z-0">
+        <div class="flex flex-col items-center gap-4">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3C4F35]"></div>
+          <p class="text-sm text-gray-500 font-medium">Cargando calendario...</p>
+        </div>
+      </div>
+      
+      <iframe 
+        id="booking-iframe"
+        data-src="https://calendar.google.com/calendar/appointments/schedules/REEMPLAZA_ESTO_POR_TU_LINK_DE_GOOGLE?gv=true" 
+        style="border: 0" 
+        width="100%" 
+        height="100%" 
+        frameborder="0" 
+        class="relative z-10 w-full h-full bg-white transition-opacity duration-500 opacity-0"
+        onload="this.classList.remove('opacity-0')"
+      ></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Script para manejar la apertura y cierre del modal en todo el sitio
+  // Se usa 'astro:page-load' para ser compatible con View Transitions
+  document.addEventListener('astro:page-load', () => {
+    const modal = document.getElementById('booking-modal');
+    const closeBtn = document.getElementById('close-booking');
+    const modalContainer = modal?.firstElementChild;
+    const iframe = document.getElementById('booking-iframe') as HTMLIFrameElement;
+    
+    // Encuentra todos los enlaces que apuntan a #reservar (botón hero, navbar, pie de página, etc)
+    const reservarLinks = document.querySelectorAll('a[href="#reservar"]');
+
+    const openModal = (e: Event) => {
+      e.preventDefault();
+      if (!modal || !modalContainer) return;
+      
+      // Cargar iframe de manera perezosa (lazy load) cuando se abre el modal
+      if (iframe && !iframe.src) {
+        // En un caso real, la URL de Google Calendar va aquí.
+        const url_reserva = iframe.getAttribute('data-src');
+        if (url_reserva) {
+             iframe.src = url_reserva;
+        }
+      }
+      
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      
+      // Pequeño retardo necesario para que la transición CSS funcione al quitar display:none
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        modalContainer.classList.remove('scale-95');
+        modalContainer.classList.add('scale-100');
+      }, 10);
+      
+      // Evitar que el fondo (body) haga scroll
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+      if (!modal || !modalContainer) return;
+      
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      modalContainer.classList.remove('scale-100');
+      modalContainer.classList.add('scale-95');
+      
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }, 300); // duración de la transición
+    };
+
+    // Agregar el evento a todos los botones "Reservar"
+    reservarLinks.forEach(link => {
+      link.addEventListener('click', openModal);
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+
+    // Cerrar al hacer clic en el fondo oscuro (fuera del contenedor blanco)
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    // Cerrar con la tecla Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal?.classList.contains('hidden')) {
+        closeModal();
+      }
+    });
+  });
+</script>
