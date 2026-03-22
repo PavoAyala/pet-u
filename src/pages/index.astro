@@ -15,11 +15,11 @@ const metadata = {
   </Fragment>
 
   <!-- SECCIÓN HERO (CUERPO PRINCIPAL) -->
-  <section class="relative w-full h-[100dvh] bg-[#fdfbf7] flex items-start md:items-center overflow-hidden pt-32 md:pt-0">
+  <section class="relative w-full min-h-[100dvh] bg-[#fdfbf7] flex items-start md:items-center overflow-x-hidden pt-32 md:pt-0">
     <div class="w-full max-w-4xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 relative z-10 text-[#3C4F35]">
       
       <!-- CONTENIDO IZQUIERDA (Alineado relativo al centro en desktop) -->
-      <div class="flex flex-col justify-start md:justify-center text-left md:col-start-1 mt-10 md:mt-0 xl:ml-20">
+      <div class="flex flex-col justify-start md:justify-center text-left md:col-start-1 mt-6 md:mt-0 xl:ml-20">
         
         <div class="mb-6">
           <img src="/images/logo_circular.png" alt="PET-U Remate Visual" class="w-32 md:w-40 h-auto object-contain drop-shadow-sm" />
@@ -49,10 +49,22 @@ const metadata = {
         </div>
       </div>
 
+      <!-- IMAGEN DEL PERRO (Versión Mobile: En un contenedor aparte debajo de los botones) -->
+      <div class="w-full flex justify-center items-end mt-12 md:hidden">
+        <div class="w-72 sm:w-80 object-bottom">
+          <img 
+            src="/images/perrito-hero.png" 
+            alt="Perrito feliz PET-U" 
+            class="w-full object-contain -mb-1"
+            style="filter: drop-shadow(0px 10px 15px rgba(0,0,0,0.1));"
+          />
+        </div>
+      </div>
+
     </div>
 
-    <!-- IMAGEN DEL PERRO (ESQUINA INFERIOR DERECHA) -->
-    <div class="absolute bottom-0 right-[5%] md:right-[15%] w-64 md:w-80 lg:w-96 z-0 mix-blend-normal object-bottom flex justify-end">
+    <!-- IMAGEN DEL PERRO (Versión Desktop: Esquina inferior derecha) -->
+    <div class="hidden md:flex absolute bottom-0 right-[5%] md:right-[15%] w-64 md:w-80 lg:w-96 z-0 mix-blend-normal object-bottom justify-end">
         <img 
           src="/images/perrito-hero.png" 
           alt="Perrito feliz PET-U" 
