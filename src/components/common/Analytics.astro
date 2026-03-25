@@ -11,3 +11,8 @@ import { ANALYTICS } from 'astrowind:config';
     />
   ) : null
 }
+
+<script>
+  import { inject } from '@vercel/analytics';
+  inject();
+</script>
