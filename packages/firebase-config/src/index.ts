@@ -26,3 +26,15 @@ if (typeof window !== 'undefined') {
 }
 
 export { app, db, analytics };
+export { 
+  collection, 
+  getDocs, 
+  addDoc, 
+  doc, 
+  updateDoc, 
+  deleteDoc, 
+  serverTimestamp, 
+  query, 
+  orderBy, 
+  type DocumentData 
+} from 'firebase/firestore';
