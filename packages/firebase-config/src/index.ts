@@ -1,5 +1,6 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
@@ -13,19 +14,21 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase efficiently for SSR/Client
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const db = getFirestore(app);
+export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
 
-let analytics;
+let analyticsInstance: any;
 if (typeof window !== 'undefined') {
   isSupported().then((supported) => {
     if (supported) {
-      analytics = getAnalytics(app);
+      analyticsInstance = getAnalytics(app);
     }
   });
 }
 
-export { app, db, analytics };
+export { analyticsInstance as analytics };
+
 export { 
   collection, 
   getDocs, 
@@ -39,4 +42,16 @@ export {
   Timestamp,
   type DocumentData 
 } from 'firebase/firestore';
+
 export * from './types';
+export type { Product } from './types';
+
+export {
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
+  browserSessionPersistence,
+  type User
+} from 'firebase/auth';
