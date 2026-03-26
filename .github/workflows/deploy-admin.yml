@@ -50,7 +50,7 @@ jobs:
         run: pnpm install
 
       - name: Build Admin App
-        run: pnpm turbo build --filter=admin
+        run: pnpm build --filter=pet-u-admin
 
       - name: Verify build output
         run: |
