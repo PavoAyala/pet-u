@@ -4,15 +4,17 @@
   "engines": {
     "node": ">=18.17.1"
   },
+  "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "dev": "pnpm -r run dev",
-    "build": "pnpm -r run build",
-    "check": "pnpm -r run check",
-    "lint": "pnpm -r run lint"
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "check": "turbo check",
+    "lint": "turbo lint"
   },
   "devDependencies": {
-    "prettier": "^3.0.0",
     "eslint": "^9.0.0",
+    "prettier": "^3.0.0",
+    "turbo": "^2.8.20",
     "typescript": "^5.0.0"
   }
 }

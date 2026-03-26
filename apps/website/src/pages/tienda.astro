@@ -1,0 +1,187 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+import TubelightNavbar from '~/components/TubelightNavbar.astro';
+import Footer from '~/components/Footer.astro';
+import { db } from '@pet-u/firebase-config';
+import { collection, getDocs, query, orderBy } from 'firebase/firestore';
+
+const metadata = {
+  title: 'Tienda Boutique | PET-U',
+  description: 'Artículos exclusivos y de alta calidad para tu mascota consentida.',
+};
+
+// Obtener productos desde Firestore en tiempo de construcción (SSG) o renderizado (SSR)
+// Dependiendo de cómo esté configurado Astro en este proyecto
+let productos: any[] = [];
+try {
+  const q = query(collection(db, 'productos'), orderBy('creadoEn', 'desc'));
+  const snap = await getDocs(q);
+  productos = snap.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+} catch (e) {
+  console.error("Error cargando productos de Firestore:", e);
+}
+
+// Categorías únicas para filtros (opcional si quieres agregarlos después)
+const categorias = [...new Set(productos.map(p => p.categoria).filter(Boolean))];
+---
+
+<Layout metadata={metadata}>
+  
+  <Fragment slot="header">
+    <TubelightNavbar currentPath="/tienda" />
+  </Fragment>
+
+  <!-- Hero Section Tienda -->
+  <section class="pt-32 pb-16 bg-[#fdfbf7]">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#3C4F35] mb-6">
+          Nuestra Tienda <span class="text-gray-400">Boutique</span>
+        </h1>
+        <p class="text-lg text-gray-600 leading-relaxed font-medium">
+          Seleccionamos cuidadosamente cada producto para asegurar que tu mejor amigo reciba solo lo mejor en nutrición, accesorios y cuidado personal.
+        </p>
+      </div>
+
+      {productos.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          {productos.map((producto) => (
+            <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-[#f0e6d2]/50 flex flex-col h-full">
+              <!-- Imagen del Producto -->
+              <div class="relative aspect-square overflow-hidden bg-gray-50">
+                {producto.imagen ? (
+                  <img 
+                    src={producto.imagen} 
+                    alt={producto.nombre} 
+                    class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  />
+                ) : (
+                  <div class="w-full h-full flex items-center justify-center bg-[#f0e6d2]/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-[#3C4F35]/20" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01"></path>
+                      <circle cx="12" cy="12" r="9"></circle>
+                    </svg>
+                  </div>
+                )}
+                
+                {/* Badge de Stock o Categoría */}
+                {producto.stock > 0 ? (
+                  <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider text-[#3C4F35] shadow-sm">
+                    {producto.categoria || 'Producto'}
+                  </div>
+                ) : (
+                  <div class="absolute top-4 right-4 bg-rose-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                    Agotado
+                  </div>
+                )}
+              </div>
+
+              <!-- Info del Producto -->
+              <div class="p-6 flex flex-col flex-1">
+                <h3 class="text-xl font-bold text-[#3C4F35] mb-2 group-hover:text-[#2A3825] transition-colors line-clamp-1">
+                  {producto.nombre}
+                </h3>
+                <p class="text-sm text-gray-500 mb-6 flex-1 line-clamp-2">
+                  {producto.descripcion || 'Sin descripción disponible.'}
+                </p>
+                
+                <div class="flex items-center justify-between mt-auto pt-4 border-t border-gray-50">
+                  <div class="flex flex-col">
+                    <span class="text-xs text-gray-400 font-medium">Precio</span>
+                    <span class="text-2xl font-bold text-[#3C4F35]">
+                      ${Number(producto.precio || 0).toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                  
+                  <a 
+                    href={`https://wa.me/5211234567890?text=Hola,%20me%20interesa%20el%20producto:%20${encodeURIComponent(producto.nombre)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class={`p-3 rounded-2xl transition-all duration-300 ${
+                      producto.stock > 0 
+                        ? "bg-[#3C4F35] text-white hover:bg-[#2A3825] hover:scale-110 shadow-lg shadow-[#3C4F35]/10" 
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                    }`}
+                    title={producto.stock > 0 ? "Comprar por WhatsApp" : "No disponible"}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                      <path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                      <path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0"></path>
+                      <path d="M17 17h-11v-14h-2"></path>
+                      <path d="M6 5l14 1l-1 7h-13"></path>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20 bg-white rounded-[40px] border border-dashed border-[#f0e6d2] shadow-sm">
+          <div class="w-20 h-20 bg-[#fdfbf7] rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-[#3C4F35]/30" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+              <circle cx="6" cy="19" r="2"></circle>
+              <circle cx="17" cy="19" r="2"></circle>
+              <path d="M17 17h-11v-14h-2"></path>
+              <path d="M6 5l14 1l-1 7h-13"></path>
+            </svg>
+          </div>
+          <h2 class="text-2xl font-bold text-[#3C4F35] mb-2">Estamos preparando los estantes</h2>
+          <p class="text-gray-500 max-w-sm mx-auto">
+            Muy pronto podrás ver todos nuestros productos exclusivos aquí. ¡Vuelve pronto!
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <!-- Sección de Contacto Rápido -->
+  <section class="pb-24 bg-[#fdfbf7]">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="bg-[#3C4F35] rounded-[40px] p-8 md:p-16 relative overflow-hidden shadow-2xl shadow-[#3C4F35]/20">
+        <div class="relative z-10 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-white mb-6">
+              ¿No encuentras lo que buscas?
+            </h2>
+            <p class="text-white/80 text-lg mb-8 leading-relaxed">
+              Trabajamos con proveedores exclusivos. Si buscas algo especial para tu mascota, contáctanos y haremos lo posible por conseguirlo.
+            </p>
+            <a href="/contacto" class="inline-flex items-center gap-2 bg-white text-[#3C4F35] px-8 py-4 rounded-full font-bold hover:bg-[#f0e6d2] transition-all duration-300 shadow-xl shadow-black/10">
+              Contáctanos
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                <path d="M5 12l14 0"></path>
+                <path d="M13 18l6 -6"></path>
+                <path d="M13 6l6 6"></path>
+              </svg>
+            </a>
+          </div>
+          <div class="hidden md:flex justify-end">
+            <div class="w-64 h-64 bg-white/10 rounded-full blur-3xl absolute -right-20 -top-20"></div>
+            <div class="w-64 h-64 bg-black/10 rounded-full blur-3xl absolute -left-20 -bottom-20"></div>
+            <img src="/images/logo_circular.png" alt="PET-U" class="w-48 h-48 opacity-20 filter invert brightness-0" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <Fragment slot="footer">
+    <Footer />
+  </Fragment>
+
+</Layout>
+
+<style>
+  /* Animación suave para las tarjetas */
+  .group:hover {
+    transform: translateY(-8px);
+  }
+</style>
