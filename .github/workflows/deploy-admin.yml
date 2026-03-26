@@ -50,7 +50,18 @@ jobs:
         run: pnpm install
 
       - name: Build Admin App
-        run: pnpm --filter admin build
+        run: pnpm turbo build --filter=admin
+
+      - name: Verify build output
+        run: |
+          if [ -d "apps/admin/dist" ]; then
+            echo "Build output directory found."
+            ls -al apps/admin/dist
+          else
+            echo "ERROR: Build output directory apps/admin/dist NOT found."
+            find apps/admin -maxdepth 2
+            exit 1
+          fi
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
