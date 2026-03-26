@@ -22,6 +22,12 @@ on:
       - 'pnpm-workspace.yaml'
       - 'pnpm-lock.yaml'
 
+# Permisos necesarios para que la acción pueda comentar en PRs y crear checks
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
