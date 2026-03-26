@@ -3,7 +3,17 @@ name: Deploy Admin to Firebase Hosting
 on:
   push:
     branches:
-      - dev # Cambia esto a 'main' si tu rama de producción es diferente
+      - main
+    paths:
+      - 'apps/admin/**'
+      - 'packages/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
+  pull_request:
+    branches:
+      - main
     paths:
       - 'apps/admin/**'
       - 'packages/**'
@@ -42,4 +52,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PET_U_FE87C }}
           projectId: pet-u-fe87c
-          channelId: live
+          channelId: ${{ github.event_name == 'push' && 'live' || '' }}
