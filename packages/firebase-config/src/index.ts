@@ -36,5 +36,7 @@ export {
   serverTimestamp, 
   query, 
   orderBy, 
+  Timestamp,
   type DocumentData 
 } from 'firebase/firestore';
+export * from './types';
