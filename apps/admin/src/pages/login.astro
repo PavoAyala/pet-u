@@ -1,0 +1,40 @@
+---
+import { SignIn2 } from '../components/ui/clean-minimal-sign-in';
+import '../styles/global.css';
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Iniciar Sesión | Pet-U Admin</title>
+    <link rel="icon" type="image/png" href="/images/logo_circular.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet" />
+  </head>
+  <body class="bg-[#fdfbf7] font-sans antialiased">
+    <SignIn2 client:load />
+    
+    <script>
+      import { auth, onAuthStateChanged, type User } from '@pet-u/firebase-config';
+
+      // If user is already logged in, send them to dashboard
+      onAuthStateChanged(auth, (user: User | null) => {
+        if (user) {
+          globalThis.location.href = '/';
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    font-family: 'Inter', sans-serif;
+  }
+  h1, h2, h3, .font-serif {
+    font-family: 'Outfit', sans-serif;
+  }
+</style>

@@ -1,0 +1,75 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Dashboard de Control">
+  <div class="px-10 py-12 max-w-[1400px] mx-auto">
+    <!-- Bienvenida -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-serif font-bold text-[#3C4F35]">¡Hola Administrador!</h1>
+      <p class="text-gray-400 mt-2 font-medium italic text-lg">Bienvenido al corazón de PET-U. Aquí es donde sucede la magia boutique.</p>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+      <div class="bg-white rounded-[32px] p-8 border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 group hover:border-[#3C4F35]/30 transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 rounded-2xl bg-[#3C4F35]/5 flex items-center justify-center text-[#3C4F35]">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+          </div>
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Catálogo</span>
+        </div>
+        <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Total Artículos</p>
+        <p id="total-products" class="text-5xl font-serif font-bold text-[#3C4F35]">...</p>
+      </div>
+
+      <div class="bg-white rounded-[32px] p-8 border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 group hover:border-[#3C4F35]/30 transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Estado</span>
+        </div>
+        <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">En Stock</p>
+        <p id="in-stock" class="text-5xl font-serif font-bold text-emerald-600">...</p>
+      </div>
+
+      <div class="bg-white rounded-[32px] p-8 border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 group hover:border-[#3C4F35]/30 transition-all">
+        <div class="flex items-center justify-between mb-6">
+          <div class="w-14 h-14 rounded-2xl bg-[#fdfbf7] flex items-center justify-center text-[#3C4F35]/40">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          </div>
+          <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Activo</span>
+        </div>
+        <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Tienda Web</p>
+        <p class="text-3xl font-serif font-bold text-[#3C4F35]">LIVE</p>
+      </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="bg-[#3C4F35] rounded-[40px] p-12 relative overflow-hidden shadow-2xl shadow-[#3C4F35]/20 flex flex-col md:flex-row items-center justify-between gap-8">
+      <div class="relative z-10 text-center md:text-left">
+        <h2 class="text-2xl md:text-3xl font-serif font-bold text-white mb-4">Administra tus Existencias</h2>
+        <p class="text-white/70 max-w-md font-medium">Mantén el inventario actualizado para que tus clientes vean siempre lo mejor en la tienda boutique.</p>
+      </div>
+      <a href="/productos" class="relative z-10 flex items-center gap-3 bg-white text-[#3C4F35] px-10 py-5 rounded-full font-bold hover:bg-[#fdfbf7] transition-all shadow-xl shadow-black/10">
+        Ir al Listado
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
+      </a>
+      
+      <!-- Decorativos de fondo -->
+      <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+      <div class="absolute -left-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { db, collection, getDocs, type DocumentData } from '@pet-u/firebase-config';
+
+  const snap = await getDocs(collection(db, 'productos'));
+  const products = snap.docs.map((d: DocumentData) => d.data());
+  
+  document.getElementById('total-products')!.textContent = String(products.length);
+  document.getElementById('in-stock')!.textContent = String(products.filter((p: any) => (p.stock || 0) > 0 || p.nombre).length);
+</script>
