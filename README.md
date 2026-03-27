@@ -40,14 +40,16 @@ pnpm install
 
 ### Desarrollo Local
 
-Para correr ambas aplicaciones (admin y website) simultáneamente:
+Para correr ambas aplicaciones (admin y website) junto con los emuladores localmente:
 
 ```bash
 pnpm dev
 ```
 
--   **Sitio Web**: `http://localhost:4321`
--   **Panel Admin**: `http://localhost:4001`
+Este comando inicia automáticamente:
+-   **Terminal 1**: Emuladores de Firebase (Auth, Firestore, UI).
+-   **Terminal 2**: Servidores de desarrollo para `website` y `admin`.
+
 
 ### Despliegue
 
