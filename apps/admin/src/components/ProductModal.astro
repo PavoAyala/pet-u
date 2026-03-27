@@ -1,0 +1,137 @@
+---
+// ProductModal.astro
+---
+
+<div id="modal" class="hidden fixed inset-0 z-50 items-center justify-center p-6 bg-brand-500/40 backdrop-blur-md">
+    <div class="bg-white rounded-[40px] w-full max-w-xl shadow-2xl scale-95 transition-all duration-300 opacity-0 overflow-hidden" id="modal-container">
+      <div class="px-10 pt-10 pb-6 border-b border-gray-50 bg-[#fdfbf7]">
+        <div class="flex items-center justify-between mb-2">
+            <h3 id="modal-title" class="text-2xl font-serif font-bold text-brand-500">Crear Producto</h3>
+            <button id="modal-close" class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-400">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+        </div>
+        <p class="text-gray-400 text-sm italic">Define los detalles del nuevo artículo exclusivo.</p>
+      </div>
+
+      <form id="form" class="p-10 space-y-6">
+        <input type="hidden" id="field-id" />
+        
+        <div class="grid grid-cols-2 gap-6">
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Nombre Comercial</label>
+            <input id="field-nombre" name="nombre" type="text" required class="w-full bg-white border border-brand-500/10 rounded-2xl px-6 py-3.5 text-sm text-brand-500 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all shadow-sm" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Marca</label>
+            <input id="field-marca" name="marca" type="text" required class="w-full bg-white border border-brand-500/10 rounded-2xl px-6 py-3.5 text-sm text-brand-500 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all shadow-sm" />
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio (MXN)</label>
+            <input id="field-precio" name="precio" type="number" step="0.01" required class="w-full bg-white border border-brand-500/10 rounded-2xl px-6 py-3.5 text-sm text-brand-500 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all shadow-sm" />
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Descripción</label>
+            <textarea id="field-descripcion" name="descripcion" rows="3" required class="w-full bg-white border border-brand-500/10 rounded-2xl px-6 py-3.5 text-sm text-brand-500 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all shadow-sm resize-none"></textarea>
+          </div>
+
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-2 ml-1">Imagen URL</label>
+            <input id="field-imagen" name="imagen" type="url" required class="w-full bg-white border border-brand-500/10 rounded-2xl px-6 py-3.5 text-sm text-brand-500 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/5 transition-all shadow-sm" />
+          </div>
+        </div>
+
+        <div id="form-error" class="hidden p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-xs font-semibold"></div>
+
+        <div class="flex gap-4 pt-4">
+          <button type="button" id="btn-cancel" class="flex-1 bg-[#fdfbf7] hover:bg-gray-100 text-gray-500 text-sm font-bold py-4 rounded-2xl transition-all">Cancelar</button>
+          <button type="submit" id="btn-submit" class="flex-1 bg-brand-500 hover:bg-brand-600 text-white text-sm font-bold py-4 rounded-2xl shadow-xl shadow-brand-500/20 transition-all active:scale-95">Confirmar Artículo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+  import { db, collection, addDoc, doc, updateDoc, serverTimestamp, type Product } from '@pet-u/firebase-config';
+
+  const modal = document.getElementById('modal')!;
+  const modalContainer = document.getElementById('modal-container')!;
+  const form = document.getElementById('form') as HTMLFormElement;
+  const modalTitle = document.getElementById('modal-title')!;
+  const fieldId = document.getElementById('field-id') as HTMLInputElement;
+
+  // Manejo de visibilidad
+  const openModal = (p?: Product) => {
+    form.reset();
+    fieldId.value = p?.id || '';
+    modalTitle.textContent = p?.id ? 'Editar Producto' : 'Crear Producto';
+    
+    if (p) {
+      (document.getElementById('field-nombre') as HTMLInputElement).value = p.nombre || '';
+      (document.getElementById('field-marca') as HTMLInputElement).value = p.marca || '';
+      (document.getElementById('field-precio') as HTMLInputElement).value = String(p.precio || '');
+      (document.getElementById('field-descripcion') as HTMLTextAreaElement).value = p.descripcion || '';
+      (document.getElementById('field-imagen') as HTMLInputElement).value = p.imagen || '';
+    }
+
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+        modalContainer.classList.remove('scale-95', 'opacity-0');
+    }, 10);
+  };
+
+  const closeModal = () => {
+    modalContainer.classList.add('scale-95', 'opacity-0');
+    setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+    }, 300);
+  };
+
+  // Escuchar eventos globales para abrir este modal
+  window.addEventListener('open-product-modal', (e: Event) => {
+    const customEvent = e as CustomEvent<Product>;
+    openModal(customEvent.detail);
+  });
+
+  document.getElementById('modal-close')!.onclick = closeModal;
+  document.getElementById('btn-cancel')!.onclick = closeModal;
+
+  form.onsubmit = async (e) => {
+    e.preventDefault();
+    const id = fieldId.value;
+    const data = {
+      nombre: (document.getElementById('field-nombre') as HTMLInputElement).value,
+      marca: (document.getElementById('field-marca') as HTMLInputElement).value,
+      precio: parseFloat((document.getElementById('field-precio') as HTMLInputElement).value),
+      descripcion: (document.getElementById('field-descripcion') as HTMLTextAreaElement).value,
+      imagen: (document.getElementById('field-imagen') as HTMLInputElement).value,
+      stock: 1,
+    };
+
+    try {
+      if (id) {
+        await updateDoc(doc(db, 'productos', id), data);
+      } else {
+        await addDoc(collection(db, 'productos'), { ...data, creadoEn: serverTimestamp() });
+      }
+      closeModal();
+      // Notificar al componente padre que se guardó un producto
+      window.dispatchEvent(new CustomEvent('product-saved'));
+    } catch (err) {
+      console.error(err);
+      const errorDiv = document.getElementById('form-error')!;
+      errorDiv.textContent = 'Error al guardar el producto. Por favor intenta de nuevo.';
+      errorDiv.classList.remove('hidden');
+    }
+  };
+
+  // Cerrar al hacer click fuera
+  modal.onclick = (e) => {
+    if (e.target === modal) closeModal();
+  };
+</script>

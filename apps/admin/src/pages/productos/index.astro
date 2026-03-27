@@ -1,0 +1,164 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import ProductModal from '../../components/ProductModal.astro';
+import { type Product } from '@pet-u/firebase-config';
+---
+
+<Layout title="Gestión de Productos">
+  <!-- Header Boutique -->
+  <div class="bg-white border-b border-[#3C4F35]/10 px-10 py-8 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/80">
+    <div>
+      <h1 class="text-3xl font-serif font-bold text-[#3C4F35]">Inventario de Tienda</h1>
+      <p class="text-gray-400 text-sm mt-1 font-medium italic">Gestiona los artículos exclusivos de PET-U</p>
+    </div>
+    <button
+      id="btn-add"
+      class="inline-flex items-center gap-2 bg-[#3C4F35] hover:bg-[#2D3B28] text-white text-sm font-bold px-6 py-3 rounded-full shadow-lg shadow-[#3C4F35]/20 transition-all active:scale-95"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+      </svg>
+      Añadir Producto
+    </button>
+  </div>
+
+  <div class="px-10 py-10 max-w-[1400px] mx-auto">
+    <!-- Search & Filters -->
+    <div class="mb-8 flex flex-wrap gap-4 items-center">
+      <div class="relative flex-1 max-w-md">
+        <input
+          id="search"
+          type="text"
+          placeholder="Buscar por nombre o marca..."
+          class="w-full bg-white border border-[#3C4F35]/15 rounded-2xl pl-12 pr-6 py-3.5 text-sm text-[#3C4F35] placeholder-gray-400 focus:outline-none focus:border-[#3C4F35] focus:ring-4 focus:ring-[#3C4F35]/5 shadow-sm transition-all"
+        />
+        <svg class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[32px] border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 overflow-hidden">
+      <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400 space-y-4 w-full">
+        <div class="w-8 h-8 rounded-full border-4 border-[#3C4F35]/10 border-t-[#3C4F35] animate-spin"></div>
+        <p class="text-sm font-semibold tracking-wide uppercase">Cargando catálogo...</p>
+      </div>
+
+      <div id="empty" class="hidden flex flex-col items-center justify-center py-32 text-center px-6 mx-auto w-full">
+        <div class="w-20 h-20 rounded-full bg-[#fdfbf7] flex items-center justify-center mb-6">
+          <svg class="w-10 h-10 text-[#3C4F35]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+          </svg>
+        </div>
+        <p class="text-gray-400 max-w-sm font-medium italic">Empieza a nutrir el inventario boutique de la tienda.</p>
+      </div>
+
+      <table id="table" class="hidden w-full text-left border-collapse">
+        <thead class="bg-[#fdfbf7]">
+          <tr>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Artículo</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Marca</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Precio</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Stock</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-right">Manejo</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y divide-[#3C4F35]/5"></tbody>
+      </table>
+    </div>
+  </div>
+
+    <ProductModal />
+</Layout>
+
+<script>
+  import { 
+    db, 
+    collection, 
+    getDocs, 
+    addDoc, 
+    doc, 
+    updateDoc, 
+    deleteDoc, 
+    serverTimestamp, 
+    query, 
+    orderBy,
+    type Product
+  } from '@pet-u/firebase-config';
+
+  const COLLECTION = 'productos';
+  let allProducts: Product[] = [];
+  const loading = document.getElementById('loading')!;
+  const empty = document.getElementById('empty')!;
+  const table = document.getElementById('table')!;
+  const tbody = document.getElementById('tbody')!;
+
+  async function load() {
+    loading.classList.remove('hidden'); table.classList.add('hidden'); empty.classList.add('hidden');
+    const q = query(collection(db, COLLECTION), orderBy('creadoEn', 'desc'));
+    const snap = await getDocs(q);
+    allProducts = snap.docs.map(d => ({ id: d.id, ...d.data() } as Product));
+    render(allProducts);
+    loading.classList.add('hidden');
+  }
+
+  function render(data: Product[]) {
+    if (data.length === 0) { table.classList.add('hidden'); empty.classList.remove('hidden'); return; }
+    empty.classList.add('hidden'); table.classList.remove('hidden');
+    tbody.innerHTML = data.map(p => `
+      <tr class="group hover:bg-[#fdfbf7]/50 transition-colors">
+        <td class="px-8 py-5">
+          <div class="flex items-center gap-4">
+            <img src="${p.imagen}" class="w-14 h-14 rounded-2xl object-cover border border-gray-100 bg-gray-50 shadow-sm" />
+            <div>
+              <p class="font-bold text-[#3C4F35] text-base">${p.nombre}</p>
+              <p class="text-xs text-gray-400 italic line-clamp-1">${p.descripcion.substring(0, 40)}...</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-8 py-5">
+          <span class="px-3 py-1.5 rounded-full bg-[#3C4F35]/5 text-[#3C4F35] text-[10px] font-bold uppercase tracking-wider border border-[#3C4F35]/10">${p.marca}</span>
+        </td>
+        <td class="px-8 py-5 text-center font-bold text-[#3C4F35]">$${Number(p.precio).toFixed(2)}</td>
+        <td class="px-8 py-5 text-center">
+            <span class="text-sm font-semibold text-emerald-600">En catálogo</span>
+        </td>
+        <td class="px-8 py-5 text-right">
+          <div class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button data-edit="${p.id}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#3C4F35]/5 text-[#3C4F35] hover:bg-[#3C4F35] hover:text-white transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+            </button>
+            <button data-delete="${p.id}" class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-50 text-rose-500 hover:bg-rose-600 hover:text-white transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+            </button>
+          </div>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // UI Events
+  document.getElementById('btn-add')!.onclick = () => {
+    window.dispatchEvent(new CustomEvent('open-product-modal'));
+  };
+
+  tbody.onclick = (e) => {
+    const editId = (e.target as HTMLElement).closest('[data-edit]')?.getAttribute('data-edit');
+    const delId = (e.target as HTMLElement).closest('[data-delete]')?.getAttribute('data-delete');
+    
+    if (editId) {
+      const product = allProducts.find(p => p.id === editId);
+      window.dispatchEvent(new CustomEvent('open-product-modal', { detail: product }));
+    }
+    
+    if (delId && confirm('¿Deseas eliminar este artículo premium?')) {
+        deleteDoc(doc(db, COLLECTION, delId)).then(load);
+    }
+  };
+
+  // Escuchar cuando el componente hijo guarda un producto
+  window.addEventListener('product-saved', () => {
+    load();
+  });
+
+  load();
+</script>
