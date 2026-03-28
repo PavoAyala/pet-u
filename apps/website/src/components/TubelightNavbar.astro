@@ -27,6 +27,7 @@ const navItems = [
       return (
         <a 
           href={item.url} 
+          data-astro-reload={item.url === '/instalaciones' ? "true" : undefined}
           class={`relative flex items-center justify-center cursor-pointer px-4 xs:px-5 sm:px-6 py-2.5 sm:py-2 rounded-full transition-all duration-300 ${
             isActive ? "text-[#3C4F35]" : "text-gray-400 hover:text-[#3C4F35] hover:bg-[#f0e6d2]/30"
           }`}
