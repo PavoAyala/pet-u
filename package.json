@@ -9,8 +9,7 @@
     "dev": "concurrently \"pnpm emulators\" \"turbo dev\"",
     "build": "turbo build",
     "check": "turbo check",
-    "lint": "turbo lint",
-    "emulators": "firebase emulators:start"
+    "emulators": "mkdir -p ./.firebase-emulators-data && firebase emulators:start --import=./.firebase-emulators-data --export-on-exit=./.firebase-emulators-data"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

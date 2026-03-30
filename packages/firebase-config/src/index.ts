@@ -2,6 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUxDf0vZMM0v4YRzuFiZcIabezjgDyerQ",
@@ -17,10 +18,12 @@ const firebaseConfig = {
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
+export const rtdb = getDatabase(app);
 
 // Detectar si estamos en un entorno de desarrollo (cliente o servidor)
 const isDev = 
   (globalThis.window !== undefined && (globalThis.window.location.hostname === 'localhost' || globalThis.window.location.hostname === '127.0.0.1')) ||
+  // @ts-expect-error: process no está definido globalmente en los tipos del navegador
   (typeof process !== 'undefined' && process.env.NODE_ENV === 'development');
 
 if (isDev) {
@@ -29,6 +32,7 @@ if (isDev) {
   const host = '127.0.0.1';
   connectFirestoreEmulator(db, host, 8080);
   connectAuthEmulator(auth, `http://${host}:9099`);
+  connectDatabaseEmulator(rtdb, host, 9000);
 }
 
 let analyticsInstance: any = null;
@@ -67,3 +71,15 @@ export {
   browserSessionPersistence,
   type User
 } from 'firebase/auth';
+
+export {
+  ref,
+  push,
+  set,
+  get,
+  onValue,
+  onChildAdded,
+  remove,
+  update,
+  child
+} from 'firebase/database';

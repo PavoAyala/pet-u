@@ -48,6 +48,10 @@ const { title = 'Pet-U Admin' } = Astro.props;
             <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
             Productos de Tienda
           </a>
+          <a href="/reservas" id="nav-reservas" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-white/60 hover:text-white hover:bg-white/5">
+            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            Reservas (Booking)
+          </a>
         </nav>
 
         <div class="px-8 pb-10 border-t border-white/10 pt-8">
@@ -83,6 +87,7 @@ const { title = 'Pet-U Admin' } = Astro.props;
           const activePath = window.location.pathname;
           if (activePath === '/') document.getElementById('nav-dashboard')?.classList.add('bg-white/10', 'text-white');
           if (activePath.includes('/productos')) document.getElementById('nav-products')?.classList.add('bg-white/10', 'text-white');
+          if (activePath.includes('/reservas')) document.getElementById('nav-reservas')?.classList.add('bg-white/10', 'text-white');
         }
       });
 
