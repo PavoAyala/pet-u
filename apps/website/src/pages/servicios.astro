@@ -3,6 +3,7 @@ import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
 import Footer from '~/components/Footer.astro';
 import ServiceCardModal from '~/components/ServiceCardModal.astro';
+import BookingFormModal from '~/components/BookingFormModal.astro';
 
 const metadata = {
   title: 'Servicios Mágicos | PET-U Daycare & Hotel',
@@ -270,9 +271,15 @@ const metadata = {
                  </ul>
               </div>
             </div>
-            <p class="text-[11px] text-center mt-6 text-gray-400 font-medium tracking-wide">*(Estancias de +6 noches se cobra baño de regalo obligatorio)*</p>
-          </Fragment>
-        </ServiceCardModal>
+             <p class="text-[11px] text-center mt-6 text-gray-400 font-medium tracking-wide">*(Estancias de +6 noches se cobra baño de regalo obligatorio)*</p>
+
+             <div class="mt-8 text-center">
+               <button class="openHotelBooking inline-block bg-[#3C4F35] text-white py-4 px-10 rounded-full font-bold text-lg hover:bg-[#2A3825] shadow-xl hover:shadow-2xl hover:-translate-y-1 transition-all">
+                 Cotizar y Reservar Hotel
+               </button>
+             </div>
+           </Fragment>
+         </ServiceCardModal>
 
         <!-- 5. GROOMING & SPA -->
         <ServiceCardModal 
@@ -390,6 +397,9 @@ const metadata = {
   <Fragment slot="footer">
     <Footer />
   </Fragment>
+
+  <!-- RTDB Booking Modal -->
+  <BookingFormModal />
 
 </Layout>
 

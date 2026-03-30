@@ -1,0 +1,299 @@
+---
+---
+
+<dialog id="bookingModal" class="p-0 rounded-3xl backdrop:bg-black/60 shadow-2xl w-full max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans">
+  <div class="bg-white">
+    <!-- Header -->
+    <div class="bg-[#3C4F35] text-[#f0e6d2] p-6 relative">
+      <h2 class="text-2xl font-serif font-bold mb-1">Cotizar y Reservar Hotel</h2>
+      <p class="text-sm opacity-90">Completa los datos para agendar la estancia de tu mascota.</p>
+      <button id="closeHotelBooking" class="absolute top-6 right-6 text-[#f0e6d2] hover:text-white">
+        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+
+    <!-- Body -->
+    <form id="hotelBookingForm" class="p-6 space-y-5">
+      
+      <!-- Pet Name & Parent Name -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-bold mb-1 text-gray-700">Nombre de la mascota</label>
+          <input type="text" id="petName" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all" placeholder="Ej. Firulais">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1 text-gray-700">Tu nombre</label>
+          <input type="text" id="ownerName" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all" placeholder="Ej. Juan Pérez">
+        </div>
+      </div>
+
+      <!-- Size Selection -->
+      <div>
+        <label class="block text-sm font-bold mb-2 text-gray-700">Tamaño (Peso)</label>
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" name="petSize" value="chica" class="text-[#3C4F35] focus:ring-[#3C4F35]" required>
+            <span>Chica <span class="text-xs text-gray-400 block">(0-15kg)</span></span>
+          </label>
+          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" name="petSize" value="mediana" class="text-[#3C4F35] focus:ring-[#3C4F35]">
+            <span>Mediana <span class="text-xs text-gray-400 block">(15-25kg)</span></span>
+          </label>
+          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" name="petSize" value="grande" class="text-[#3C4F35] focus:ring-[#3C4F35]">
+            <span>Grande <span class="text-xs text-gray-400 block">(25-50kg)</span></span>
+          </label>
+          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
+            <input type="radio" name="petSize" value="xl" class="text-[#3C4F35] focus:ring-[#3C4F35]">
+            <span>Extra Grande <span class="text-xs text-gray-400 block">(+50kg)</span></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Dates -->
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-in</label>
+          <input type="date" id="checkinDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-out</label>
+          <input type="date" id="checkoutDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
+        </div>
+      </div>
+
+      <!-- Dynamic Price Summary -->
+      <div id="priceSummary" class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4 hidden">
+        <div class="flex justify-between items-center mb-1">
+          <span class="text-gray-600 text-sm">Costo por <span id="summaryNights">0</span> noches:</span>
+          <strong class="text-xl font-serif text-[#3C4F35]">$<span id="summaryTotal">0</span> <span class="text-xs font-sans">MXN</span></strong>
+        </div>
+        <p class="text-[11px] text-gray-400 italic mt-2">* Cotización estimada. Pago se realiza en recepción.</p>
+      </div>
+
+      <!-- Status/Error Message -->
+      <div id="formStatus" class="text-sm font-bold text-center hidden p-3 rounded-lg"></div>
+
+      <!-- Submit -->
+      <button type="submit" id="submitBtn" class="w-full bg-[#d2a265] text-[#3C4F35] py-3 rounded-full font-bold hover:bg-[#c19154] shadow-md transition-all mt-4 disabled:opacity-50">
+        Confirmar y Enviar Reserva
+      </button>
+
+    </form>
+  </div>
+</dialog>
+
+<script>
+  // We cannot use TS imports directly in Astro client scripts easily without setup, 
+  // but since we are using vite, module resolution works if we tell it it's a module
+  import { rtdb, ref, push, set } from '@pet-u/firebase-config';
+
+  const prices = {
+    baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
+    alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
+  };
+
+  const modal = document.getElementById('bookingModal') as HTMLDialogElement;
+  const openBtns = document.querySelectorAll('.openHotelBooking');
+  const closeBtn = document.getElementById('closeHotelBooking');
+  const form = document.getElementById('hotelBookingForm') as HTMLFormElement;
+  
+  const checkinInput = document.getElementById('checkinDate') as HTMLInputElement;
+  const checkoutInput = document.getElementById('checkoutDate') as HTMLInputElement;
+  const sizeRadios = document.querySelectorAll('input[name="petSize"]');
+  
+  const priceSummary = document.getElementById('priceSummary');
+  const summaryNights = document.getElementById('summaryNights');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const formStatus = document.getElementById('formStatus');
+  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  checkinInput.min = today;
+  checkinInput.addEventListener('change', () => {
+    if (checkinInput.value) {
+      const [cy, cm, cd] = checkinInput.value.split('-').map(Number);
+      const minCheckout = new Date(cy, cm - 1, cd);
+      minCheckout.setDate(minCheckout.getDate() + 1);
+      
+      // Formatting local date manually avoiding timezone shifts:
+      const yyyy = minCheckout.getFullYear();
+      const mm = String(minCheckout.getMonth() + 1).padStart(2, '0');
+      const dd = String(minCheckout.getDate()).padStart(2, '0');
+      const minCheckoutStr = `${yyyy}-${mm}-${dd}`;
+      
+      checkoutInput.min = minCheckoutStr;
+
+      if (checkoutInput.value && checkoutInput.value <= checkinInput.value) {
+        checkoutInput.value = '';
+        priceSummary?.classList.add('hidden');
+      } else {
+        calculateTotal();
+      }
+    }
+  });
+
+  function isHighSeason(date: Date) {
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDate();
+    if (year === 2025 && month === 7 && day >= 1 && day <= 24) return true;
+    if (year === 2025 && month === 11 && day >= 18) return true;
+    if (year === 2026 && month === 0 && day <= 7) return true;
+    if (year === 2026 && month === 2 && day >= 30) return true;
+    if (year === 2026 && month === 3 && day <= 10) return true;
+    if (year === 2026 && month === 6 && day >= 17) return true;
+    if (year === 2025) {
+       if (month === 8 && (day === 16 || day === 26)) return true;
+       if (month === 9 && day === 31) return true;
+       if (month === 10 && (day === 17 || day === 28)) return true;
+    }
+    if (year === 2026) {
+       if (month === 0 && day === 30) return true;
+       if (month === 1 && (day === 2 || day === 27)) return true;
+       if (month === 2 && (day === 16 || day === 27)) return true;
+       if (month === 4 && (day === 1 || day === 5 || day === 15 || day === 29)) return true;
+       if (month === 5 && day === 26) return true;
+    }
+    return false;
+  }
+
+  // Calculate Total Logic
+  function calculateTotal() {
+    const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
+    if (!sizeEl || !checkinInput.value || !checkoutInput.value) {
+      priceSummary?.classList.add('hidden');
+      return;
+    }
+
+    const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
+    const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
+    const checkin = new Date(inY, inM - 1, inD);
+    const checkout = new Date(outY, outM - 1, outD);
+    const diffTime = checkout.getTime() - checkin.getTime();
+    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays <= 0 || isNaN(diffDays)) {
+      priceSummary?.classList.add('hidden');
+      return;
+    }
+
+    const size = sizeEl.value;
+    let total = 0;
+    
+    // Iterar noche por noche
+    const currentDate = new Date(checkin.getTime());
+    for (let i = 0; i < diffDays; i++) {
+      const isHigh = isHighSeason(currentDate);
+      const seasonKey = isHigh ? 'alta' : 'baja';
+      total += prices[seasonKey as keyof typeof prices][size as keyof typeof prices['baja']];
+      
+      currentDate.setDate(currentDate.getDate() + 1); // siguiente día
+    }
+
+    summaryNights!.textContent = diffDays.toString();
+    summaryTotal!.textContent = total.toLocaleString();
+    priceSummary?.classList.remove('hidden');
+  }
+
+  // Attach listeners to recalculate
+  sizeRadios.forEach(r => r.addEventListener('change', calculateTotal));
+  checkoutInput.addEventListener('change', () => {
+    if (checkinInput.value && checkoutInput.value && checkoutInput.value <= checkinInput.value) {
+       checkoutInput.value = '';
+       priceSummary?.classList.add('hidden');
+    } else {
+       calculateTotal();
+    }
+  });
+
+  // Modal Open/Close
+  openBtns.forEach(btn => btn.addEventListener('click', () => {
+    modal?.showModal();
+    document.body.style.overflow = 'hidden';
+  }));
+
+  closeBtn?.addEventListener('click', () => {
+    modal?.close();
+    document.body.style.overflow = '';
+    formStatus?.classList.add('hidden');
+  });
+
+  // Handle Form Submission -> Firebase RTDB
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    formStatus?.classList.add('hidden');
+
+    try {
+      const petName = (document.getElementById('petName') as HTMLInputElement).value;
+      const ownerName = (document.getElementById('ownerName') as HTMLInputElement).value;
+      const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
+      const total = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
+
+      const reservationData = {
+        serviceType: 'hotel',
+        petName,
+        ownerName,
+        petSize: sizeEl.value,
+        checkin: checkinInput.value,
+        checkout: checkoutInput.value,
+        season: 'auto-calculada',
+        totalEstimado: total,
+        status: 'pending',
+        createdAt: new Date().toISOString()
+      };
+
+      // Push to Realtime Database
+      const reservationsListRef = ref(rtdb, 'reservations');
+      const newReservationRef = push(reservationsListRef);
+      await set(newReservationRef, reservationData);
+
+      // Success
+      formStatus!.classList.remove('hidden');
+      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-green-100 text-green-800 border border-green-200 mt-4';
+      formStatus!.textContent = '¡Reserva enviada con éxito! Revisa tu Admin Panel o contactaremos contigo pronto.';
+      
+      form.reset();
+      priceSummary?.classList.add('hidden');
+      
+      setTimeout(() => {
+        modal?.close();
+        document.body.style.overflow = '';
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Confirmar y Enviar Reserva';
+      }, 3000);
+
+    } catch (error: unknown) {
+      console.error("Error al guardar reserva:", error);
+      formStatus!.classList.remove('hidden');
+      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-red-100 text-red-800 border border-red-200 mt-4';
+      formStatus!.textContent = 'Hubo un error al enviar tu reserva: ' + (error as Error).message;
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Intentar de nuevo';
+    }
+  });
+</script>
+
+<style>
+  dialog::backdrop {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+  }
+  dialog[open] {
+    animation: zoomIn 0.3s ease normal;
+  }
+  @keyframes zoomIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+</style>

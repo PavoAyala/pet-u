@@ -1,0 +1,144 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Control de Reservas">
+  <!-- Header Boutique -->
+  <div class="bg-white border-b border-[#3C4F35]/10 px-10 py-8 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/80">
+    <div>
+      <h1 class="text-3xl font-serif font-bold text-[#3C4F35]">Reservas Entrantes</h1>
+      <p class="text-gray-400 text-sm mt-1 font-medium italic">Monitoreo en tiempo real (RTDB)</p>
+    </div>
+    <div class="flex gap-4">
+      <div class="animate-pulse flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2 rounded-full text-xs font-bold border border-emerald-100">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        Conectado en vivo
+      </div>
+    </div>
+  </div>
+
+  <div class="px-10 py-10 max-w-[1400px] mx-auto">
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+       <div class="bg-white p-6 rounded-3xl border border-[#3C4F35]/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Reservas</p>
+         <p id="stat-total" class="text-3xl font-serif font-bold text-[#3C4F35]">0</p>
+       </div>
+       <div class="bg-white p-6 rounded-3xl border border-[#3C4F35]/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Status: Pendientes</p>
+         <p id="stat-pending" class="text-3xl font-serif font-bold text-amber-500">0</p>
+       </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[32px] border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 overflow-hidden">
+      <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400 space-y-4 w-full">
+        <div class="w-8 h-8 rounded-full border-4 border-[#3C4F35]/10 border-t-[#3C4F35] animate-spin"></div>
+        <p class="text-sm font-semibold tracking-wide uppercase">Cargando reservas...</p>
+      </div>
+
+      <div id="empty" class="hidden flex flex-col items-center justify-center py-32 text-center px-6 mx-auto w-full">
+        <div class="w-20 h-20 rounded-full bg-[#fdfbf7] flex items-center justify-center mb-6">
+           <svg class="w-10 h-10 text-[#3C4F35]/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </div>
+        <p class="text-gray-400 max-w-sm font-medium italic">Aún no hay reservas. Cuando un cliente cotice en la web, aparecerá aquí instantáneamente.</p>
+      </div>
+
+      <table id="table" class="hidden w-full text-left border-collapse">
+        <thead class="bg-[#fdfbf7]">
+          <tr>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Fecha Llegada</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Mascota / Dueño</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Servicio</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Status</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-right">Cotización</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y divide-[#3C4F35]/5"></tbody>
+      </table>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+
+  const loading = document.getElementById('loading')!;
+  const empty = document.getElementById('empty')!;
+  const table = document.getElementById('table')!;
+  const tbody = document.getElementById('tbody')!;
+  
+  const statTotal = document.getElementById('stat-total')!;
+  const statPending = document.getElementById('stat-pending')!;
+
+  const reservationsRef = ref(rtdb, 'reservations');
+
+  onValue(reservationsRef, (snapshot) => {
+    loading.classList.add('hidden');
+    
+    if (!snapshot.exists()) {
+      table.classList.add('hidden');
+      empty.classList.remove('hidden');
+      statTotal.textContent = '0';
+      statPending.textContent = '0';
+      return;
+    }
+
+    const data = snapshot.val();
+    // Convert object to array and sort by createdAt descending
+    const reservations = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    })).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    render(reservations);
+    
+    statTotal.textContent = String(reservations.length);
+    statPending.textContent = String(reservations.filter(r => r.status === 'pending').length);
+  });
+
+  function render(data: any[]) {
+    if (data.length === 0) { 
+      table.classList.add('hidden'); 
+      empty.classList.remove('hidden'); 
+      return; 
+    }
+    
+    empty.classList.add('hidden'); 
+    table.classList.remove('hidden');
+    
+    tbody.innerHTML = data.map(r => `
+      <tr class="group hover:bg-[#fdfbf7]/50 transition-colors">
+        <td class="px-8 py-5">
+           <div class="text-[#3C4F35] font-bold">${r.checkin || 'N/A'}</div>
+           <div class="text-[10px] text-gray-400">Creado: ${new Date(r.createdAt).toLocaleDateString()}</div>
+        </td>
+        <td class="px-8 py-5">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 rounded-full bg-[#3C4F35]/10 flex items-center justify-center text-[#3C4F35] font-bold font-serif text-lg">
+                ${r.petName ? r.petName.charAt(0).toUpperCase() : '?'}
+             </div>
+             <div>
+               <p class="font-bold text-[#3C4F35] text-base capitalize">${r.petName || 'Sin Nombre'}</p>
+               <p class="text-[11px] text-gray-400 italic">De: ${r.ownerName || 'Desconocido'}</p>
+             </div>
+          </div>
+        </td>
+        <td class="px-8 py-5">
+          <span class="px-3 py-1.5 rounded-full bg-[#f0e6d2] text-[#3C4F35] text-[10px] font-bold uppercase tracking-wider">${r.serviceType || 'General'}</span>
+          <div class="text-xs text-gray-500 mt-1 capitalize">${r.petSize || ''} - ${r.season || ''}</div>
+        </td>
+        <td class="px-8 py-5 text-center">
+            ${r.status === 'pending' 
+              ? '<span class="text-xs font-bold text-amber-500 bg-amber-50 px-3 py-1 rounded-full border border-amber-100 uppercase tracking-widest">Pendiente</span>'
+              : '<span class="text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-100 uppercase tracking-widest">Confimada</span>'
+            }
+        </td>
+        <td class="px-8 py-5 text-right font-serif font-bold text-[#3C4F35] text-lg">
+          $${Number(r.totalEstimado || 0).toLocaleString()} <span class="text-[10px] font-sans font-normal text-gray-400">MXN</span>
+        </td>
+      </tr>
+    `).join('');
+  }
+</script>
