@@ -2,6 +2,8 @@
 import Layout from '~/layouts/PageLayout.astro';
 import TubelightNavbar from '~/components/TubelightNavbar.astro';
 import Footer from '~/components/Footer.astro';
+import BookingSelector from '~/components/BookingSelector.astro';
+import BookingFormModal from '~/components/BookingFormModal.astro';
 
 const metadata = {
   title: 'PET-U Daycare & Hotel',
@@ -33,9 +35,7 @@ const metadata = {
         </p>
         
         <div class="flex flex-wrap items-center gap-4">
-          <a href="/servicios" class="bg-[#3C4F35] shadow-lg hover:bg-[#2A3825] text-white px-8 py-2.5 rounded-full font-bold transition-all duration-200">
-            Agendar cita
-          </a>
+          <BookingSelector />
           <a href="/tienda" class="border-2 border-[#3C4F35] hover:bg-[#3C4F35] hover:text-white text-[#3C4F35] px-8 py-2.5 rounded-full font-bold flex items-center gap-2 transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 opacity-90" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -80,5 +80,8 @@ const metadata = {
   <Fragment slot="footer">
     <Footer />
   </Fragment>
+
+  <!-- RTDB Booking Modal -->
+  <BookingFormModal />
 
 </Layout>

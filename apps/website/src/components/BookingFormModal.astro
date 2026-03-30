@@ -1,19 +1,18 @@
----
----
-
-<dialog id="bookingModal" class="p-0 rounded-3xl backdrop:bg-black/60 shadow-2xl w-full max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans">
+<dialog id="bookingModal" class="p-0 rounded-3xl backdrop:bg-black/60 shadow-2xl w-full max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans border-0">
   <div class="bg-white">
     <!-- Header -->
-    <div class="bg-[#3C4F35] text-[#f0e6d2] p-6 relative">
-      <h2 class="text-2xl font-serif font-bold mb-1">Cotizar y Reservar Hotel</h2>
-      <p class="text-sm opacity-90">Completa los datos para agendar la estancia de tu mascota.</p>
-      <button id="closeHotelBooking" class="absolute top-6 right-6 text-[#f0e6d2] hover:text-white">
+    <div id="modalHeader" class="bg-[#3C4F35] text-[#f0e6d2] p-6 relative transition-colors duration-300">
+      <h2 id="modalTitle" class="text-2xl font-serif font-bold mb-1">Cotizar y Reservar</h2>
+      <p id="modalSubtitle" class="text-sm opacity-90">Completa los datos para agendar tu cita.</p>
+      <button id="closeHotelBooking" class="absolute top-6 right-6 text-[#f0e6d2] hover:text-white transition-transform hover:rotate-90">
         <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </div>
 
     <!-- Body -->
     <form id="hotelBookingForm" class="p-6 space-y-5">
+      <!-- Hidden Service Type -->
+      <input type="hidden" id="serviceTypeInput" name="serviceType" value="hotel">
       
       <!-- Pet Name & Parent Name -->
       <div class="grid grid-cols-2 gap-4">
@@ -27,8 +26,33 @@
         </div>
       </div>
 
+      <!-- Vacunas Dropdown (Only for Vacunas) -->
+      <div id="vaccineSelectionGroup" class="hidden">
+        <label class="block text-sm font-bold mb-1 text-gray-700">Selecciona la vacuna</label>
+        <select id="vaccineType" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm bg-white">
+          <option value="" disabled selected>Elegir vacuna...</option>
+          <optgroup label="Caninos (Perros)">
+            <option value="quintuple">Quíntuple (DHPPL)</option>
+            <option value="sextuple">Séxtuple</option>
+            <option value="rabia">Rabia</option>
+            <option value="bordetella">Bordetella</option>
+            <option value="giardia">Giardia</option>
+            <option value="puppy_dp">Puppy DP</option>
+          </optgroup>
+          <optgroup label="Felinos (Gatos)">
+            <option value="triple_felina">Triple Felina</option>
+            <option value="leucemia">Leucemia Felina</option>
+            <option value="rabia_gato">Rabia (Gato)</option>
+          </optgroup>
+          <optgroup label="Otros">
+            <option value="desparasitacion">Desparasitación Interna</option>
+            <option value="consulta_general">Consulta General</option>
+          </optgroup>
+        </select>
+      </div>
+
       <!-- Size Selection -->
-      <div>
+      <div id="sizeSelectionGroup">
         <label class="block text-sm font-bold mb-2 text-gray-700">Tamaño (Peso)</label>
         <div class="grid grid-cols-2 gap-3 text-sm">
           <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
@@ -53,10 +77,10 @@
       <!-- Dates -->
       <div class="grid grid-cols-2 gap-4">
         <div>
-          <label class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-in</label>
+          <label id="checkinLabel" class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-in</label>
           <input type="date" id="checkinDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
         </div>
-        <div>
+        <div id="checkoutGroup">
           <label class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-out</label>
           <input type="date" id="checkoutDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
         </div>
@@ -65,7 +89,7 @@
       <!-- Dynamic Price Summary -->
       <div id="priceSummary" class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4 hidden">
         <div class="flex justify-between items-center mb-1">
-          <span class="text-gray-600 text-sm">Costo por <span id="summaryNights">0</span> noches:</span>
+          <span id="summaryLabel" class="text-gray-600 text-sm">Costo total:</span>
           <strong class="text-xl font-serif text-[#3C4F35]">$<span id="summaryTotal">0</span> <span class="text-xs font-sans">MXN</span></strong>
         </div>
         <p class="text-[11px] text-gray-400 italic mt-2">* Cotización estimada. Pago se realiza en recepción.</p>
@@ -84,17 +108,19 @@
 </dialog>
 
 <script>
-  // We cannot use TS imports directly in Astro client scripts easily without setup, 
-  // but since we are using vite, module resolution works if we tell it it's a module
   import { rtdb, ref, push, set } from '@pet-u/firebase-config';
 
   const prices = {
-    baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
-    alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
+    hotel: {
+        baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
+        alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
+    },
+    daycare: { chica: 180, mediana: 220, grande: 280, xl: 350 },
+    spa: { chica: 350, mediana: 450, grande: 550, xl: 650 },
+    vacunas: { fixed: 560 } // Example fixed price
   };
 
   const modal = document.getElementById('bookingModal') as HTMLDialogElement;
-  const openBtns = document.querySelectorAll('.openHotelBooking');
   const closeBtn = document.getElementById('closeHotelBooking');
   const form = document.getElementById('hotelBookingForm') as HTMLFormElement;
   
@@ -103,12 +129,94 @@
   const sizeRadios = document.querySelectorAll('input[name="petSize"]');
   
   const priceSummary = document.getElementById('priceSummary');
-  const summaryNights = document.getElementById('summaryNights');
   const summaryTotal = document.getElementById('summaryTotal');
+  const summaryLabel = document.getElementById('summaryLabel');
   const formStatus = document.getElementById('formStatus');
   const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
+  
+  const serviceTypeInput = document.getElementById('serviceTypeInput') as HTMLInputElement;
+  const modalTitle = document.getElementById('modalTitle');
+  const modalSubtitle = document.getElementById('modalSubtitle');
+  const checkinLabel = document.getElementById('checkinLabel');
+  const checkoutGroup = document.getElementById('checkoutGroup');
+  const sizeSelectionGroup = document.getElementById('sizeSelectionGroup');
+  const vaccineSelectionGroup = document.getElementById('vaccineSelectionGroup');
+  const vaccineTypeSelect = document.getElementById('vaccineType') as HTMLSelectElement;
 
-  // Set min date to today
+  // Configuración de UI por servicio
+  const serviceConfigs: Record<string, any> = {
+    hotel: {
+        title: 'Reservar Hotel',
+        subtitle: 'Cotiza y reserva la estancia de tu mascota.',
+        checkinLabel: 'Fecha de Check-in',
+        showCheckout: true,
+        showSize: true,
+        showVaccines: false,
+        summaryPrefix: 'Costo por estancia:'
+    },
+    daycare: {
+        title: 'Agendar Daycare',
+        subtitle: 'Diversión y socialización garantizada.',
+        checkinLabel: 'Fecha de visita',
+        showCheckout: false,
+        showSize: true,
+        showVaccines: false,
+        summaryPrefix: 'Costo por día:'
+    },
+    spa: {
+        title: 'Cita en Spa & Grooming',
+        subtitle: 'Elige el día para consentir a tu mascota.',
+        checkinLabel: 'Fecha de cita',
+        showCheckout: false,
+        showSize: true,
+        showVaccines: false,
+        summaryPrefix: 'Costo estimado:'
+    },
+    vacunas: {
+        title: 'Cita de Vacunación',
+        subtitle: 'Salud y prevención para tu mejor amigo.',
+        checkinLabel: 'Fecha de cita',
+        showCheckout: false,
+        showSize: false,
+        showVaccines: true,
+        summaryPrefix: 'Servicio de consulta/vacuna:'
+    }
+  };
+
+  window.addEventListener('openBookingModal', (e: any) => {
+    const service = e.detail.service || 'hotel';
+    serviceTypeInput.value = service;
+    
+    const config = serviceConfigs[service];
+    if (modalTitle) modalTitle.textContent = config.title;
+    if (modalSubtitle) modalSubtitle.textContent = config.subtitle;
+    if (checkinLabel) checkinLabel.textContent = config.checkinLabel;
+    
+    if (config.showCheckout) checkoutGroup?.classList.remove('hidden');
+    else checkoutGroup?.classList.add('hidden');
+    
+    if (config.showSize) sizeSelectionGroup?.classList.remove('hidden');
+    else sizeSelectionGroup?.classList.add('hidden');
+
+    if (config.showVaccines) {
+        vaccineSelectionGroup?.classList.remove('hidden');
+        vaccineTypeSelect.required = true;
+    } else {
+        vaccineSelectionGroup?.classList.add('hidden');
+        vaccineTypeSelect.required = false;
+    }
+
+    summaryLabel!.textContent = config.summaryPrefix;
+    
+    // Reset form
+    form.reset();
+    priceSummary?.classList.add('hidden');
+    formStatus?.classList.add('hidden');
+    
+    modal?.showModal();
+    document.body.style.overflow = 'hidden';
+  });
+
   const today = new Date().toISOString().split('T')[0];
   checkinInput.min = today;
   checkinInput.addEventListener('change', () => {
@@ -117,20 +225,13 @@
       const minCheckout = new Date(cy, cm - 1, cd);
       minCheckout.setDate(minCheckout.getDate() + 1);
       
-      // Formatting local date manually avoiding timezone shifts:
       const yyyy = minCheckout.getFullYear();
       const mm = String(minCheckout.getMonth() + 1).padStart(2, '0');
       const dd = String(minCheckout.getDate()).padStart(2, '0');
       const minCheckoutStr = `${yyyy}-${mm}-${dd}`;
       
       checkoutInput.min = minCheckoutStr;
-
-      if (checkoutInput.value && checkoutInput.value <= checkinInput.value) {
-        checkoutInput.value = '';
-        priceSummary?.classList.add('hidden');
-      } else {
-        calculateTotal();
-      }
+      calculateTotal();
     }
   });
 
@@ -144,86 +245,51 @@
     if (year === 2026 && month === 2 && day >= 30) return true;
     if (year === 2026 && month === 3 && day <= 10) return true;
     if (year === 2026 && month === 6 && day >= 17) return true;
-    if (year === 2025) {
-       if (month === 8 && (day === 16 || day === 26)) return true;
-       if (month === 9 && day === 31) return true;
-       if (month === 10 && (day === 17 || day === 28)) return true;
-    }
-    if (year === 2026) {
-       if (month === 0 && day === 30) return true;
-       if (month === 1 && (day === 2 || day === 27)) return true;
-       if (month === 2 && (day === 16 || day === 27)) return true;
-       if (month === 4 && (day === 1 || day === 5 || day === 15 || day === 29)) return true;
-       if (month === 5 && day === 26) return true;
-    }
     return false;
   }
 
-  // Calculate Total Logic
   function calculateTotal() {
+    const service = serviceTypeInput.value;
     const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
-    if (!sizeEl || !checkinInput.value || !checkoutInput.value) {
-      priceSummary?.classList.add('hidden');
-      return;
-    }
-
-    const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
-    const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
-    const checkin = new Date(inY, inM - 1, inD);
-    const checkout = new Date(outY, outM - 1, outD);
-    const diffTime = checkout.getTime() - checkin.getTime();
-    const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays <= 0 || isNaN(diffDays)) {
-      priceSummary?.classList.add('hidden');
-      return;
-    }
-
-    const size = sizeEl.value;
-    let total = 0;
     
-    // Iterar noche por noche
-    const currentDate = new Date(checkin.getTime());
-    for (let i = 0; i < diffDays; i++) {
-      const isHigh = isHighSeason(currentDate);
-      const seasonKey = isHigh ? 'alta' : 'baja';
-      total += prices[seasonKey as keyof typeof prices][size as keyof typeof prices['baja']];
-      
-      currentDate.setDate(currentDate.getDate() + 1); // siguiente día
+    if (service === 'hotel') {
+        if (!sizeEl || !checkinInput.value || !checkoutInput.value) return;
+        const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
+        const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
+        const checkin = new Date(inY, inM - 1, inD);
+        const checkout = new Date(outY, outM - 1, outD);
+        const diffDays = Math.round((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24));
+        
+        let total = 0;
+        const currentDate = new Date(checkin.getTime());
+        for (let i = 0; i < diffDays; i++) {
+          const isHigh = isHighSeason(currentDate);
+          total += prices.hotel[isHigh ? 'alta' : 'baja'][sizeEl.value as keyof typeof prices.hotel.baja];
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
+        summaryTotal!.textContent = total.toLocaleString();
+        priceSummary?.classList.remove('hidden');
+    } else if (service === 'vacunas') {
+        summaryTotal!.textContent = prices.vacunas.fixed.toLocaleString();
+        priceSummary?.classList.remove('hidden');
+    } else {
+        if (!sizeEl || !checkinInput.value) return;
+        const total = prices[service as 'daycare' | 'spa'][sizeEl.value as keyof typeof prices.daycare];
+        summaryTotal!.textContent = total.toLocaleString();
+        priceSummary?.classList.remove('hidden');
     }
-
-    summaryNights!.textContent = diffDays.toString();
-    summaryTotal!.textContent = total.toLocaleString();
-    priceSummary?.classList.remove('hidden');
   }
 
-  // Attach listeners to recalculate
   sizeRadios.forEach(r => r.addEventListener('change', calculateTotal));
-  checkoutInput.addEventListener('change', () => {
-    if (checkinInput.value && checkoutInput.value && checkoutInput.value <= checkinInput.value) {
-       checkoutInput.value = '';
-       priceSummary?.classList.add('hidden');
-    } else {
-       calculateTotal();
-    }
-  });
-
-  // Modal Open/Close
-  openBtns.forEach(btn => btn.addEventListener('click', () => {
-    modal?.showModal();
-    document.body.style.overflow = 'hidden';
-  }));
+  checkoutInput.addEventListener('change', calculateTotal);
 
   closeBtn?.addEventListener('click', () => {
     modal?.close();
     document.body.style.overflow = '';
-    formStatus?.classList.add('hidden');
   });
 
-  // Handle Form Submission -> Firebase RTDB
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     formStatus?.classList.add('hidden');
@@ -233,29 +299,29 @@
       const ownerName = (document.getElementById('ownerName') as HTMLInputElement).value;
       const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
       const total = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
+      const serviceType = serviceTypeInput.value;
+      const vaccineType = vaccineTypeSelect.value;
 
       const reservationData = {
-        serviceType: 'hotel',
+        serviceType,
         petName,
         ownerName,
-        petSize: sizeEl.value,
+        petSize: sizeEl ? sizeEl.value : 'n/a',
+        vaccineType: serviceType === 'vacunas' ? vaccineType : 'n/a',
         checkin: checkinInput.value,
-        checkout: checkoutInput.value,
-        season: 'auto-calculada',
+        checkout: serviceType === 'hotel' ? checkoutInput.value : checkinInput.value,
         totalEstimado: total,
         status: 'pending',
         createdAt: new Date().toISOString()
       };
 
-      // Push to Realtime Database
       const reservationsListRef = ref(rtdb, 'reservations');
       const newReservationRef = push(reservationsListRef);
       await set(newReservationRef, reservationData);
 
-      // Success
       formStatus!.classList.remove('hidden');
-      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-green-100 text-green-800 border border-green-200 mt-4';
-      formStatus!.textContent = '¡Reserva enviada con éxito! Revisa tu Admin Panel o contactaremos contigo pronto.';
+      formStatus!.className = 'text-sm font-bold text-center p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 mt-4';
+      formStatus!.innerHTML = `¡Reserva de <strong>${serviceType.toUpperCase()}</strong> enviada!<br><span class="font-normal opacity-80 text-xs">Contactaremos contigo pronto.</span>`;
       
       form.reset();
       priceSummary?.classList.add('hidden');
@@ -265,13 +331,12 @@
         document.body.style.overflow = '';
         submitBtn.disabled = false;
         submitBtn.textContent = 'Confirmar y Enviar Reserva';
-      }, 3000);
+      }, 4000);
 
-    } catch (error: unknown) {
-      console.error("Error al guardar reserva:", error);
+    } catch (error: any) {
       formStatus!.classList.remove('hidden');
-      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-red-100 text-red-800 border border-red-200 mt-4';
-      formStatus!.textContent = 'Hubo un error al enviar tu reserva: ' + (error as Error).message;
+      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-100 mt-4';
+      formStatus!.textContent = 'Hubo un error: ' + error.message;
       submitBtn.disabled = false;
       submitBtn.textContent = 'Intentar de nuevo';
     }

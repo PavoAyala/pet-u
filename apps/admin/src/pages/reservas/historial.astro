@@ -1,0 +1,326 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Historial de Reservas">
+  <!-- Header Boutique -->
+  <div class="bg-white border-b border-[#3C4F35]/10 px-10 py-8 flex items-center justify-between sticky top-0 z-10 backdrop-blur-md bg-white/80">
+    <div>
+      <h1 class="text-3xl font-serif font-bold text-gray-500">Historial de Reservas</h1>
+      <p class="text-gray-400 text-sm mt-1 font-medium italic">Reservaciones finalizadas y registros</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="/reservas" class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition-all font-bold text-sm border border-indigo-100 shadow-sm cursor-pointer">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+        Volver al Panel Activo
+      </a>
+    </div>
+  </div>
+
+  <div class="px-10 py-10 max-w-[1400px] mx-auto">
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+       <div class="bg-white p-6 rounded-3xl border border-[#3C4F35]/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Completadas</p>
+         <p id="stat-total" class="text-3xl font-serif font-bold text-gray-500">0</p>
+       </div>
+       <div class="bg-white p-6 rounded-3xl border border-[#3C4F35]/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Ingresos Base Históricos</p>
+         <p id="stat-ingresos" class="text-3xl font-serif font-bold text-emerald-600">$0</p>
+       </div>
+    </div>
+
+    <!-- Search input -->
+    <div class="mb-6 relative">
+       <div class="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none text-gray-400">
+         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+       </div>
+       <input type="text" id="searchInput" class="w-full bg-white border border-[#3C4F35]/10 rounded-full py-4 pl-14 pr-6 placeholder-gray-400 text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all shadow-sm font-medium" placeholder="Buscar reservación anterior por nombre de cliente, mascota, o ID..." />
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[32px] border border-[#3C4F35]/10 shadow-xl shadow-[#3C4F35]/5 overflow-hidden">
+      <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400 space-y-4 w-full">
+        <div class="w-8 h-8 rounded-full border-4 border-[#3C4F35]/10 border-t-gray-400 animate-spin"></div>
+        <p class="text-sm font-semibold tracking-wide uppercase">Cargando historial...</p>
+      </div>
+
+      <div id="empty" class="hidden flex flex-col items-center justify-center py-32 text-center px-6 mx-auto w-full">
+        <div class="w-20 h-20 rounded-full bg-[#fdfbf7] flex items-center justify-center mb-6 border border-gray-100">
+           <svg class="w-10 h-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+        </div>
+        <p class="text-gray-400 max-w-sm font-medium italic" id="empty-msg">No se encontraron reservaciones completadas en el historial.</p>
+      </div>
+
+      <table id="table" class="hidden w-full text-left border-collapse">
+        <thead class="bg-[#fdfbf7]">
+          <tr>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Fechas Servicio</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Mascota / Dueño</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Servicio</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Status</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-right">Cotización</th>
+            <th class="px-8 py-5 text-transparent w-10">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y divide-[#3C4F35]/5"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Detalles de Reserva -->
+  <div id="reservationModal" class="fixed inset-0 z-50 hidden bg-[#3C4F35]/40 backdrop-blur-sm flex items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-[32px] w-full max-w-lg shadow-2xl transform translate-y-4 transition-transform duration-300 overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="relative bg-gradient-to-r from-gray-600 to-gray-700 p-8 text-white shrink-0">
+        <button id="closeModal" class="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <h2 class="text-3xl font-serif font-bold tracking-tight">Registro Histórico</h2>
+        <p class="text-gray-200 text-sm flex items-center gap-1.5 mt-2 opacity-90"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ID: <span id="modal-id" class="font-mono text-xs font-semibold tracking-wider"></span></p>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-8 overflow-y-auto w-full custom-scrollbar">
+        <!-- Main details -->
+        <div class="flex items-start gap-5 mb-8">
+           <div class="w-20 h-20 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-500 font-bold font-serif text-4xl shrink-0 shadow-inner" id="modal-avatar">
+              ?
+           </div>
+           <div>
+             <h3 class="text-2xl font-bold text-gray-700 capitalize" id="modal-pet"></h3>
+             <p class="text-sm text-gray-500 font-medium italic mt-1" id="modal-owner"></p>
+             <div class="flex flex-wrap gap-2 mt-3" id="modal-tags"></div>
+           </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+           <div class="bg-gray-50 p-5 rounded-3xl border border-gray-100 relative overflow-hidden">
+             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Check-in</span>
+             <p class="text-gray-700 font-bold text-lg" id="modal-checkin"></p>
+           </div>
+           <div class="bg-gray-50 p-5 rounded-3xl border border-gray-100 relative overflow-hidden">
+             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Check-out</span>
+             <p class="text-gray-700 font-bold text-lg" id="modal-checkout"></p>
+           </div>
+        </div>
+
+        <div class="space-y-4">
+           <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Desglose de Facturación</h4>
+           <div class="flex justify-between items-center text-sm text-gray-600">
+             <span class="flex items-center gap-2">Hospedaje</span>
+             <span class="font-bold text-gray-700" id="modal-cost-nights"></span>
+           </div>
+           <div id="modal-cost-food" class="flex justify-between items-center text-sm text-gray-600 hidden">
+             <span class="flex items-center gap-2">Alimento</span>
+             <span class="font-bold text-gray-700" id="modal-cost-food-val"></span>
+           </div>
+           <div class="flex justify-between items-center pt-5 border-t border-gray-100 mt-5">
+             <span class="font-serif font-bold text-lg text-gray-400">Total</span>
+             <span id="modal-total" class="font-serif font-bold text-3xl text-gray-700"></span>
+           </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-6 bg-gray-50 border-t border-gray-100 flex justify-end shrink-0">
+         <button id="closeModalBtn" class="px-8 py-3 rounded-full bg-white border border-gray-200 text-gray-600 font-bold text-sm hover:bg-gray-100 hover:text-gray-900 transition-all shadow-sm">Entendido</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { rtdb, ref, onValue, remove } from '@pet-u/firebase-config';
+
+  const loading = document.getElementById('loading')!;
+  const empty = document.getElementById('empty')!;
+  const table = document.getElementById('table')!;
+  const tbody = document.getElementById('tbody')!;
+  
+  const statTotal = document.getElementById('stat-total')!;
+  const statIngresos = document.getElementById('stat-ingresos')!;
+  const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+
+  const reservationsRef = ref(rtdb, 'reservations');
+  let allReservations: any[] = [];
+  let displayReservations: any[] = [];
+
+  onValue(reservationsRef, (snapshot) => {
+    loading.classList.add('hidden');
+    
+    if (!snapshot.exists()) {
+      table.classList.add('hidden');
+      empty.classList.remove('hidden');
+      statTotal.textContent = '0';
+      statIngresos.textContent = '$0';
+      return;
+    }
+
+    const data = snapshot.val();
+    // Fetch ONLY completed reservations for History
+    allReservations = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    }))
+    .filter(r => r.status === 'completed')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    displayReservations = [...allReservations];
+    updateView();
+  });
+
+  searchInput.addEventListener('input', () => {
+    const term = searchInput.value.toLowerCase().trim();
+    if (!term) {
+       displayReservations = [...allReservations];
+    } else {
+       displayReservations = allReservations.filter(r => 
+          (r.petName && r.petName.toLowerCase().includes(term)) ||
+          (r.ownerName && r.ownerName.toLowerCase().includes(term)) ||
+          (r.id && r.id.toLowerCase().includes(term)) ||
+          (r.ownerPhone && String(r.ownerPhone).includes(term))
+       );
+    }
+    updateView();
+  });
+
+  function updateView() {
+    statTotal.textContent = String(allReservations.length); // Total en base a todo el global
+    const totalIngresos = allReservations.reduce((acc, curr) => acc + Number(curr.totalEstimado || 0), 0);
+    statIngresos.textContent = '$' + totalIngresos.toLocaleString() + ' MXN';
+
+    if (displayReservations.length === 0) { 
+      table.classList.add('hidden'); 
+      empty.classList.remove('hidden'); 
+      if(searchInput.value.trim() !== '') {
+          document.getElementById('empty-msg')!.textContent = `Sin resultados para "${searchInput.value}"`;
+      } else {
+          document.getElementById('empty-msg')!.textContent = 'No se encontraron reservaciones completadas en el historial.';
+      }
+      return; 
+    }
+    
+    empty.classList.add('hidden'); 
+    table.classList.remove('hidden');
+    
+    tbody.innerHTML = displayReservations.map(r => `
+      <tr class="group hover:bg-[#fdfbf7]/50 transition-colors">
+        <td class="px-8 py-5">
+           <div class="text-gray-500 font-bold">${r.checkin || '-'} <span class="text-gray-300 font-normal mx-1">al</span> ${r.checkout || '-'}</div>
+           <div class="text-[10px] text-gray-400">Archivada</div>
+        </td>
+        <td class="px-8 py-5">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold font-serif text-lg">
+                ${r.petName ? r.petName.charAt(0).toUpperCase() : '?'}
+             </div>
+             <div>
+               <p class="font-bold text-gray-500 text-base capitalize">${r.petName || 'Sin Nombre'}</p>
+               <p class="text-[11px] text-gray-400 italic">De: ${r.ownerName || 'Desconocido'}</p>
+             </div>
+          </div>
+        </td>
+        <td class="px-8 py-5">
+          <span class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-600 text-[10px] font-bold uppercase tracking-wider">${r.serviceType || 'General'}</span>
+          <div class="text-xs text-gray-400 mt-1 capitalize">${r.petSize || ''} - ${r.season || ''}</div>
+        </td>
+        <td class="px-8 py-5 text-center">
+            <span class="text-[10px] font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 uppercase tracking-widest text-nowrap">✓ Completada</span>
+        </td>
+        <td class="px-8 py-5 text-right font-serif font-bold text-gray-400 text-lg">
+          $${Number(r.totalEstimado || 0).toLocaleString()} <span class="text-[10px] font-sans font-normal">MXN</span>
+        </td>
+        <td class="px-6 py-5 text-right w-10 whitespace-nowrap">
+          <button data-id="${r.id}" class="btn-view p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors mr-1" title="Ver Detalles Anteriores">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </button>
+          <button data-id="${r.id}" class="btn-delete p-2 rounded-full text-red-200 hover:text-red-500 hover:bg-red-50 transition-colors" title="Eliminar Permanentemente">
+             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
+  // --- Modal Logic ---
+  const modal = document.getElementById('reservationModal')!;
+  const modalBox = modal.querySelector('div')!;
+  const closeModalEls = [document.getElementById('closeModal'), document.getElementById('closeModalBtn')];
+
+  function openModal(reserva: any) {
+    document.getElementById('modal-id')!.textContent = reserva.id;
+    document.getElementById('modal-avatar')!.textContent = reserva.petName ? reserva.petName.charAt(0).toUpperCase() : '?';
+    document.getElementById('modal-pet')!.textContent = reserva.petName || 'Sin Nombre';
+    document.getElementById('modal-owner')!.innerHTML = `Reservado por: <strong>${reserva.ownerName || 'Desconocido'}</strong>${reserva.ownerPhone ? '<br/>Tel: ' + reserva.ownerPhone : ''}`;
+    
+    document.getElementById('modal-tags')!.innerHTML = `
+      <span class="px-3 py-1 bg-gray-100 text-gray-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.serviceType || 'General'}</span>
+      <span class="px-3 py-1 bg-gray-50 border border-gray-100 text-gray-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.petSize || 'Sin tamaño'}</span>
+    `;
+    
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return '-';
+      return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    };
+
+    document.getElementById('modal-checkin')!.textContent = formatDate(reserva.checkin);
+    document.getElementById('modal-checkout')!.textContent = formatDate(reserva.checkout);
+    
+    document.getElementById('modal-cost-nights')!.textContent = `$${Number(reserva.costoCheckinCheckOut || reserva.totalEstimado || 0).toLocaleString()} MXN`;
+    
+    const foodWrap = document.getElementById('modal-cost-food')!;
+    if (reserva.costAllFood && reserva.costAllFood > 0) {
+       foodWrap.classList.remove('hidden');
+       document.getElementById('modal-cost-food-val')!.innerHTML = `$${Number(reserva.costAllFood).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+    } else {
+       foodWrap.classList.add('hidden');
+    }
+    
+    document.getElementById('modal-total')!.innerHTML = `$${Number(reserva.totalEstimado || 0).toLocaleString()} <span class="text-xs font-sans font-normal text-gray-400">MXN</span>`;
+    
+    modal.classList.remove('hidden');
+    setTimeout(() => {
+      modal.classList.remove('opacity-0');
+      modalBox.classList.remove('translate-y-4');
+    }, 10);
+  }
+  
+  function hideModal() {
+    modal.classList.add('opacity-0');
+    modalBox.classList.add('translate-y-4');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+
+  closeModalEls.forEach(el => el?.addEventListener('click', hideModal));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) hideModal();
+  });
+
+  tbody.addEventListener('click', async (e) => {
+    // 1. Boton Ver Detalles (Modo Lectura Histórico)
+    const btnView = (e.target as Element).closest('.btn-view');
+    if (btnView) {
+      const id = btnView.getAttribute('data-id');
+      const reserva = displayReservations.find(r => r.id === id);
+      if (reserva) openModal(reserva);
+      return;
+    }
+
+    // 2. Mantenemos la logica de Eliminación final
+    const btnDel = (e.target as Element).closest('.btn-delete');
+    if (btnDel) {
+      if (confirm('🚨 ATENCIÓN: Esta reserva ya está pagada y completada.\n¿Seguro que deseas ELIMINARLA PERMANENTEMENTE de tu base de datos? Esto afectará tus analíticas.')) {
+        const id = btnDel.getAttribute('data-id');
+        try {
+          await remove(ref(rtdb, `reservations/${id}`));
+        } catch (error) {
+          console.error(error);
+          alert('Hubo un error al intentar eliminar la reserva histórica.');
+        }
+      }
+    }
+  });
+</script>
