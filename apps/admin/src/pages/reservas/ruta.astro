@@ -29,12 +29,35 @@ import Layout from '../../layouts/Layout.astro';
   <!-- Main Content: Split Layout -->
   <div class="flex h-[calc(100vh-88px)]">
     <!-- Left Panel: Stops List -->
-    <div class="w-[380px] shrink-0 bg-white border-r border-brand-500/10 flex flex-col overflow-hidden">
+    <div class="w-[400px] shrink-0 bg-white border-r border-brand-500/10 flex flex-col overflow-hidden">
+
+      <!-- Shift Tabs -->
+      <div class="shrink-0 px-4 pt-4 pb-0 bg-white">
+        <div class="flex rounded-2xl bg-gray-100/80 p-1 gap-1">
+          <!-- Tab Mañana -->
+          <button id="tabManana" class="shift-tab flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all active-tab" data-shift="manana">
+            <span class="text-base">🌅</span>
+            <span>Mañana</span>
+            <span id="countManana" class="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-amber-400/20 text-amber-600 text-[10px] font-black">0</span>
+          </button>
+          <!-- Tab Tarde -->
+          <button id="tabTarde" class="shift-tab flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all inactive-tab" data-shift="tarde">
+            <span class="text-base">🌆</span>
+            <span>Tarde</span>
+            <span id="countTarde" class="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black">0</span>
+          </button>
+        </div>
+        <!-- Shift label -->
+        <div class="mt-2 px-1">
+          <p id="shiftLabel" class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">⏰ Recolección: 8:30 AM</p>
+        </div>
+      </div>
+
       <!-- Summary bar -->
-      <div class="px-6 py-4 bg-[#fdfbf7] border-b border-brand-500/10 shrink-0">
+      <div class="px-6 py-3 bg-[#fdfbf7] border-b border-brand-500/10 shrink-0 mt-3">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Paradas del día</p>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Paradas turno</p>
             <p id="stopCount" class="text-2xl font-serif font-bold text-brand-500">0</p>
           </div>
           <div class="text-right">
@@ -45,16 +68,18 @@ import Layout from '../../layouts/Layout.astro';
       </div>
 
       <!-- Stops List -->
-      <div id="stopList" class="overflow-y-auto flex-1 custom-scrollbar divide-y divide-gray-50 p-4 space-y-2">
-        <!-- Empty state -->
+      <div id="stopList" class="overflow-y-auto flex-1 custom-scrollbar p-4 space-y-2">
+        <!-- Empty state — always stays in DOM, shown/hidden via class -->
         <div id="emptyState" class="flex flex-col items-center justify-center h-full text-center py-12">
           <div class="w-16 h-16 rounded-full bg-[#f0e6d2]/50 flex items-center justify-center mb-4">
             <span class="text-3xl">🚌</span>
           </div>
           <p class="text-gray-400 font-medium text-sm leading-relaxed max-w-[200px]">
-            Sin recolecciones Happy Bus para este día.
+            Sin recolecciones Happy Bus para este turno.
           </p>
         </div>
+        <!-- Cards container — only this gets overwritten -->
+        <div id="stopsContainer" class="space-y-2"></div>
       </div>
     </div>
 
@@ -78,9 +103,29 @@ import Layout from '../../layouts/Layout.astro';
   const MAPS_API_KEY = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY;
 
   let map: any = null;
-  let routePolyline: any = null;   // Polyline used to draw the route (replaces DirectionsRenderer)
+  let routePolyline: any = null;
+  let stopMarkers: any[] = [];   // Track stop markers so we can remove them on shift/date change
   let allReservations: any[] = [];
   let orderedStops: any[] = [];
+  let currentShift: 'manana' | 'tarde' = 'manana';
+
+  // Mañana: daycare (8:15–10:30 AM), spa (11:00 AM)
+  // Tarde:  hotel (4:30 PM)
+  const MANANA_SERVICES = ['daycare', 'spa'];
+  const TARDE_SERVICES  = ['hotel'];
+
+  const SHIFT_CONFIG = {
+    manana: {
+      label: '⏰ Recolección: 8:30 AM',
+      pinColor: '#d2a265',
+      routeColor: '#d97706',
+    },
+    tarde: {
+      label: '⏰ Recolección: 4:30 PM',
+      pinColor: '#3C4F35',
+      routeColor: '#3C4F35',
+    }
+  };
 
   // Set today's date as default
   const routeDate = document.getElementById('routeDate') as HTMLInputElement;
@@ -89,6 +134,37 @@ import Layout from '../../layouts/Layout.astro';
   const mm = String(today.getMonth() + 1).padStart(2, '0');
   const dd = String(today.getDate()).padStart(2, '0');
   routeDate.value = `${yyyy}-${mm}-${dd}`;
+
+  // Tab switch
+  document.querySelectorAll('.shift-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const shift = btn.getAttribute('data-shift') as 'manana' | 'tarde';
+      if (shift === currentShift) return;
+      currentShift = shift;
+      updateTabUI();
+      if (map) {
+        clearMap();
+        renderCurrentShift();
+      }
+    });
+  });
+
+  function updateTabUI() {
+    const cfg = SHIFT_CONFIG[currentShift];
+    document.getElementById('shiftLabel')!.textContent = cfg.label;
+
+    // Tab styles
+    document.querySelectorAll('.shift-tab').forEach(btn => {
+      const shift = btn.getAttribute('data-shift');
+      if (shift === currentShift) {
+        btn.classList.remove('inactive-tab');
+        btn.classList.add('active-tab');
+      } else {
+        btn.classList.remove('active-tab');
+        btn.classList.add('inactive-tab');
+      }
+    });
+  }
 
   // Load Google Maps (Modern Loader)
   async function loadMaps() {
@@ -125,11 +201,9 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   async function initMap() {
-    // 'maps' library: Map + Polyline (no legacy Marker)
     const { Map, Polyline } =
       await (window as any).google.maps.importLibrary('maps') as any;
 
-    // 'marker' library: AdvancedMarkerElement (modern, non-deprecated)
     const { AdvancedMarkerElement, PinElement } =
       await (window as any).google.maps.importLibrary('marker') as any;
 
@@ -142,21 +216,20 @@ import Layout from '../../layouts/Layout.astro';
       disableDefaultUI: false,
     });
 
-    // Reusable polyline for the route (drawn via DirectionsService geometry)
     routePolyline = new Polyline({
-      strokeColor: '#3C4F35',
+      strokeColor: SHIFT_CONFIG[currentShift].routeColor,
       strokeWeight: 5,
       strokeOpacity: 0.8,
       map
     });
 
-    // Origin marker using AdvancedMarkerElement
-    const originPin = new PinElement({ background: '#3C4F35', borderColor: '#fff', glyphColor: '#fff', glyph: '🏠' });
+    // Origin marker
+    const originPin = new PinElement({ background: '#2563EB', borderColor: '#fff', glyphColor: '#fff', glyphText: '🏠' });
     new AdvancedMarkerElement({
       position: PETU_ORIGIN,
       map,
       title: 'PET-U — Punto de Partida',
-      content: originPin.element
+      content: originPin
     });
 
     loadReservations();
@@ -171,30 +244,55 @@ import Layout from '../../layouts/Layout.astro';
         const data = snapshot.val();
         allReservations = Object.keys(data).map(key => ({ id: key, ...data[key] }));
       }
-      filterAndRender(routeDate.value);
+      updateBadgeCounts(routeDate.value);
+      renderCurrentShift();
     });
   }
 
-  async function filterAndRender(date: string) {
-    // Filter: Happy Bus enabled + checkin matches selected date + has coordinates
-    console.log(`Total de reservas en BD: ${allReservations.length}`);
-    const availableDates = [...new Set(allReservations.map(r => r.checkin))];
-    console.log("Fechas encontradas en la BD:", availableDates);
-
-    const stops = allReservations.filter(r => {
+  function getShiftStops(date: string): any[] {
+    const services = currentShift === 'manana' ? MANANA_SERVICES : TARDE_SERVICES;
+    return allReservations.filter(r => {
       const want = r.happyBus?.want === true || r.happyBus?.want === 'true';
       const sameDate = r.checkin === date;
       const hasCoords = r.happyBus?.lat && r.happyBus?.lng;
-      
-      if (sameDate && !want) console.log(`Reserva ${r.id} omitida: No activó Happy Bus.`);
-      if (sameDate && want && !hasCoords) console.log(`Reserva ${r.id} omitida: No tiene coordenadas.`);
-      
-      return want && sameDate && hasCoords;
+      const correctService = services.includes(r.serviceType);
+      return want && sameDate && hasCoords && correctService;
     });
+  }
 
-    console.log(`Buscando fecha: ${date}. Reservas encontradas: ${stops.length}`);
+  // Always keeps both tab badge counters in sync with the selected date
+  function updateBadgeCounts(date: string) {
+    const isHappyBusStop = (r: any) => {
+      const want = r.happyBus?.want === true || r.happyBus?.want === 'true';
+      const sameDate = r.checkin === date;
+      const hasCoords = r.happyBus?.lat && r.happyBus?.lng;
+      return want && sameDate && hasCoords;
+    };
+    const allDateStops = allReservations.filter(isHappyBusStop);
+    const mananaCount = allDateStops.filter(r => MANANA_SERVICES.includes(r.serviceType)).length;
+    const tardeCount  = allDateStops.filter(r => TARDE_SERVICES.includes(r.serviceType)).length;
+    document.getElementById('countManana')!.textContent = String(mananaCount);
+    document.getElementById('countTarde')!.textContent  = String(tardeCount);
+  }
+
+  function renderCurrentShift() {
+    // Update polyline color
+    if (routePolyline) {
+      routePolyline.setOptions({ strokeColor: SHIFT_CONFIG[currentShift].routeColor });
+    }
+    filterAndRender(routeDate.value);
+  }
+
+  async function filterAndRender(date: string) {
+    const stops = getShiftStops(date);
+
+    // Keep both tab badges in sync on every render
+    updateBadgeCounts(date);
+
+    // Update revenue + stop count for the current shift
     const revenue = stops.reduce((sum: number, r: any) => sum + (r.happyBus?.cost || 0), 0);
     document.getElementById('routeRevenue')!.textContent = `$${revenue.toLocaleString()}`;
+    document.getElementById('stopCount')!.textContent = String(stops.length);
 
     if (stops.length === 0) {
       renderStopList([]);
@@ -212,7 +310,7 @@ import Layout from '../../layouts/Layout.astro';
       return;
     }
 
-    // Calculate optimized route with DirectionsService (geometry decoded manually)
+    // Optimized route via DirectionsService
     const { DirectionsService, TravelMode } =
       await (window as any).google.maps.importLibrary('routes') as any;
     const { encoding } =
@@ -238,7 +336,6 @@ import Layout from '../../layouts/Layout.astro';
       travelMode: TravelMode.DRIVING
     }, (result: any, status: any) => {
       if (status === 'OK') {
-        // Decode the route overview polyline and draw it manually (no DirectionsRenderer)
         const overviewPath = encoding.decodePath(
           result.routes[0].overview_polyline
         );
@@ -251,7 +348,6 @@ import Layout from '../../layouts/Layout.astro';
         renderNumberedMarkers(reordered);
         buildMapsUrl(reordered);
       } else {
-        // Fallback: just show markers without route line
         orderedStops = stops;
         renderStopList(stops);
         renderMarkersOnly(stops);
@@ -262,27 +358,32 @@ import Layout from '../../layouts/Layout.astro';
 
   function clearMap() {
     if (routePolyline) routePolyline.setPath([]);
+    // Remove all stop markers from the map
+    stopMarkers.forEach(m => { m.map = null; });
+    stopMarkers = [];
   }
 
-  // Helper: draw numbered stop markers using AdvancedMarkerElement
   async function placeStopMarkers(stops: any[]) {
     if (!map) return;
     const { AdvancedMarkerElement, PinElement } =
       await (window as any).google.maps.importLibrary('marker') as any;
 
+    const pinColor = SHIFT_CONFIG[currentShift].pinColor;
+
     stops.forEach((stop: any, i: number) => {
       const pin = new PinElement({
-        background: '#d2a265',
+        background: pinColor,
         borderColor: '#fff',
         glyphColor: '#fff',
-        glyph: String(i + 1)
+        glyphText: String(i + 1)
       });
-      new AdvancedMarkerElement({
+      const marker = new AdvancedMarkerElement({
         position: { lat: parseFloat(stop.happyBus.lat), lng: parseFloat(stop.happyBus.lng) },
         map,
         title: `Parada ${i + 1}: ${stop.petName}`,
-        content: pin.element
+        content: pin
       });
+      stopMarkers.push(marker);
     });
   }
 
@@ -296,12 +397,12 @@ import Layout from '../../layouts/Layout.astro';
   }
 
   function renderStopList(stops: any[]) {
-    const list = document.getElementById('stopList')!;
+    // emptyState is a permanent DOM node — never overwrite it with innerHTML
     const empty = document.getElementById('emptyState')!;
+    const container = document.getElementById('stopsContainer')!;
 
     if (stops.length === 0) {
-      list.innerHTML = '';
-      list.appendChild(empty);
+      container.innerHTML = '';
       empty.classList.remove('hidden');
       return;
     }
@@ -317,10 +418,18 @@ import Layout from '../../layouts/Layout.astro';
       'C': 'bg-purple-50 text-purple-700 border-purple-100'
     };
 
-    list.innerHTML = stops.map((stop: any, i: number) => `
+    const pinColor = currentShift === 'manana' ? '#d2a265' : '#3C4F35';
+
+    const serviceLabels: Record<string, string> = {
+      hotel: '🏨 Hotel',
+      daycare: '☀️ Daycare',
+      spa: '✂️ Spa',
+    };
+
+    container.innerHTML = stops.map((stop: any, i: number) => `
       <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-brand-500/20 transition-all cursor-pointer stop-card" data-index="${i}">
         <div class="flex items-start gap-3">
-          <div class="w-8 h-8 rounded-full bg-[#d2a265] flex items-center justify-center shrink-0 text-white font-bold text-sm">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-sm" style="background:${pinColor}">
             ${i + 1}
           </div>
           <div class="flex-1 min-w-0">
@@ -336,7 +445,7 @@ import Layout from '../../layouts/Layout.astro';
               ${(!stop.happyBus?.address || stop.happyBus.address === 'n/a') ? 'Sin dirección' : stop.happyBus.address}
             </p>
             <div class="flex items-center justify-between mt-2">
-              <span class="text-[10px] bg-brand-500/5 text-brand-500 px-2 py-0.5 rounded-full font-bold uppercase">${stop.serviceType || 'Servicio'}</span>
+              <span class="text-[10px] bg-brand-500/5 text-brand-500 px-2 py-0.5 rounded-full font-bold uppercase">${serviceLabels[stop.serviceType] || stop.serviceType || 'Servicio'}</span>
               <span class="text-sm font-bold text-[#d2a265]">+$${stop.happyBus?.cost || 0}</span>
             </div>
           </div>
@@ -345,7 +454,7 @@ import Layout from '../../layouts/Layout.astro';
     `).join('');
 
     // Click to center map on stop
-    list.querySelectorAll('.stop-card').forEach(card => {
+    container.querySelectorAll('.stop-card').forEach(card => {
       card.addEventListener('click', () => {
         const idx = parseInt(card.getAttribute('data-index') || '0');
         const stop = orderedStops[idx];
@@ -377,6 +486,7 @@ import Layout from '../../layouts/Layout.astro';
   routeDate.addEventListener('change', () => {
     if (map) {
       clearMap();
+      updateBadgeCounts(routeDate.value);
       filterAndRender(routeDate.value);
     }
   });
@@ -389,4 +499,19 @@ import Layout from '../../layouts/Layout.astro';
   .custom-scrollbar::-webkit-scrollbar { width: 4px; }
   .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
   .custom-scrollbar::-webkit-scrollbar-thumb { background: #3C4F35; border-radius: 10px; }
+
+  /* Tab active state */
+  .active-tab {
+    background: white;
+    color: #3C4F35;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .inactive-tab {
+    color: #9ca3af;
+    background: transparent;
+  }
+  .inactive-tab:hover {
+    background: white/50;
+    color: #6b7280;
+  }
 </style>

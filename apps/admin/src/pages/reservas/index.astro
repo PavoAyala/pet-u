@@ -122,13 +122,15 @@ import Layout from '../../layouts/Layout.astro';
              <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg> Alimento</span>
              <span class="font-bold text-brand-500" id="modal-cost-food-val"></span>
            </div>
-           <div id="modal-cost-pickup" class="justify-between items-center text-sm text-gray-600 hidden">
-             <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Transporte Ida</span>
-             <span class="font-bold text-brand-500" id="modal-cost-pickup-val"></span>
-           </div>
-           <div id="modal-cost-dropoff" class="justify-between items-center text-sm text-gray-600 hidden">
-             <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Transporte Vuelta</span>
-             <span class="font-bold text-brand-500" id="modal-cost-dropoff-val"></span>
+           <div id="modal-happybus" class="justify-between items-start text-sm text-gray-600 hidden gap-4">
+             <span class="flex items-start gap-2 min-w-0">
+               <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 6v6m8-6v6M6 18h12M7 3h10a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zm0 0v15"></path></svg>
+               <span class="min-w-0">
+                 <span class="block">Servicio Happy Bus</span>
+                 <span id="modal-happybus-address" class="block text-xs text-gray-400 mt-1 break-words"></span>
+               </span>
+             </span>
+             <span class="font-bold text-brand-500 text-right shrink-0" id="modal-happybus-cost"></span>
            </div>
            <div class="flex justify-between items-center pt-5 border-t border-gray-100 mt-5">
              <span class="font-serif font-bold text-lg text-gray-400">Total</span>
@@ -285,6 +287,24 @@ import Layout from '../../layouts/Layout.astro';
   const modal = document.getElementById('reservationModal')!;
   const modalBox = modal.querySelector('div')!;
   const closeModalEls = [document.getElementById('closeModal'), document.getElementById('closeModalBtn')];
+  const formatMoney = (value: unknown) => `$${Number(value || 0).toLocaleString()} MXN`;
+  const hasHappyBus = (happyBus: any) => happyBus?.want === true || happyBus?.want === 'true';
+  const getHappyBusAddressLabel = (happyBus: any) => {
+    const address = happyBus?.address?.trim?.();
+    if (!address || address.toLowerCase() === 'n/a') return 'Ubicación seleccionada en mapa';
+    return address;
+  };
+  const getBaseCost = (reserva: any) => {
+    const total = Number(reserva.totalEstimado || 0);
+    const food = Number(reserva.costAllFood || 0);
+    const happyBusCost = Number(hasHappyBus(reserva.happyBus) ? reserva.happyBus?.cost || 0 : 0);
+
+    if (reserva.costoCheckinCheckOut != null) {
+      return Number(reserva.costoCheckinCheckOut || 0);
+    }
+
+    return Math.max(total - food - happyBusCost, 0);
+  };
 
   function openModal(reserva: any) {
     document.getElementById('modal-id')!.textContent = reserva.id;
@@ -306,7 +326,7 @@ import Layout from '../../layouts/Layout.astro';
     document.getElementById('modal-checkin')!.textContent = formatDate(reserva.checkin);
     document.getElementById('modal-checkout')!.textContent = formatDate(reserva.checkout);
     
-    document.getElementById('modal-cost-nights')!.textContent = `$${Number(reserva.costoCheckinCheckOut || reserva.totalEstimado || 0).toLocaleString()} MXN`;
+    document.getElementById('modal-cost-nights')!.textContent = formatMoney(getBaseCost(reserva));
     
     const foodWrap = document.getElementById('modal-cost-food')!;
     if (reserva.costAllFood && reserva.costAllFood > 0) {
@@ -318,24 +338,16 @@ import Layout from '../../layouts/Layout.astro';
        foodWrap.classList.remove('flex');
     }
     
-    const pickWrap = document.getElementById('modal-cost-pickup')!;
-    if (reserva.transportPickup) {
-       pickWrap.classList.remove('hidden');
-       pickWrap.classList.add('flex');
-       document.getElementById('modal-cost-pickup-val')!.textContent = '✓ Sí';
+    const happyBusWrap = document.getElementById('modal-happybus')!;
+    const hb = reserva.happyBus;
+    if (hasHappyBus(hb)) {
+       happyBusWrap.classList.remove('hidden');
+       happyBusWrap.classList.add('flex');
+       document.getElementById('modal-happybus-cost')!.innerHTML = `$${Number(hb.cost || 0).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+       document.getElementById('modal-happybus-address')!.textContent = getHappyBusAddressLabel(hb);
     } else {
-       pickWrap.classList.add('hidden');
-       pickWrap.classList.remove('flex');
-    }
-    
-    const dropWrap = document.getElementById('modal-cost-dropoff')!;
-    if (reserva.transportDropoff) {
-       dropWrap.classList.remove('hidden');
-       dropWrap.classList.add('flex');
-       document.getElementById('modal-cost-dropoff-val')!.textContent = '✓ Sí';
-    } else {
-       dropWrap.classList.add('hidden');
-       dropWrap.classList.remove('flex');
+       happyBusWrap.classList.add('hidden');
+       happyBusWrap.classList.remove('flex');
     }
     
     document.getElementById('modal-total')!.innerHTML = `$${Number(reserva.totalEstimado || 0).toLocaleString()} <span class="text-xs font-sans font-normal text-gray-400">MXN</span>`;

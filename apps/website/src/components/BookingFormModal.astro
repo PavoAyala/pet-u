@@ -272,6 +272,13 @@
     vacunas: { title: 'Vacunación', subtitle: 'SALUD Y PREVENCIÓN', checkinLabel: 'Fecha cita', showCheckout: false, showSize: false, showVaccines: true, showHappyBus: false, summaryPrefix: 'Vacuna:' }
   };
 
+  const normalizeHappyBusAddress = (value: string | null | undefined) => {
+    const normalized = value?.trim();
+    if (!normalized) return null;
+    if (normalized.toLowerCase() === 'n/a') return null;
+    return normalized;
+  };
+
   function setupBookingForm() {
     const modal = document.getElementById('bookingModal') as HTMLDialogElement;
     const form = document.getElementById('bookingForm') as HTMLFormElement & { _bookingInit?: boolean };
@@ -475,6 +482,9 @@
             const sizeEl = form.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
             const totalValue = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
             const serviceType = serviceTypeInput.value;
+            const happyBusAddress = normalizeHappyBusAddress(
+              (document.getElementById('happyBusAddressText') as HTMLInputElement).value
+            );
 
             const reservationData = {
                 serviceType,
@@ -485,9 +495,7 @@
                 happyBus: {
                     want: wantHappyBus.checked,
                     zone: wantHappyBus.checked ? happyBusZone.value : null,
-                    address: wantHappyBus.checked
-                        ? ((document.getElementById('happyBusAddressText') as HTMLInputElement).value || null)
-                        : null,
+                    address: wantHappyBus.checked ? happyBusAddress : null,
                     lat: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLat') as HTMLInputElement).value) || null : null,
                     lng: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLng') as HTMLInputElement).value) || null : null,
                     cost: wantHappyBus.checked ? (transportPrices[happyBusZone.value] || 0) : 0
