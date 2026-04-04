@@ -77,7 +77,7 @@ ${reservation.vaccineType && reservation.vaccineType !== 'n/a' ? `💉 Vacuna: $
 
 export const onReservationDeleted = onValueDeleted("/reservations/{pushId}", async (event) => {
   const reservation = event.data.val();
-  const pushId = event.params.pushId;
+  // const pushId = event.params.pushId;
 
   const calendarEventId = reservation.calendarEventId;
   const calendarIdUsed = reservation.calendarIdUsed || HOTEL_CALENDAR_ID;

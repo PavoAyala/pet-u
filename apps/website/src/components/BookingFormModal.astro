@@ -1,37 +1,40 @@
-<dialog id="bookingModal" class="p-0 rounded-3xl backdrop:bg-black/60 shadow-2xl w-full max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans border-0">
-  <div class="bg-white">
-    <!-- Header -->
-    <div id="modalHeader" class="bg-[#3C4F35] text-[#f0e6d2] p-6 relative transition-colors duration-300">
-      <h2 id="modalTitle" class="text-2xl font-serif font-bold mb-1">Cotizar y Reservar</h2>
-      <p id="modalSubtitle" class="text-sm opacity-90">Completa los datos para agendar tu cita.</p>
-      <button id="closeHotelBooking" class="absolute top-6 right-6 text-[#f0e6d2] hover:text-white transition-transform hover:rotate-90">
-        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+<dialog id="bookingModal" class="p-0 rounded-[32px] backdrop:bg-black/80 backdrop:backdrop-blur-sm shadow-2xl w-[95%] max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans border-0 transition-all duration-300">
+  <div id="bookingModalContent" class="bg-white w-full rounded-[32px] overflow-hidden flex flex-col max-h-[90vh]">
+    
+    <!-- Header Compacto -->
+    <div class="bg-[#3C4F35] p-5 text-white flex justify-between items-center shrink-0">
+      <div>
+        <h2 id="modalTitle" class="text-xl font-serif font-black tracking-tight leading-none uppercase">Reservar</h2>
+        <p id="modalSubtitle" class="text-[11px] opacity-80 font-medium mt-1 uppercase tracking-wider">Cuidado premium para tu mascota</p>
+      </div>
+      <button id="closeBookingModal" class="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     </div>
 
-    <!-- Body -->
-    <form id="hotelBookingForm" class="p-6 space-y-5">
+    <!-- Content Area Scrollable -->
+    <form id="bookingForm" class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 bg-white">
       <!-- Hidden Service Type -->
       <input type="hidden" id="serviceTypeInput" name="serviceType" value="hotel">
       
-      <!-- Pet Name & Parent Name -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Pet & Owner Info -->
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="block text-sm font-bold mb-1 text-gray-700">Nombre de la mascota</label>
-          <input type="text" id="petName" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all" placeholder="Ej. Firulais">
+          <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Nombre de la mascota</label>
+          <input type="text" id="petName" required placeholder="Ej. Firulais" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all bg-gray-50/50" />
         </div>
         <div>
-          <label class="block text-sm font-bold mb-1 text-gray-700">Tu nombre</label>
-          <input type="text" id="ownerName" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all" placeholder="Ej. Juan Pérez">
+          <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Tu nombre</label>
+          <input type="text" id="ownerName" required placeholder="Ej. Juan Pérez" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all bg-gray-50/50" />
         </div>
       </div>
 
-      <!-- Vacunas Dropdown (Only for Vacunas) -->
+      <!-- Vacunas Dropdown -->
       <div id="vaccineSelectionGroup" class="hidden">
-        <label class="block text-sm font-bold mb-1 text-gray-700">Selecciona la vacuna</label>
-        <select id="vaccineType" class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm bg-white">
-          <option value="" disabled selected>Elegir vacuna...</option>
-          <optgroup label="Caninos (Perros)">
+        <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Tipo de Vacuna</label>
+        <select id="vaccineType" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white">
+          <option value="" disabled selected>Seleccionar...</option>
+          <optgroup label="Caninos">
             <option value="quintuple">Quíntuple (DHPPL)</option>
             <option value="sextuple">Séxtuple</option>
             <option value="rabia">Rabia</option>
@@ -39,70 +42,149 @@
             <option value="giardia">Giardia</option>
             <option value="puppy_dp">Puppy DP</option>
           </optgroup>
-          <optgroup label="Felinos (Gatos)">
+          <optgroup label="Felinos">
             <option value="triple_felina">Triple Felina</option>
-            <option value="leucemia">Leucemia Felina</option>
-            <option value="rabia_gato">Rabia (Gato)</option>
+            <option value="leucemia">Leucemia</option>
+            <option value="rabia_felina">Rabia Felina</option>
           </optgroup>
-          <optgroup label="Otros">
-            <option value="desparasitacion">Desparasitación Interna</option>
-            <option value="consulta_general">Consulta General</option>
+          <optgroup label="General">
+            <option value="desparasitacion">Desparasitación</option>
+            <option value="consulta">Consulta</option>
           </optgroup>
         </select>
       </div>
 
-      <!-- Size Selection -->
+      <!-- Size Selection Compacto -->
       <div id="sizeSelectionGroup">
-        <label class="block text-sm font-bold mb-2 text-gray-700">Tamaño (Peso)</label>
-        <div class="grid grid-cols-2 gap-3 text-sm">
-          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="radio" name="petSize" value="chica" class="text-[#3C4F35] focus:ring-[#3C4F35]" required>
-            <span>Chica <span class="text-xs text-gray-400 block">(0-15kg)</span></span>
+        <label class="block text-[11px] font-bold uppercase tracking-wider mb-2 text-gray-400">Tamaño de mascota</label>
+        <div class="grid grid-cols-2 gap-2">
+          <label class="relative flex items-center p-2 rounded-xl border border-gray-100 bg-gray-50/50 cursor-pointer hover:border-brand-500/30 transition-all group has-[:checked]:bg-brand-500/5 has-[:checked]:border-brand-500">
+            <div class="flex items-center gap-2">
+              <div class="relative w-4 h-4 shrink-0">
+                <input type="radio" name="petSize" value="chica" class="sr-only peer" required />
+                <div class="w-4 h-4 rounded-full border-2 border-gray-300 peer-checked:border-brand-500 peer-checked:bg-brand-500 flex items-center justify-center transition-all">
+                  <div class="w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-xs font-bold text-gray-700 capitalize">Chica</p>
+                <p class="text-[10px] text-gray-400 leading-none">0-15kg</p>
+              </div>
+            </div>
           </label>
-          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="radio" name="petSize" value="mediana" class="text-[#3C4F35] focus:ring-[#3C4F35]">
-            <span>Mediana <span class="text-xs text-gray-400 block">(15-25kg)</span></span>
+          <label class="relative flex items-center p-2 rounded-xl border border-gray-100 bg-gray-50/50 cursor-pointer hover:border-brand-500/30 transition-all group has-[:checked]:bg-brand-500/5 has-[:checked]:border-brand-500">
+            <div class="flex items-center gap-2">
+              <div class="relative w-4 h-4 shrink-0">
+                <input type="radio" name="petSize" value="mediana" class="sr-only peer" />
+                <div class="w-4 h-4 rounded-full border-2 border-gray-300 peer-checked:border-brand-500 peer-checked:bg-brand-500 flex items-center justify-center transition-all">
+                  <div class="w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-xs font-bold text-gray-700 capitalize">Mediana</p>
+                <p class="text-[10px] text-gray-400 leading-none">15-25kg</p>
+              </div>
+            </div>
           </label>
-          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="radio" name="petSize" value="grande" class="text-[#3C4F35] focus:ring-[#3C4F35]">
-            <span>Grande <span class="text-xs text-gray-400 block">(25-50kg)</span></span>
+          <label class="relative flex items-center p-2 rounded-xl border border-gray-100 bg-gray-50/50 cursor-pointer hover:border-brand-500/30 transition-all group has-[:checked]:bg-brand-500/5 has-[:checked]:border-brand-500">
+            <div class="flex items-center gap-2">
+              <div class="relative w-4 h-4 shrink-0">
+                <input type="radio" name="petSize" value="grande" class="sr-only peer" />
+                <div class="w-4 h-4 rounded-full border-2 border-gray-300 peer-checked:border-brand-500 peer-checked:bg-brand-500 flex items-center justify-center transition-all">
+                  <div class="w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-xs font-bold text-gray-700 capitalize">Grande</p>
+                <p class="text-[10px] text-gray-400 leading-none">25-50kg</p>
+              </div>
+            </div>
           </label>
-          <label class="border border-gray-200 rounded-xl p-3 flex items-center gap-2 cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="radio" name="petSize" value="xl" class="text-[#3C4F35] focus:ring-[#3C4F35]">
-            <span>Extra Grande <span class="text-xs text-gray-400 block">(+50kg)</span></span>
+          <label class="relative flex items-center p-2 rounded-xl border border-gray-100 bg-gray-50/50 cursor-pointer hover:border-brand-500/30 transition-all group has-[:checked]:bg-brand-500/5 has-[:checked]:border-brand-500">
+            <div class="flex items-center gap-2">
+              <div class="relative w-4 h-4 shrink-0">
+                <input type="radio" name="petSize" value="xl" class="sr-only peer" />
+                <div class="w-4 h-4 rounded-full border-2 border-gray-300 peer-checked:border-brand-500 peer-checked:bg-brand-500 flex items-center justify-center transition-all">
+                  <div class="w-1.5 h-1.5 bg-white rounded-full opacity-0 peer-checked:opacity-100"></div>
+                </div>
+              </div>
+              <div class="flex flex-col">
+                <p class="text-xs font-bold text-gray-700 capitalize">Extra Grande</p>
+                <p class="text-[10px] text-gray-400 leading-none">+50kg</p>
+              </div>
+            </div>
           </label>
         </div>
       </div>
 
-      <!-- Dates -->
-      <div class="grid grid-cols-2 gap-4">
+      <!-- Dates Compacto -->
+      <div class="grid grid-cols-2 gap-3">
         <div>
-          <label id="checkinLabel" class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-in</label>
-          <input type="date" id="checkinDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
+          <label id="checkinLabel" class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400 text-nowrap">Fecha</label>
+          <input type="date" id="checkinDate" required class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-gray-50/50" />
         </div>
-        <div id="checkoutGroup">
-          <label class="block text-sm font-bold mb-1 text-gray-700">Fecha de Check-out</label>
-          <input type="date" id="checkoutDate" required class="w-full border border-gray-300 rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all text-sm">
+        <div id="checkoutGroup" class="hidden">
+          <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Check-out</label>
+          <input type="date" id="checkoutDate" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-gray-50/50" />
+        </div>
+      </div>
+      <div id="dateErrorMessage" class="hidden text-[10px] text-red-500 font-bold mt-1 px-1">La fecha de salida debe ser posterior a la llegada.</div>
+
+      <!-- Happy Bus Compacto -->
+      <div id="happyBusSection" class="border-t border-gray-100 pt-4">
+        <label class="flex items-center gap-2 cursor-pointer group mb-3">
+          <input type="checkbox" id="wantHappyBus" class="sr-only peer">
+          <div class="w-9 h-5 bg-gray-200 rounded-full peer peer-checked:bg-[#3C4F35] relative after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4"></div>
+          <span class="text-xs font-bold text-gray-600 group-hover:text-[#3C4F35] transition-colors">¿Servicio Happy Bus? 🚌</span>
+        </label>
+
+        <div id="happyBusOptions" class="hidden space-y-3 bg-[#fdfbf7] p-4 rounded-xl border border-[#d2a265]/20">
+          <div>
+            <select id="happyBusZone" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm bg-white">
+              <option value="" disabled selected>Elegir zona...</option>
+              <option value="A">Zona A: UDEM, Bosques, Corregidora ($100)</option>
+              <option value="B">Zona B: Valle Pte, Huasteca, Sta. Catarina ($150)</option>
+              <option value="C">Zona C: San Jerónimo, San Agustín, Centrito ($200)</option>
+            </select>
+            <p id="zoneError" class="hidden text-[11px] text-red-500 font-bold mt-1">⚠ Selecciona una zona de recolección.</p>
+          </div>
+          <div class="relative" id="addressInputWrapper">
+            <!-- Contenedor para el nuevo buscador de Google -->
+            <div id="happyBusAddressContainer" class="w-full min-h-[38px]">
+              <input type="text" id="happyBusAddress" placeholder="Buscar dirección de recolección..." autocomplete="off" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-[#3C4F35] pr-8" />
+            </div>
+            <p id="addressError" class="hidden text-[11px] text-red-500 font-bold mt-1">⚠ Selecciona una dirección válida del buscador para que podamos ubicarte.</p>
+          </div>
+          <input type="hidden" id="happyBusLat" />
+          <input type="hidden" id="happyBusLng" />
+          <input type="hidden" id="happyBusAddressText" />
+          <div id="happyBusSchedule" class="text-xs text-gray-500 bg-white/50 p-3 rounded-lg border border-[#d2a265]/20 shadow-sm"></div>
         </div>
       </div>
 
-      <!-- Dynamic Price Summary -->
-      <div id="priceSummary" class="bg-gray-50 p-4 rounded-xl border border-gray-200 mt-4 hidden">
-        <div class="flex justify-between items-center mb-1">
-          <span id="summaryLabel" class="text-gray-600 text-sm">Costo total:</span>
-          <strong class="text-xl font-serif text-[#3C4F35]">$<span id="summaryTotal">0</span> <span class="text-xs font-sans">MXN</span></strong>
+      <!-- Summary Compacto -->
+      <div id="priceSummary" class="bg-[#3C4F35]/5 p-4 rounded-2xl border border-[#3C4F35]/10 shrink-0 hidden">
+        <div class="space-y-1">
+          <div class="flex justify-between items-center text-xs">
+             <span id="summaryLabel" class="text-gray-500 font-bold uppercase tracking-tight">Servicio:</span>
+             <span class="font-bold text-[#3C4F35]">$<span id="subtotalValue">0</span></span>
+          </div>
+          <div id="transportRow" class="hidden justify-between items-center text-xs">
+             <span class="text-gray-500 font-bold uppercase tracking-tight">Transporte:</span>
+             <span class="font-bold text-[#3C4F35]">$<span id="transportValue">0</span></span>
+          </div>
+          <div class="pt-1 border-t border-[#3C4F35]/10 flex justify-between items-center">
+            <span class="text-[#3C4F35] font-bold text-sm uppercase tracking-wider">Total Est.:</span>
+            <span class="text-xl font-serif font-black text-[#3C4F35]">$<span id="summaryTotal">0</span></span>
+          </div>
         </div>
-        <p class="text-[11px] text-gray-400 italic mt-2">* Cotización estimada. Pago se realiza en recepción.</p>
       </div>
 
-      <!-- Status/Error Message -->
-      <div id="formStatus" class="text-sm font-bold text-center hidden p-3 rounded-lg"></div>
-
-      <!-- Submit -->
-      <button type="submit" id="submitBtn" class="w-full bg-[#d2a265] text-[#3C4F35] py-3 rounded-full font-bold hover:bg-[#c19154] shadow-md transition-all mt-4 disabled:opacity-50">
-        Confirmar y Enviar Reserva
+      <button type="submit" id="submitBooking" class="w-full bg-[#3C4F35] text-white py-3.5 rounded-2xl font-bold hover:bg-[#2D3B28] shadow-lg shadow-[#3C4F35]/20 transition-all active:scale-[0.98] shrink-0">
+        Confirmar Reserva
       </button>
-
+      
+      <div id="formStatus" class="hidden"></div>
     </form>
   </div>
 </dialog>
@@ -110,237 +192,342 @@
 <script>
   import { rtdb, ref, push, set } from '@pet-u/firebase-config';
 
-  const prices = {
+  import { loadGoogleMaps, initPlaceAutocomplete } from '../utils/googleMaps';
+
+  // Function called when UI needs the Autocomplete
+  async function loadGoogleMapsPlaces() {
+    loadGoogleMaps(import.meta.env.PUBLIC_GOOGLE_MAPS_KEY);
+    
+    await initPlaceAutocomplete({
+        containerId: 'happyBusAddressContainer',
+        colorScheme: 'LIGHT',
+        includedRegionCodes: ['mx'],
+        onSelect: (location, address) => {
+            (document.getElementById('happyBusLat') as HTMLInputElement).value = location.lat.toString();
+            (document.getElementById('happyBusLng') as HTMLInputElement).value = location.lng.toString();
+            (document.getElementById('happyBusAddressText') as HTMLInputElement).value = address;
+            // Clear location error when a valid place is picked
+            document.getElementById('addressError')?.classList.add('hidden');
+            document.getElementById('happyBusAddressContainer')?.querySelector('*')?.removeAttribute('data-error');
+        }
+    });
+  }
+
+  type PriceLevel = Record<string, number>;
+
+
+
+  // Type for indexing prices by service name
+  type PricesMap = {
+    hotel: {
+      baja: PriceLevel;
+      alta: PriceLevel;
+    };
+    daycare: PriceLevel;
+    spa: PriceLevel;
+    vacunas: {
+      fixed: number;
+    };
+    [key: string]: PriceLevel | { fixed: number } | { baja: PriceLevel; alta: PriceLevel } | undefined;
+  };
+
+  const prices: PricesMap = {
     hotel: {
         baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
         alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
     },
     daycare: { chica: 180, mediana: 220, grande: 280, xl: 350 },
     spa: { chica: 350, mediana: 450, grande: 550, xl: 650 },
-    vacunas: { fixed: 560 } // Example fixed price
+    vacunas: { fixed: 560 }
   };
 
-  const modal = document.getElementById('bookingModal') as HTMLDialogElement;
-  const closeBtn = document.getElementById('closeHotelBooking');
-  const form = document.getElementById('hotelBookingForm') as HTMLFormElement;
+  const transportPrices: Record<string, number> = { 
+    'A': 100, 
+    'B': 150, 
+    'C': 200 
+  };
   
-  const checkinInput = document.getElementById('checkinDate') as HTMLInputElement;
-  const checkoutInput = document.getElementById('checkoutDate') as HTMLInputElement;
-  const sizeRadios = document.querySelectorAll('input[name="petSize"]');
-  
-  const priceSummary = document.getElementById('priceSummary');
-  const summaryTotal = document.getElementById('summaryTotal');
-  const summaryLabel = document.getElementById('summaryLabel');
-  const formStatus = document.getElementById('formStatus');
-  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
-  
-  const serviceTypeInput = document.getElementById('serviceTypeInput') as HTMLInputElement;
-  const modalTitle = document.getElementById('modalTitle');
-  const modalSubtitle = document.getElementById('modalSubtitle');
-  const checkinLabel = document.getElementById('checkinLabel');
-  const checkoutGroup = document.getElementById('checkoutGroup');
-  const sizeSelectionGroup = document.getElementById('sizeSelectionGroup');
-  const vaccineSelectionGroup = document.getElementById('vaccineSelectionGroup');
-  const vaccineTypeSelect = document.getElementById('vaccineType') as HTMLSelectElement;
-
-  // Configuración de UI por servicio
-  const serviceConfigs: Record<string, any> = {
-    hotel: {
-        title: 'Reservar Hotel',
-        subtitle: 'Cotiza y reserva la estancia de tu mascota.',
-        checkinLabel: 'Fecha de Check-in',
-        showCheckout: true,
-        showSize: true,
-        showVaccines: false,
-        summaryPrefix: 'Costo por estancia:'
-    },
-    daycare: {
-        title: 'Agendar Daycare',
-        subtitle: 'Diversión y socialización garantizada.',
-        checkinLabel: 'Fecha de visita',
-        showCheckout: false,
-        showSize: true,
-        showVaccines: false,
-        summaryPrefix: 'Costo por día:'
-    },
-    spa: {
-        title: 'Cita en Spa & Grooming',
-        subtitle: 'Elige el día para consentir a tu mascota.',
-        checkinLabel: 'Fecha de cita',
-        showCheckout: false,
-        showSize: true,
-        showVaccines: false,
-        summaryPrefix: 'Costo estimado:'
-    },
-    vacunas: {
-        title: 'Cita de Vacunación',
-        subtitle: 'Salud y prevención para tu mejor amigo.',
-        checkinLabel: 'Fecha de cita',
-        showCheckout: false,
-        showSize: false,
-        showVaccines: true,
-        summaryPrefix: 'Servicio de consulta/vacuna:'
-    }
+  const happyBusSchedules: Record<string, string> = {
+    daycare: '<div class="space-y-1"><p><span class="text-sm font-black text-[#3C4F35] uppercase">Recolección:</span> <span class="text-base font-black text-[#3C4F35]">8:15 AM - 10:30 AM</span></p><p><span class="text-sm font-black text-[#3C4F35] uppercase">Entrega:</span> <span class="text-base font-black text-[#3C4F35]">4:30 PM - 6:00 PM</span></p></div>',
+    spa: '<p><span class="text-sm font-black text-[#3C4F35] uppercase">Recolección y regreso:</span> <br/><span class="text-base font-black text-[#3C4F35]">a partir de las 11:00 AM</span></p>',
+    hotel: '<p><span class="text-sm font-black text-[#3C4F35] uppercase">Recolección:</span> <span class="text-lg font-black text-[#3C4F35]">4:30 PM</span></p>',
+    vacunas: 'Servicio a domicilio no disponible para vacunas.'
   };
 
-  window.addEventListener('openBookingModal', (e: any) => {
-    const service = e.detail.service || 'hotel';
-    serviceTypeInput.value = service;
-    
-    const config = serviceConfigs[service];
-    if (modalTitle) modalTitle.textContent = config.title;
-    if (modalSubtitle) modalSubtitle.textContent = config.subtitle;
-    if (checkinLabel) checkinLabel.textContent = config.checkinLabel;
-    
-    if (config.showCheckout) checkoutGroup?.classList.remove('hidden');
-    else checkoutGroup?.classList.add('hidden');
-    
-    if (config.showSize) sizeSelectionGroup?.classList.remove('hidden');
-    else sizeSelectionGroup?.classList.add('hidden');
-
-    if (config.showVaccines) {
-        vaccineSelectionGroup?.classList.remove('hidden');
-        vaccineTypeSelect.required = true;
-    } else {
-        vaccineSelectionGroup?.classList.add('hidden');
-        vaccineTypeSelect.required = false;
-    }
-
-    summaryLabel!.textContent = config.summaryPrefix;
-    
-    // Reset form
-    form.reset();
-    priceSummary?.classList.add('hidden');
-    formStatus?.classList.add('hidden');
-    
-    modal?.showModal();
-    document.body.style.overflow = 'hidden';
-  });
-
-  const today = new Date().toISOString().split('T')[0];
-  checkinInput.min = today;
-  checkinInput.addEventListener('change', () => {
-    if (checkinInput.value) {
-      const [cy, cm, cd] = checkinInput.value.split('-').map(Number);
-      const minCheckout = new Date(cy, cm - 1, cd);
-      minCheckout.setDate(minCheckout.getDate() + 1);
-      
-      const yyyy = minCheckout.getFullYear();
-      const mm = String(minCheckout.getMonth() + 1).padStart(2, '0');
-      const dd = String(minCheckout.getDate()).padStart(2, '0');
-      const minCheckoutStr = `${yyyy}-${mm}-${dd}`;
-      
-      checkoutInput.min = minCheckoutStr;
-      calculateTotal();
-    }
-  });
-
-  function isHighSeason(date: Date) {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDate();
-    if (year === 2025 && month === 7 && day >= 1 && day <= 24) return true;
-    if (year === 2025 && month === 11 && day >= 18) return true;
-    if (year === 2026 && month === 0 && day <= 7) return true;
-    if (year === 2026 && month === 2 && day >= 30) return true;
-    if (year === 2026 && month === 3 && day <= 10) return true;
-    if (year === 2026 && month === 6 && day >= 17) return true;
-    return false;
+  interface ServiceConfig {
+    title: string;
+    subtitle: string;
+    checkinLabel: string;
+    showCheckout: boolean;
+    showSize: boolean;
+    showVaccines: boolean;
+    showHappyBus: boolean;
+    summaryPrefix: string;
   }
 
-  function calculateTotal() {
-    const service = serviceTypeInput.value;
-    const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
-    
-    if (service === 'hotel') {
-        if (!sizeEl || !checkinInput.value || !checkoutInput.value) return;
-        const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
-        const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
-        const checkin = new Date(inY, inM - 1, inD);
-        const checkout = new Date(outY, outM - 1, outD);
-        const diffDays = Math.round((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24));
-        
-        let total = 0;
-        const currentDate = new Date(checkin.getTime());
-        for (let i = 0; i < diffDays; i++) {
-          const isHigh = isHighSeason(currentDate);
-          total += prices.hotel[isHigh ? 'alta' : 'baja'][sizeEl.value as keyof typeof prices.hotel.baja];
-          currentDate.setDate(currentDate.getDate() + 1);
+  const serviceConfigs: Record<string, ServiceConfig> = {
+    hotel: { title: 'Reservar Hotel', subtitle: 'ESTANCIA NOCTURNA PREMIUM', checkinLabel: 'Llegada', showCheckout: true, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Hospedaje:' },
+    daycare: { title: 'Agendar Daycare', subtitle: 'SOCIALIZACIÓN Y DIVERSIÓN', checkinLabel: 'Fecha visita', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Estancia:' },
+    spa: { title: 'Cita de Grooming', subtitle: 'SPA & ESTÉTICA', checkinLabel: 'Fecha cita', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Servicio Spa:' },
+    vacunas: { title: 'Vacunación', subtitle: 'SALUD Y PREVENCIÓN', checkinLabel: 'Fecha cita', showCheckout: false, showSize: false, showVaccines: true, showHappyBus: false, summaryPrefix: 'Vacuna:' }
+  };
+
+  function setupBookingForm() {
+    const modal = document.getElementById('bookingModal') as HTMLDialogElement;
+    const form = document.getElementById('bookingForm') as HTMLFormElement & { _bookingInit?: boolean };
+    if (!modal || !form) return;
+    // Guard: only attach listeners once per DOM instance
+    if (form._bookingInit) return;
+    form._bookingInit = true;
+
+    const serviceTypeInput = document.getElementById('serviceTypeInput') as HTMLInputElement;
+    const checkinInput = document.getElementById('checkinDate') as HTMLInputElement;
+    const checkoutInput = document.getElementById('checkoutDate') as HTMLInputElement;
+    const wantHappyBus = document.getElementById('wantHappyBus') as HTMLInputElement;
+    const happyBusZone = document.getElementById('happyBusZone') as HTMLSelectElement;
+    const summaryTotal = document.getElementById('summaryTotal');
+
+    const calculateTotal = () => {
+      const service = serviceTypeInput.value;
+      const sizeEl = form.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
+      const selectedSize = sizeEl?.value;
+
+      let subtotal = 0;
+      let transport = 0;
+      
+      if (service === 'hotel') {
+          if (!selectedSize || !checkinInput.value || !checkoutInput.value) return;
+          const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
+          const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
+          const checkin = new Date(inY, inM - 1, inD);
+          const checkout = new Date(outY, outM - 1, outD);
+          const diffDays = Math.round((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays <= 0) {
+              const errorEl = document.getElementById('dateErrorMessage');
+              errorEl?.classList.remove('hidden');
+              checkinInput.value = '';
+              checkoutInput.value = '';
+              document.getElementById('priceSummary')?.classList.add('hidden');
+              return;
+          }
+          document.getElementById('dateErrorMessage')?.classList.add('hidden');
+          
+          const currentDate = new Date(checkin.getTime());
+          for (let i = 0; i < diffDays; i++) {
+            const month = currentDate.getMonth();
+            const day = currentDate.getDate();
+            const year = currentDate.getFullYear();
+            // Simple high season logic
+            const isHigh = (year === 2025 && month === 11) || (year === 2026 && month === 0 && day <= 7);
+            const hotelPrices = prices.hotel[isHigh ? 'alta' : 'baja'];
+            if (hotelPrices && selectedSize) {
+              subtotal += (hotelPrices as PriceLevel)[selectedSize] || 0;
+            }
+            currentDate.setDate(currentDate.getDate() + 1);
+          }
+      } else if (service === 'vacunas') {
+          subtotal = prices.vacunas.fixed || 0;
+      } else {
+          if (!selectedSize || !checkinInput.value) return;
+          const servicePrice = prices[service];
+          if (servicePrice && selectedSize) {
+            subtotal = (servicePrice as PriceLevel)[selectedSize] || 0;
+          }
+      }
+
+      if (wantHappyBus.checked && happyBusZone.value) {
+          transport = transportPrices[happyBusZone.value] || 0;
+          const transportRow = document.getElementById('transportRow');
+          transportRow?.classList.remove('hidden');
+          transportRow?.classList.add('flex');
+          document.getElementById('transportValue')!.textContent = transport.toLocaleString();
+      } else {
+          const transportRow = document.getElementById('transportRow');
+          transportRow?.classList.add('hidden');
+          transportRow?.classList.remove('flex');
+      }
+
+      document.getElementById('subtotalValue')!.textContent = subtotal.toLocaleString();
+      summaryTotal!.textContent = (subtotal + transport).toLocaleString();
+      document.getElementById('priceSummary')?.classList.remove('hidden');
+    };
+
+    // Event Listeners for Opening
+    const openModal = (service: string) => {
+        const config = serviceConfigs[service];
+        if (!config) return;
+
+        serviceTypeInput.value = service;
+        document.getElementById('modalTitle')!.textContent = config.title;
+        document.getElementById('modalSubtitle')!.textContent = config.subtitle;
+        document.getElementById('checkinLabel')!.textContent = config.checkinLabel;
+        document.getElementById('summaryLabel')!.textContent = config.summaryPrefix;
+
+        document.getElementById('checkoutGroup')?.classList.toggle('hidden', !config.showCheckout);
+        document.getElementById('sizeSelectionGroup')?.classList.toggle('hidden', !config.showSize);
+        document.getElementById('vaccineSelectionGroup')?.classList.toggle('hidden', !config.showVaccines);
+        document.getElementById('happyBusSection')?.classList.toggle('hidden', !config.showHappyBus);
+
+        if (config.showVaccines) {
+            (document.getElementById('vaccineType') as HTMLSelectElement).required = true;
         }
-        summaryTotal!.textContent = total.toLocaleString();
-        priceSummary?.classList.remove('hidden');
-    } else if (service === 'vacunas') {
-        summaryTotal!.textContent = prices.vacunas.fixed.toLocaleString();
-        priceSummary?.classList.remove('hidden');
-    } else {
-        if (!sizeEl || !checkinInput.value) return;
-        const total = prices[service as 'daycare' | 'spa'][sizeEl.value as keyof typeof prices.daycare];
-        summaryTotal!.textContent = total.toLocaleString();
-        priceSummary?.classList.remove('hidden');
-    }
+
+        wantHappyBus.checked = false;
+        document.getElementById('happyBusOptions')?.classList.add('hidden');
+        const hpSchedule = document.getElementById('happyBusSchedule');
+        if (hpSchedule) hpSchedule.innerHTML = happyBusSchedules[service] || '';
+
+        form.reset();
+        document.getElementById('priceSummary')?.classList.add('hidden');
+        document.getElementById('formStatus')?.classList.add('hidden');
+        
+        modal.showModal();
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.addEventListener('openBookingModal', ((e: Event) => {
+      const customEvent = e as CustomEvent;
+      openModal(customEvent.detail.service);
+    }) as EventListener);
+
+    // Support legacy buttons
+    document.querySelectorAll('.openHotelBooking').forEach(btn => {
+        btn.addEventListener('click', () => openModal('hotel'));
+    });
+
+    // Form Interactions
+    form.querySelectorAll('input[name="petSize"]').forEach(r => r.addEventListener('change', calculateTotal));
+    checkinInput.addEventListener('change', () => {
+        const config = serviceConfigs[serviceTypeInput.value];
+        
+        // Bloqueo preventivo: la salida no puede ser antes de la entrada
+        if (config?.showCheckout && checkinInput.value) {
+            checkoutInput.min = checkinInput.value;
+            
+            // Si la salida actual es menor a la nueva entrada, la limpiamos
+            if (checkoutInput.value && checkoutInput.value < checkinInput.value) {
+                checkoutInput.value = '';
+            }
+
+            setTimeout(() => {
+                if (typeof checkoutInput.showPicker === 'function') {
+                    checkoutInput.showPicker();
+                } else {
+                    checkoutInput.focus();
+                }
+            }, 100);
+        }
+        calculateTotal();
+    });
+    checkoutInput.addEventListener('change', calculateTotal);
+    wantHappyBus.addEventListener('change', () => {
+        document.getElementById('happyBusOptions')?.classList.toggle('hidden', !wantHappyBus.checked);
+        if (wantHappyBus.checked) loadGoogleMapsPlaces();
+        calculateTotal();
+    });
+    happyBusZone.addEventListener('change', calculateTotal);
+
+    document.getElementById('closeBookingModal')?.addEventListener('click', () => {
+        modal.close();
+        document.body.style.overflow = '';
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBooking') as HTMLButtonElement;
+        const formStatus = document.getElementById('formStatus');
+
+        // ── Happy Bus validation ──────────────────────────────────────────
+        if (wantHappyBus.checked) {
+          let happyBusValid = true;
+
+          const zone = happyBusZone.value;
+          const lat  = (document.getElementById('happyBusLat') as HTMLInputElement).value;
+          const lng  = (document.getElementById('happyBusLng') as HTMLInputElement).value;
+
+          if (!zone) {
+            document.getElementById('zoneError')?.classList.remove('hidden');
+            happyBusValid = false;
+          } else {
+            document.getElementById('zoneError')?.classList.add('hidden');
+          }
+
+          if (!lat || !lng) {
+            document.getElementById('addressError')?.classList.remove('hidden');
+            // Highlight the input wrapper
+            const wrapper = document.getElementById('addressInputWrapper');
+            wrapper?.classList.add('ring-2', 'ring-red-400', 'rounded-xl');
+            setTimeout(() => wrapper?.classList.remove('ring-2', 'ring-red-400', 'rounded-xl'), 3000);
+            happyBusValid = false;
+          } else {
+            document.getElementById('addressError')?.classList.add('hidden');
+          }
+
+          if (!happyBusValid) return;  // ← block submission
+        }
+        // ─────────────────────────────────────────────────────────────────
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+
+        try {
+            const sizeEl = form.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
+            const totalValue = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
+            const serviceType = serviceTypeInput.value;
+
+            const reservationData = {
+                serviceType,
+                petName: (document.getElementById('petName') as HTMLInputElement).value,
+                ownerName: (document.getElementById('ownerName') as HTMLInputElement).value,
+                petSize: sizeEl?.value || null,
+                vaccineType: serviceType === 'vacunas' ? (document.getElementById('vaccineType') as HTMLSelectElement).value : null,
+                happyBus: {
+                    want: wantHappyBus.checked,
+                    zone: wantHappyBus.checked ? happyBusZone.value : null,
+                    address: wantHappyBus.checked
+                        ? ((document.getElementById('happyBusAddressText') as HTMLInputElement).value || null)
+                        : null,
+                    lat: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLat') as HTMLInputElement).value) || null : null,
+                    lng: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLng') as HTMLInputElement).value) || null : null,
+                    cost: wantHappyBus.checked ? (transportPrices[happyBusZone.value] || 0) : 0
+                },
+                checkin: checkinInput.value,
+                checkout: serviceType === 'hotel' ? checkoutInput.value : checkinInput.value,
+                totalEstimado: totalValue,
+                status: 'pending',
+                createdAt: new Date().toISOString()
+            };
+
+            const reservationsListRef = ref(rtdb, 'reservations');
+            await set(push(reservationsListRef), reservationData);
+
+            formStatus!.classList.remove('hidden');
+            formStatus!.className = 'text-sm font-bold text-center p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 mt-4';
+            formStatus!.innerHTML = `¡Reserva enviada con éxito! 🐾`;
+            
+            setTimeout(() => {
+                modal.close();
+                document.body.style.overflow = '';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Confirmar Reserva';
+            }, 3000);
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+            formStatus!.classList.remove('hidden');
+            formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-100 mt-4';
+            formStatus!.textContent = 'Hubo un error: ' + errorMessage;
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Intentar de nuevo';
+        }
+    });
   }
 
-  sizeRadios.forEach(r => r.addEventListener('change', calculateTotal));
-  checkoutInput.addEventListener('change', calculateTotal);
-
-  closeBtn?.addEventListener('click', () => {
-    modal?.close();
-    document.body.style.overflow = '';
-  });
-
-  form?.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Enviando...';
-    formStatus?.classList.add('hidden');
-
-    try {
-      const petName = (document.getElementById('petName') as HTMLInputElement).value;
-      const ownerName = (document.getElementById('ownerName') as HTMLInputElement).value;
-      const sizeEl = document.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
-      const total = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
-      const serviceType = serviceTypeInput.value;
-      const vaccineType = vaccineTypeSelect.value;
-
-      const reservationData = {
-        serviceType,
-        petName,
-        ownerName,
-        petSize: sizeEl ? sizeEl.value : 'n/a',
-        vaccineType: serviceType === 'vacunas' ? vaccineType : 'n/a',
-        checkin: checkinInput.value,
-        checkout: serviceType === 'hotel' ? checkoutInput.value : checkinInput.value,
-        totalEstimado: total,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      };
-
-      const reservationsListRef = ref(rtdb, 'reservations');
-      const newReservationRef = push(reservationsListRef);
-      await set(newReservationRef, reservationData);
-
-      formStatus!.classList.remove('hidden');
-      formStatus!.className = 'text-sm font-bold text-center p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 mt-4';
-      formStatus!.innerHTML = `¡Reserva de <strong>${serviceType.toUpperCase()}</strong> enviada!<br><span class="font-normal opacity-80 text-xs">Contactaremos contigo pronto.</span>`;
-      
-      form.reset();
-      priceSummary?.classList.add('hidden');
-      
-      setTimeout(() => {
-        modal?.close();
-        document.body.style.overflow = '';
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Confirmar y Enviar Reserva';
-      }, 4000);
-
-    } catch (error: any) {
-      formStatus!.classList.remove('hidden');
-      formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-100 mt-4';
-      formStatus!.textContent = 'Hubo un error: ' + error.message;
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Intentar de nuevo';
-    }
-  });
+  // Use only astro:page-load to avoid double registration.
+  // Also guard inside setupBookingForm with a flag on the form element.
+  document.addEventListener('astro:page-load', setupBookingForm);
+  // Fire once immediately in case the page already loaded (non-SPA navigation)
+  if (document.readyState !== 'loading') setupBookingForm();
 </script>
 
 <style>
@@ -349,16 +536,45 @@
     backdrop-filter: blur(4px);
   }
   dialog[open] {
-    animation: zoomIn 0.3s ease normal;
+    animation: zoomIn 0.3s ease-out forwards;
   }
   @keyframes zoomIn {
-    from {
-      opacity: 0;
-      transform: scale(0.95) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1) translateY(0);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #3C4F35; border-radius: 10px; }
+
+  /* Estilos para el nuevo PlaceAutocompleteElement */
+  gmp-place-autocomplete {
+    width: 100%;
+    display: block;
+  }
+  gmp-place-autocomplete::part(input) {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    padding-right: 2.5rem;
+    font-size: 0.875rem;
+    background-color: white;
+    color: #374151;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+  gmp-place-autocomplete::part(input):focus {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px #3C4F35;
+  }
+  /* Asegurar que la lista de resultados sea visible */
+  gmp-place-autocomplete::part(results-list) {
+    background-color: white;
+    z-index: 10000;
+  }
+  /* Ocultar el icono de pin en la barra de búsqueda */
+  gmp-place-autocomplete::part(icon) {
+    display: none;
   }
 </style>

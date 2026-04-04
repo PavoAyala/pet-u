@@ -1,0 +1,392 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Ruta de Recolección - Happy Bus">
+  <!-- Header -->
+  <div class="bg-white/80 border-b border-brand-500/10 px-10 py-6 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+    <div class="flex items-center gap-4">
+      <a href="/reservas" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div>
+        <h1 class="text-2xl font-serif font-bold text-brand-500 flex items-center gap-2">
+          🚌 Ruta Happy Bus del Día
+        </h1>
+        <p class="text-gray-400 text-xs mt-0.5 font-medium">Recolecciones optimizadas automáticamente</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <input type="date" id="routeDate" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white text-brand-500 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer shadow-sm" />
+      <a id="openInMaps" href="#" target="_blank"
+        class="hidden items-center gap-2 bg-brand-500 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-[#2D3B28] transition-all shadow-lg shadow-brand-500/20">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Navegar en Maps
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content: Split Layout -->
+  <div class="flex h-[calc(100vh-88px)]">
+    <!-- Left Panel: Stops List -->
+    <div class="w-[380px] shrink-0 bg-white border-r border-brand-500/10 flex flex-col overflow-hidden">
+      <!-- Summary bar -->
+      <div class="px-6 py-4 bg-[#fdfbf7] border-b border-brand-500/10 shrink-0">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Paradas del día</p>
+            <p id="stopCount" class="text-2xl font-serif font-bold text-brand-500">0</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recauda estimado</p>
+            <p id="routeRevenue" class="text-2xl font-serif font-bold text-emerald-600">$0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stops List -->
+      <div id="stopList" class="overflow-y-auto flex-1 custom-scrollbar divide-y divide-gray-50 p-4 space-y-2">
+        <!-- Empty state -->
+        <div id="emptyState" class="flex flex-col items-center justify-center h-full text-center py-12">
+          <div class="w-16 h-16 rounded-full bg-[#f0e6d2]/50 flex items-center justify-center mb-4">
+            <span class="text-3xl">🚌</span>
+          </div>
+          <p class="text-gray-400 font-medium text-sm leading-relaxed max-w-[200px]">
+            Sin recolecciones Happy Bus para este día.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Map -->
+    <div class="flex-1 relative">
+      <div id="map" class="w-full h-full bg-gray-100"></div>
+      <!-- Map loading overlay -->
+      <div id="mapLoading" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 rounded-full border-4 border-brand-500/10 border-t-brand-500 animate-spin mb-4"></div>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Cargando mapa...</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+
+  // PET-U Origin
+  const PETU_ORIGIN = { lat: 25.6653039, lng: -100.4054094, label: 'PET-U (Origen)' };
+  const MAPS_API_KEY = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY;
+
+  let map: any = null;
+  let routePolyline: any = null;   // Polyline used to draw the route (replaces DirectionsRenderer)
+  let allReservations: any[] = [];
+  let orderedStops: any[] = [];
+
+  // Set today's date as default
+  const routeDate = document.getElementById('routeDate') as HTMLInputElement;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  routeDate.value = `${yyyy}-${mm}-${dd}`;
+
+  // Load Google Maps (Modern Loader)
+  async function loadMaps() {
+    if (!(window as any).google?.maps?.importLibrary) {
+      (function(g: Record<string, string>){
+          let h: Promise<void>;
+          const p="The Google Maps JavaScript API", c="google", l="importLibrary", q="__ib__", m=document, b=window as any;
+          const googleObj = (b[c] || (b[c]={}));
+          const d = (googleObj.maps || (googleObj.maps={})) as Record<string, unknown>;
+          const r = new Set<string>();
+          const e = new URLSearchParams();
+          const u = () => h || (h = new Promise((f, n) => {
+              const a = m.createElement("script");
+              e.set("libraries", [...r].join(","));
+              for (const k in g) if (Object.prototype.hasOwnProperty.call(g, k)) e.set(k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()), g[k]);
+              e.set("callback", c + ".maps." + q);
+              a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => { n(Error(p + " could not load.")); };
+              a.nonce = (m.querySelector("script[nonce]") as HTMLScriptElement)?.nonce || "";
+              m.head.append(a);
+          }));
+          if (d[l]) { console.warn(p + " only loads once."); } else {
+              d[l] = (f: string, ...n: unknown[]) => r.add(f) && u().then(() => (d[l] as (f: string, ...n: unknown[]) => Promise<void>)(f, ...n));
+          }
+      })({
+          key: MAPS_API_KEY,
+          v: "weekly",
+          language: "es"
+      });
+    }
+
+    await initMap();
+  }
+
+  async function initMap() {
+    // 'maps' library: Map + Polyline (no legacy Marker)
+    const { Map, Polyline } =
+      await (window as any).google.maps.importLibrary('maps') as any;
+
+    // 'marker' library: AdvancedMarkerElement (modern, non-deprecated)
+    const { AdvancedMarkerElement, PinElement } =
+      await (window as any).google.maps.importLibrary('marker') as any;
+
+    document.getElementById('mapLoading')?.classList.add('hidden');
+    map = new Map(document.getElementById('map'), {
+      center: PETU_ORIGIN,
+      zoom: 13,
+      mapId: 'petu_route_map',
+      colorScheme: 'LIGHT',
+      disableDefaultUI: false,
+    });
+
+    // Reusable polyline for the route (drawn via DirectionsService geometry)
+    routePolyline = new Polyline({
+      strokeColor: '#3C4F35',
+      strokeWeight: 5,
+      strokeOpacity: 0.8,
+      map
+    });
+
+    // Origin marker using AdvancedMarkerElement
+    const originPin = new PinElement({ background: '#3C4F35', borderColor: '#fff', glyphColor: '#fff', glyph: '🏠' });
+    new AdvancedMarkerElement({
+      position: PETU_ORIGIN,
+      map,
+      title: 'PET-U — Punto de Partida',
+      content: originPin.element
+    });
+
+    loadReservations();
+  }
+
+  // Listen to RTDB
+  function loadReservations() {
+    const reservationsRef = ref(rtdb, 'reservations');
+    onValue(reservationsRef, (snapshot) => {
+      allReservations = [];
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        allReservations = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      }
+      filterAndRender(routeDate.value);
+    });
+  }
+
+  async function filterAndRender(date: string) {
+    // Filter: Happy Bus enabled + checkin matches selected date + has coordinates
+    console.log(`Total de reservas en BD: ${allReservations.length}`);
+    const availableDates = [...new Set(allReservations.map(r => r.checkin))];
+    console.log("Fechas encontradas en la BD:", availableDates);
+
+    const stops = allReservations.filter(r => {
+      const want = r.happyBus?.want === true || r.happyBus?.want === 'true';
+      const sameDate = r.checkin === date;
+      const hasCoords = r.happyBus?.lat && r.happyBus?.lng;
+      
+      if (sameDate && !want) console.log(`Reserva ${r.id} omitida: No activó Happy Bus.`);
+      if (sameDate && want && !hasCoords) console.log(`Reserva ${r.id} omitida: No tiene coordenadas.`);
+      
+      return want && sameDate && hasCoords;
+    });
+
+    console.log(`Buscando fecha: ${date}. Reservas encontradas: ${stops.length}`);
+    const revenue = stops.reduce((sum: number, r: any) => sum + (r.happyBus?.cost || 0), 0);
+    document.getElementById('routeRevenue')!.textContent = `$${revenue.toLocaleString()}`;
+
+    if (stops.length === 0) {
+      renderStopList([]);
+      clearMap();
+      document.getElementById('openInMaps')?.classList.add('hidden');
+      document.getElementById('openInMaps')?.classList.remove('flex');
+      return;
+    }
+
+    if (stops.length === 1) {
+      orderedStops = stops;
+      renderStopList(orderedStops);
+      renderMarkersOnly(orderedStops);
+      buildMapsUrl(orderedStops);
+      return;
+    }
+
+    // Calculate optimized route with DirectionsService (geometry decoded manually)
+    const { DirectionsService, TravelMode } =
+      await (window as any).google.maps.importLibrary('routes') as any;
+    const { encoding } =
+      await (window as any).google.maps.importLibrary('geometry') as any;
+    const directionsService = new DirectionsService();
+
+    const waypoints = stops.slice(1).map((s: any) => ({
+      location: new (window as any).google.maps.LatLng(
+        parseFloat(s.happyBus.lat), parseFloat(s.happyBus.lng)
+      ),
+      stopover: true
+    }));
+
+    directionsService.route({
+      origin: new (window as any).google.maps.LatLng(
+        PETU_ORIGIN.lat, PETU_ORIGIN.lng
+      ),
+      destination: new (window as any).google.maps.LatLng(
+        parseFloat(stops[0].happyBus.lat), parseFloat(stops[0].happyBus.lng)
+      ),
+      waypoints,
+      optimizeWaypoints: true,
+      travelMode: TravelMode.DRIVING
+    }, (result: any, status: any) => {
+      if (status === 'OK') {
+        // Decode the route overview polyline and draw it manually (no DirectionsRenderer)
+        const overviewPath = encoding.decodePath(
+          result.routes[0].overview_polyline
+        );
+        routePolyline.setPath(overviewPath);
+
+        const waypointOrder = result.routes[0].waypoint_order;
+        const reordered = [stops[0], ...waypointOrder.map((i: number) => stops.slice(1)[i])];
+        orderedStops = reordered;
+        renderStopList(reordered);
+        renderNumberedMarkers(reordered);
+        buildMapsUrl(reordered);
+      } else {
+        // Fallback: just show markers without route line
+        orderedStops = stops;
+        renderStopList(stops);
+        renderMarkersOnly(stops);
+        buildMapsUrl(stops);
+      }
+    });
+  }
+
+  function clearMap() {
+    if (routePolyline) routePolyline.setPath([]);
+  }
+
+  // Helper: draw numbered stop markers using AdvancedMarkerElement
+  async function placeStopMarkers(stops: any[]) {
+    if (!map) return;
+    const { AdvancedMarkerElement, PinElement } =
+      await (window as any).google.maps.importLibrary('marker') as any;
+
+    stops.forEach((stop: any, i: number) => {
+      const pin = new PinElement({
+        background: '#d2a265',
+        borderColor: '#fff',
+        glyphColor: '#fff',
+        glyph: String(i + 1)
+      });
+      new AdvancedMarkerElement({
+        position: { lat: parseFloat(stop.happyBus.lat), lng: parseFloat(stop.happyBus.lng) },
+        map,
+        title: `Parada ${i + 1}: ${stop.petName}`,
+        content: pin.element
+      });
+    });
+  }
+
+  async function renderMarkersOnly(stops: any[]) {
+    clearMap();
+    await placeStopMarkers(stops);
+  }
+
+  async function renderNumberedMarkers(stops: any[]) {
+    await placeStopMarkers(stops);
+  }
+
+  function renderStopList(stops: any[]) {
+    const list = document.getElementById('stopList')!;
+    const empty = document.getElementById('emptyState')!;
+
+    if (stops.length === 0) {
+      list.innerHTML = '';
+      list.appendChild(empty);
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+
+    const zoneLabels: Record<string, string> = {
+      'A': 'Zona A', 'B': 'Zona B', 'C': 'Zona C'
+    };
+    const zoneColors: Record<string, string> = {
+      'A': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      'B': 'bg-blue-50 text-blue-700 border-blue-100',
+      'C': 'bg-purple-50 text-purple-700 border-purple-100'
+    };
+
+    list.innerHTML = stops.map((stop: any, i: number) => `
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-brand-500/20 transition-all cursor-pointer stop-card" data-index="${i}">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full bg-[#d2a265] flex items-center justify-center shrink-0 text-white font-bold text-sm">
+            ${i + 1}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <p class="font-bold text-brand-500 capitalize truncate">${stop.petName || 'Mascota'}</p>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${zoneColors[stop.happyBus?.zone] || 'bg-gray-50 text-gray-500 border-gray-100'}">
+                ${zoneLabels[stop.happyBus?.zone] || stop.happyBus?.zone || '—'}
+              </span>
+            </div>
+            <p class="text-xs text-gray-400 italic">De: ${stop.ownerName || 'Desconocido'}</p>
+            <p class="text-xs text-gray-600 mt-1.5 leading-tight">
+              <svg class="w-3 h-3 inline text-gray-400 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+              ${(!stop.happyBus?.address || stop.happyBus.address === 'n/a') ? 'Sin dirección' : stop.happyBus.address}
+            </p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-[10px] bg-brand-500/5 text-brand-500 px-2 py-0.5 rounded-full font-bold uppercase">${stop.serviceType || 'Servicio'}</span>
+              <span class="text-sm font-bold text-[#d2a265]">+$${stop.happyBus?.cost || 0}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Click to center map on stop
+    list.querySelectorAll('.stop-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-index') || '0');
+        const stop = orderedStops[idx];
+        if (map && stop?.happyBus?.lat) {
+          map.panTo({ lat: stop.happyBus.lat, lng: stop.happyBus.lng });
+          map.setZoom(16);
+        }
+      });
+    });
+  }
+
+  function buildMapsUrl(stops: any[]) {
+    const btn = document.getElementById('openInMaps') as HTMLAnchorElement;
+    if (!btn || stops.length === 0) return;
+
+    const origin = `${PETU_ORIGIN.lat},${PETU_ORIGIN.lng}`;
+    const dest = `${stops[stops.length - 1].happyBus.lat},${stops[stops.length - 1].happyBus.lng}`;
+    const waypoints = stops.slice(0, -1).map((s: any) => `${s.happyBus.lat},${s.happyBus.lng}`).join('|');
+
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
+    if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;
+
+    btn.href = url;
+    btn.classList.remove('hidden');
+    btn.classList.add('flex');
+  }
+
+  // Date picker change
+  routeDate.addEventListener('change', () => {
+    if (map) {
+      clearMap();
+      filterAndRender(routeDate.value);
+    }
+  });
+
+  // Init
+  loadMaps();
+</script>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #3C4F35; border-radius: 10px; }
+</style>
