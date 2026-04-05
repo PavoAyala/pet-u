@@ -22,7 +22,7 @@
     "fix:prettier": "prettier -w ."
   },
   "dependencies": {
-    "@astrojs/rss": "^4.0.12",
+    "@astrojs/rss": "^4.0.18",
     "@astrojs/sitemap": "^3.4.2",
     "@astrojs/vercel": "^8.2.11",
     "@astrolib/analytics": "^0.6.1",
@@ -33,7 +33,6 @@
     "astro": "^5.12.9",
     "astro-embed": "^0.9.0",
     "astro-icon": "^1.1.5",
-    "firebase": "^10.14.1",
     "limax": "4.1.0",
     "lodash.merge": "^4.6.2",
     "unpic": "^4.1.3"

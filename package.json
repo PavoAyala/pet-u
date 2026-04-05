@@ -5,6 +5,11 @@
     "node": ">=18.17.1"
   },
   "packageManager": "pnpm@10.32.1",
+  "pnpm": {
+    "overrides": {
+      "fast-xml-parser": "^5.5.7"
+    }
+  },
   "scripts": {
     "dev": "concurrently \"pnpm emulators\" \"turbo dev\"",
     "build": "turbo build",
