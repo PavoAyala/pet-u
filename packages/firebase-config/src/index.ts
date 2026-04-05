@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from 'firebase/app';
 import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import { getDatabase, connectDatabaseEmulator, type Database } from 'firebase/database';
 import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
 
 const firebaseConfig = {
@@ -18,9 +18,12 @@ const firebaseConfig = {
 
 // Initialize Firebase efficiently for SSR/Client
 export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const isBrowser = typeof window !== 'undefined';
+
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const rtdb = getDatabase(app);
+// Astro evaluates imported modules during SSR/prerender. Avoid constructing RTDB there.
+export const rtdb = (isBrowser ? getDatabase(app) : undefined) as Database;
 export const functions = getFunctions(app);
 
 // Detectar si estamos en un entorno de desarrollo (cliente o servidor)
@@ -35,12 +38,14 @@ if (isDev) {
   const host = '127.0.0.1';
   connectFirestoreEmulator(db, host, 8080);
   connectAuthEmulator(auth, `http://${host}:9099`);
-  connectDatabaseEmulator(rtdb, host, 9000);
+  if (isBrowser) {
+    connectDatabaseEmulator(rtdb, host, 9000);
+  }
   connectFunctionsEmulator(functions, host, 5001);
 }
 
-let analyticsInstance: any = null;
-if (globalThis.window !== undefined) {
+let analyticsInstance: ReturnType<typeof getAnalytics> | null = null;
+if (isBrowser) {
   const supported = await isSupported();
   if (supported) {
     analyticsInstance = getAnalytics(app);
