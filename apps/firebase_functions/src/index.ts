@@ -2,7 +2,9 @@ import * as admin from "firebase-admin";
 
 // Inicializar la app de Admin UNA SOLA VEZ aquí en el archivo raíz.
 if (admin.apps.length === 0) {
-  admin.initializeApp();
+  admin.initializeApp({
+    databaseURL: "https://pet-u-fe87c-default-rtdb.firebaseio.com",
+  });
 }
 
 // ============================================

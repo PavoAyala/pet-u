@@ -130,6 +130,40 @@
       </div>
       <div id="dateErrorMessage" class="hidden text-[10px] text-red-500 font-bold mt-1 px-1">La fecha de salida debe ser posterior a la llegada.</div>
 
+      <div id="hotelTimeSection" class="hidden border-t border-gray-100 pt-4">
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Hora check-in</label>
+            <select id="hotelCheckinTime" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+              <option value="" selected>Seleccionar...</option>
+            </select>
+            <p class="text-[10px] text-gray-400 mt-1">Disponible de 11:00 AM a 7:00 PM.</p>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Hora check-out</label>
+            <select id="hotelCheckoutTime" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
+              <option value="" selected>Seleccionar...</option>
+            </select>
+            <p class="text-[10px] text-gray-400 mt-1">Disponible de 10:00 AM a 2:00 PM.</p>
+          </div>
+        </div>
+        <p id="hotelTimeError" class="hidden text-[11px] text-red-500 font-bold mt-2">⚠ Selecciona horario de check-in y check-out.</p>
+      </div>
+
+      <div id="timeSlotSection" class="hidden border-t border-gray-100 pt-4">
+        <div class="flex items-center justify-between gap-3 mb-3">
+          <div>
+            <label id="timeSlotLabel" class="block text-[11px] font-bold uppercase tracking-wider text-gray-400">Hora de llegada</label>
+            <p class="text-[10px] text-gray-400 mt-1">Reserva con al menos 1 día de anticipación. Domingo no disponible.</p>
+          </div>
+          <span id="timeSlotBadge" class="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-[#3C4F35]/5 text-[#3C4F35] hidden"></span>
+        </div>
+        <input type="hidden" id="appointmentTime" />
+        <div id="timeSlotStatus" class="hidden text-[11px] font-bold mb-3"></div>
+        <div id="timeSlotGrid" class="grid grid-cols-3 gap-2"></div>
+        <p id="timeSlotError" class="hidden text-[11px] text-red-500 font-bold mt-2">⚠ Selecciona una hora disponible.</p>
+      </div>
+
       <!-- Happy Bus Compacto -->
       <div id="happyBusSection" class="border-t border-gray-100 pt-4">
         <label class="flex items-center gap-2 cursor-pointer group mb-3">
@@ -169,12 +203,16 @@
              <span id="summaryLabel" class="text-gray-500 font-bold uppercase tracking-tight">Servicio:</span>
              <span class="font-bold text-[#3C4F35]">$<span id="subtotalValue">0</span></span>
           </div>
+          <div id="mandatoryBathRow" class="hidden justify-between items-center text-xs">
+             <span class="text-gray-500 font-bold uppercase tracking-tight">Baño obligatorio:</span>
+             <span class="font-bold text-[#3C4F35]">$<span id="mandatoryBathValue">0</span></span>
+          </div>
           <div id="transportRow" class="hidden justify-between items-center text-xs">
              <span class="text-gray-500 font-bold uppercase tracking-tight">Transporte:</span>
              <span class="font-bold text-[#3C4F35]">$<span id="transportValue">0</span></span>
           </div>
           <div class="pt-1 border-t border-[#3C4F35]/10 flex justify-between items-center">
-            <span class="text-[#3C4F35] font-bold text-sm uppercase tracking-wider">Total Est.:</span>
+            <span class="text-[#3C4F35] font-bold text-sm uppercase tracking-wider">Total:</span>
             <span class="text-xl font-serif font-black text-[#3C4F35]">$<span id="summaryTotal">0</span></span>
           </div>
         </div>
@@ -189,35 +227,50 @@
   </div>
 </dialog>
 
-<script>
-  import { rtdb, ref, push, set } from '@pet-u/firebase-config';
+<dialog id="hotelInfoModal" class="p-0 rounded-[28px] backdrop:bg-black/70 backdrop:backdrop-blur-sm shadow-2xl w-[92%] max-w-md border-0">
+  <div class="bg-white rounded-[28px] p-6">
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#d2a265]">Aviso Importante</p>
+        <h3 class="text-xl font-serif font-black text-[#3C4F35] mt-1">Hotel sin Happy Bus</h3>
+      </div>
+      <button id="closeHotelInfoModal" class="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors flex items-center justify-center text-gray-500">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+    </div>
+    <div class="mt-4 space-y-3 text-sm text-gray-600 leading-relaxed">
+      <p class="font-bold text-[#3C4F35]">Costo de $100 extra fuera de tiempo.</p>
+      <p class="font-bold text-[#3C4F35]">Estancias de +6 noches se cobra baño de regalo obligatorio.</p>
+    </div>
+    <button id="confirmHotelInfoModal" class="mt-6 w-full bg-[#3C4F35] text-white py-3 rounded-2xl font-bold hover:bg-[#2D3B28] transition-colors">
+      Entendido
+    </button>
+  </div>
+</dialog>
 
+<script>
+  import { functions, httpsCallable } from '@pet-u/firebase-config';
   import { loadGoogleMaps, initPlaceAutocomplete } from '../utils/googleMaps';
 
-  // Function called when UI needs the Autocomplete
   async function loadGoogleMapsPlaces() {
     loadGoogleMaps(import.meta.env.PUBLIC_GOOGLE_MAPS_KEY);
-    
+
     await initPlaceAutocomplete({
-        containerId: 'happyBusAddressContainer',
-        colorScheme: 'LIGHT',
-        includedRegionCodes: ['mx'],
-        onSelect: (location, address) => {
-            (document.getElementById('happyBusLat') as HTMLInputElement).value = location.lat.toString();
-            (document.getElementById('happyBusLng') as HTMLInputElement).value = location.lng.toString();
-            (document.getElementById('happyBusAddressText') as HTMLInputElement).value = address;
-            // Clear location error when a valid place is picked
-            document.getElementById('addressError')?.classList.add('hidden');
-            document.getElementById('happyBusAddressContainer')?.querySelector('*')?.removeAttribute('data-error');
-        }
+      containerId: 'happyBusAddressContainer',
+      colorScheme: 'LIGHT',
+      includedRegionCodes: ['mx'],
+      onSelect: (location, address) => {
+        (document.getElementById('happyBusLat') as HTMLInputElement).value = location.lat.toString();
+        (document.getElementById('happyBusLng') as HTMLInputElement).value = location.lng.toString();
+        (document.getElementById('happyBusAddressText') as HTMLInputElement).value = address;
+        document.getElementById('addressError')?.classList.add('hidden');
+        document.getElementById('happyBusAddressContainer')?.querySelector('*')?.removeAttribute('data-error');
+      }
     });
   }
 
   type PriceLevel = Record<string, number>;
 
-
-
-  // Type for indexing prices by service name
   type PricesMap = {
     hotel: {
       baja: PriceLevel;
@@ -233,20 +286,29 @@
 
   const prices: PricesMap = {
     hotel: {
-        baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
-        alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
+      baja: { chica: 280, mediana: 350, grande: 430, xl: 520 },
+      alta: { chica: 380, mediana: 450, grande: 500, xl: 620 }
     },
     daycare: { chica: 180, mediana: 220, grande: 280, xl: 350 },
     spa: { chica: 350, mediana: 450, grande: 550, xl: 650 },
     vacunas: { fixed: 560 }
   };
 
-  const transportPrices: Record<string, number> = { 
-    'A': 100, 
-    'B': 150, 
-    'C': 200 
+  const mandatoryBathPrices: PriceLevel = {
+    // Public grooming pricing is published by size, but the form does not capture coat type yet.
+    // If coat type is added later, split this map into short/long hair pricing.
+    chica: 150,
+    mediana: 250,
+    grande: 400,
+    xl: 450
   };
-  
+
+  const transportPrices: Record<string, number> = {
+    A: 100,
+    B: 150,
+    C: 200
+  };
+
   const happyBusSchedules: Record<string, string> = {
     daycare: '<div class="space-y-1"><p><span class="text-sm font-black text-[#3C4F35] uppercase">Recolección:</span> <span class="text-base font-black text-[#3C4F35]">8:15 AM - 10:30 AM</span></p><p><span class="text-sm font-black text-[#3C4F35] uppercase">Entrega:</span> <span class="text-base font-black text-[#3C4F35]">4:30 PM - 6:00 PM</span></p></div>',
     spa: '<p><span class="text-sm font-black text-[#3C4F35] uppercase">Recolección y regreso:</span> <br/><span class="text-base font-black text-[#3C4F35]">a partir de las 11:00 AM</span></p>',
@@ -258,18 +320,21 @@
     title: string;
     subtitle: string;
     checkinLabel: string;
+    timeLabel: string;
     showCheckout: boolean;
     showSize: boolean;
     showVaccines: boolean;
     showHappyBus: boolean;
+    showTimeSelection: boolean;
+    showHotelTimeSelection: boolean;
     summaryPrefix: string;
   }
 
   const serviceConfigs: Record<string, ServiceConfig> = {
-    hotel: { title: 'Reservar Hotel', subtitle: 'ESTANCIA NOCTURNA PREMIUM', checkinLabel: 'Llegada', showCheckout: true, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Hospedaje:' },
-    daycare: { title: 'Agendar Daycare', subtitle: 'SOCIALIZACIÓN Y DIVERSIÓN', checkinLabel: 'Fecha visita', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Estancia:' },
-    spa: { title: 'Cita de Grooming', subtitle: 'SPA & ESTÉTICA', checkinLabel: 'Fecha cita', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, summaryPrefix: 'Servicio Spa:' },
-    vacunas: { title: 'Vacunación', subtitle: 'SALUD Y PREVENCIÓN', checkinLabel: 'Fecha cita', showCheckout: false, showSize: false, showVaccines: true, showHappyBus: false, summaryPrefix: 'Vacuna:' }
+    hotel: { title: 'Reservar Hotel', subtitle: 'ESTANCIA NOCTURNA PREMIUM', checkinLabel: 'Llegada', timeLabel: 'Hora de llegada', showCheckout: true, showSize: true, showVaccines: false, showHappyBus: true, showTimeSelection: false, showHotelTimeSelection: true, summaryPrefix: 'Hospedaje:' },
+    daycare: { title: 'Agendar Daycare', subtitle: 'SOCIALIZACIÓN Y DIVERSIÓN', checkinLabel: 'Fecha visita', timeLabel: 'Hora de llegada', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, showTimeSelection: true, showHotelTimeSelection: false, summaryPrefix: 'Estancia:' },
+    spa: { title: 'Cita de Grooming', subtitle: 'SPA & ESTÉTICA', checkinLabel: 'Fecha cita', timeLabel: 'Hora de cita', showCheckout: false, showSize: true, showVaccines: false, showHappyBus: true, showTimeSelection: true, showHotelTimeSelection: false, summaryPrefix: 'Servicio Spa:' },
+    vacunas: { title: 'Vacunación', subtitle: 'SALUD Y PREVENCIÓN', checkinLabel: 'Fecha cita', timeLabel: 'Hora de cita', showCheckout: false, showSize: false, showVaccines: true, showHappyBus: false, showTimeSelection: true, showHotelTimeSelection: false, summaryPrefix: 'Vacuna:' }
   };
 
   const normalizeHappyBusAddress = (value: string | null | undefined) => {
@@ -279,11 +344,51 @@
     return normalized;
   };
 
+  const availabilityCallable = httpsCallable(functions, 'booking-getAvailability');
+  const createReservationCallable = httpsCallable(functions, 'booking-createReservation');
+
+  const getTomorrowDateValue = () => {
+    const parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Monterrey',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(new Date());
+
+    const year = Number(parts.find((part) => part.type === 'year')?.value);
+    const month = Number(parts.find((part) => part.type === 'month')?.value);
+    const day = Number(parts.find((part) => part.type === 'day')?.value);
+    const tomorrow = new Date(Date.UTC(year, month - 1, day));
+    tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
+    return tomorrow.toISOString().slice(0, 10);
+  };
+
+  const formatSlotLabel = (time: string) => {
+    const [hourString, minuteString] = time.split(':');
+    const hour = Number(hourString);
+    const minute = Number(minuteString);
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    const normalizedHour = hour % 12 || 12;
+    return `${normalizedHour}:${String(minute).padStart(2, '0')} ${suffix}`;
+  };
+
+  const generateTimeOptions = (startHour: number, endHour: number) => {
+    const values: string[] = [];
+    const current = new Date(Date.UTC(2000, 0, 1, startHour, 0));
+    const end = new Date(Date.UTC(2000, 0, 1, endHour, 0));
+    while (current <= end) {
+      const hour = String(current.getUTCHours()).padStart(2, '0');
+      const minute = String(current.getUTCMinutes()).padStart(2, '0');
+      values.push(`${hour}:${minute}`);
+      current.setUTCMinutes(current.getUTCMinutes() + 30);
+    }
+    return values;
+  };
+
   function setupBookingForm() {
     const modal = document.getElementById('bookingModal') as HTMLDialogElement;
     const form = document.getElementById('bookingForm') as HTMLFormElement & { _bookingInit?: boolean };
     if (!modal || !form) return;
-    // Guard: only attach listeners once per DOM instance
     if (form._bookingInit) return;
     form._bookingInit = true;
 
@@ -293,6 +398,168 @@
     const wantHappyBus = document.getElementById('wantHappyBus') as HTMLInputElement;
     const happyBusZone = document.getElementById('happyBusZone') as HTMLSelectElement;
     const summaryTotal = document.getElementById('summaryTotal');
+    const mandatoryBathRow = document.getElementById('mandatoryBathRow');
+    const hotelTimeSection = document.getElementById('hotelTimeSection')!;
+    const hotelCheckinTime = document.getElementById('hotelCheckinTime') as HTMLSelectElement;
+    const hotelCheckoutTime = document.getElementById('hotelCheckoutTime') as HTMLSelectElement;
+    const timeSlotSection = document.getElementById('timeSlotSection')!;
+    const timeSlotLabel = document.getElementById('timeSlotLabel')!;
+    const timeSlotBadge = document.getElementById('timeSlotBadge')!;
+    const timeSlotGrid = document.getElementById('timeSlotGrid')!;
+    const timeSlotStatus = document.getElementById('timeSlotStatus')!;
+    const appointmentTimeInput = document.getElementById('appointmentTime') as HTMLInputElement;
+
+    let currentAvailabilityRequest = 0;
+    let hotelInfoShownForCurrentOpen = false;
+
+    const hotelCheckinOptions = generateTimeOptions(11, 19);
+    const hotelCheckoutOptions = generateTimeOptions(10, 14);
+    hotelCheckinTime.innerHTML = `<option value="" selected>Seleccionar...</option>${hotelCheckinOptions.map((time) => `<option value="${time}">${formatSlotLabel(time)}</option>`).join('')}`;
+    hotelCheckoutTime.innerHTML = `<option value="" selected>Seleccionar...</option>${hotelCheckoutOptions.map((time) => `<option value="${time}">${formatSlotLabel(time)}</option>`).join('')}`;
+
+    const resetTimeSelection = () => {
+      appointmentTimeInput.value = '';
+      timeSlotGrid.innerHTML = '';
+      timeSlotStatus.classList.add('hidden', 'text-red-500', 'text-gray-400');
+      timeSlotStatus.textContent = '';
+      timeSlotBadge.classList.add('hidden');
+      document.getElementById('timeSlotError')?.classList.add('hidden');
+    };
+
+    const resetHotelTimeSelection = () => {
+      hotelCheckinTime.value = '';
+      hotelCheckoutTime.value = '';
+      document.getElementById('hotelTimeError')?.classList.add('hidden');
+    };
+
+    const setTimeSlotStatus = (message: string, tone: 'neutral' | 'error' = 'neutral') => {
+      timeSlotStatus.classList.remove('hidden', 'text-red-500', 'text-gray-400');
+      timeSlotStatus.classList.add(tone === 'error' ? 'text-red-500' : 'text-gray-400');
+      timeSlotStatus.textContent = message;
+    };
+
+    const updateDateMinimums = () => {
+      const minDate = getTomorrowDateValue();
+      checkinInput.min = minDate;
+      checkoutInput.min = checkinInput.value || minDate;
+    };
+
+    const shouldShowTimeSelection = () => {
+      const config = serviceConfigs[serviceTypeInput.value];
+      return Boolean(config?.showTimeSelection && !wantHappyBus.checked);
+    };
+
+    const updateTimeSelectionVisibility = () => {
+      if (shouldShowTimeSelection()) {
+        timeSlotSection.classList.remove('hidden');
+      } else {
+        timeSlotSection.classList.add('hidden');
+        resetTimeSelection();
+      }
+    };
+
+    const shouldShowHotelTimeSelection = () => {
+      const config = serviceConfigs[serviceTypeInput.value];
+      return Boolean(config?.showHotelTimeSelection && !wantHappyBus.checked);
+    };
+
+    const updateHotelTimeVisibility = () => {
+      if (shouldShowHotelTimeSelection()) {
+        hotelTimeSection.classList.remove('hidden');
+      } else {
+        hotelTimeSection.classList.add('hidden');
+        resetHotelTimeSelection();
+      }
+    };
+
+    const hotelInfoModal = document.getElementById('hotelInfoModal') as HTMLDialogElement | null;
+    const maybeShowHotelInfo = () => {
+      if (!hotelInfoModal) return;
+      if (serviceTypeInput.value !== 'hotel' || wantHappyBus.checked || hotelInfoShownForCurrentOpen) return;
+      hotelInfoModal.showModal();
+      hotelInfoShownForCurrentOpen = true;
+    };
+
+    document.getElementById('closeHotelInfoModal')?.addEventListener('click', () => hotelInfoModal?.close());
+    document.getElementById('confirmHotelInfoModal')?.addEventListener('click', () => hotelInfoModal?.close());
+
+    const renderTimeSlots = (slots: Array<{ time: string; label?: string; available: boolean }>) => {
+      timeSlotGrid.innerHTML = slots.map((slot) => `
+        <button
+          type="button"
+          class="time-slot-btn px-3 py-2 rounded-xl border text-xs font-bold transition-all ${slot.available ? 'border-[#3C4F35]/15 bg-white text-[#3C4F35] hover:border-[#3C4F35] hover:bg-[#3C4F35]/5' : 'border-gray-100 bg-gray-50 text-gray-300 cursor-not-allowed'}"
+          data-time="${slot.time}"
+          ${slot.available ? '' : 'disabled'}
+        >
+          ${slot.label || formatSlotLabel(slot.time)}
+        </button>
+      `).join('');
+
+      timeSlotGrid.querySelectorAll('.time-slot-btn:not([disabled])').forEach((button) => {
+        button.addEventListener('click', () => {
+          appointmentTimeInput.value = button.getAttribute('data-time') || '';
+          document.getElementById('timeSlotError')?.classList.add('hidden');
+
+          timeSlotGrid.querySelectorAll('.time-slot-btn').forEach((candidate) => {
+            candidate.classList.remove('bg-[#3C4F35]', 'text-black', 'border-[#3C4F35]');
+          });
+
+          button.classList.add('bg-[#3C4F35]', 'text-black', 'border-[#3C4F35]');
+        });
+      });
+    };
+
+    const loadAvailability = async () => {
+      updateTimeSelectionVisibility();
+      updateHotelTimeVisibility();
+      if (!shouldShowTimeSelection()) return;
+
+      if (!checkinInput.value) {
+        resetTimeSelection();
+        setTimeSlotStatus('Selecciona una fecha para ver horarios disponibles.');
+        return;
+      }
+
+      if (checkinInput.value < getTomorrowDateValue()) {
+        resetTimeSelection();
+        setTimeSlotStatus('Las reservaciones deben hacerse con al menos 1 día de anticipación.', 'error');
+        return;
+      }
+
+      const requestId = ++currentAvailabilityRequest;
+      resetTimeSelection();
+      setTimeSlotStatus('Consultando horarios disponibles...');
+
+      try {
+        const response = await availabilityCallable({ date: checkinInput.value });
+        if (requestId !== currentAvailabilityRequest) return;
+
+        const data = response.data as {
+          slots: Array<{ time: string; label?: string; available: boolean }>;
+        };
+
+        if (!data.slots.length) {
+          setTimeSlotStatus('No hay horarios disponibles para esa fecha.', 'error');
+          return;
+        }
+
+        const availableCount = data.slots.filter((slot) => slot.available).length;
+        timeSlotBadge.classList.remove('hidden');
+        timeSlotBadge.textContent = `${availableCount} disponibles`;
+
+        if (availableCount === 0) {
+          setTimeSlotStatus('Todos los horarios ya están ocupados para esa fecha.', 'error');
+          renderTimeSlots(data.slots);
+          return;
+        }
+
+        timeSlotStatus.classList.add('hidden');
+        renderTimeSlots(data.slots);
+      } catch {
+        if (requestId !== currentAvailabilityRequest) return;
+        setTimeSlotStatus('No fue posible cargar la disponibilidad. Intenta de nuevo.', 'error');
+      }
+    };
 
     const calculateTotal = () => {
       const service = serviceTypeInput.value;
@@ -300,97 +567,119 @@
       const selectedSize = sizeEl?.value;
 
       let subtotal = 0;
+      let mandatoryBath = 0;
       let transport = 0;
-      
+
       if (service === 'hotel') {
-          if (!selectedSize || !checkinInput.value || !checkoutInput.value) return;
-          const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
-          const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
-          const checkin = new Date(inY, inM - 1, inD);
-          const checkout = new Date(outY, outM - 1, outD);
-          const diffDays = Math.round((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24));
-          
-          if (diffDays <= 0) {
-              const errorEl = document.getElementById('dateErrorMessage');
-              errorEl?.classList.remove('hidden');
-              checkinInput.value = '';
-              checkoutInput.value = '';
-              document.getElementById('priceSummary')?.classList.add('hidden');
-              return;
+        if (!selectedSize || !checkinInput.value || !checkoutInput.value) return;
+        const [inY, inM, inD] = checkinInput.value.split('-').map(Number);
+        const [outY, outM, outD] = checkoutInput.value.split('-').map(Number);
+        const checkin = new Date(inY, inM - 1, inD);
+        const checkout = new Date(outY, outM - 1, outD);
+        const diffDays = Math.round((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays <= 0) {
+          document.getElementById('dateErrorMessage')?.classList.remove('hidden');
+          checkinInput.value = '';
+          checkoutInput.value = '';
+          document.getElementById('priceSummary')?.classList.add('hidden');
+          return;
+        }
+
+        document.getElementById('dateErrorMessage')?.classList.add('hidden');
+
+        if (diffDays > 6) {
+          mandatoryBath = mandatoryBathPrices[selectedSize] || 0;
+        }
+
+        const currentDate = new Date(checkin.getTime());
+        for (let i = 0; i < diffDays; i++) {
+          const month = currentDate.getMonth();
+          const day = currentDate.getDate();
+          const year = currentDate.getFullYear();
+          const isHigh = (year === 2025 && month === 11) || (year === 2026 && month === 0 && day <= 7);
+          const hotelPrices = prices.hotel[isHigh ? 'alta' : 'baja'];
+          if (hotelPrices && selectedSize) {
+            subtotal += (hotelPrices as PriceLevel)[selectedSize] || 0;
           }
-          document.getElementById('dateErrorMessage')?.classList.add('hidden');
-          
-          const currentDate = new Date(checkin.getTime());
-          for (let i = 0; i < diffDays; i++) {
-            const month = currentDate.getMonth();
-            const day = currentDate.getDate();
-            const year = currentDate.getFullYear();
-            // Simple high season logic
-            const isHigh = (year === 2025 && month === 11) || (year === 2026 && month === 0 && day <= 7);
-            const hotelPrices = prices.hotel[isHigh ? 'alta' : 'baja'];
-            if (hotelPrices && selectedSize) {
-              subtotal += (hotelPrices as PriceLevel)[selectedSize] || 0;
-            }
-            currentDate.setDate(currentDate.getDate() + 1);
-          }
+          currentDate.setDate(currentDate.getDate() + 1);
+        }
       } else if (service === 'vacunas') {
-          subtotal = prices.vacunas.fixed || 0;
+        subtotal = prices.vacunas.fixed || 0;
       } else {
-          if (!selectedSize || !checkinInput.value) return;
-          const servicePrice = prices[service];
-          if (servicePrice && selectedSize) {
-            subtotal = (servicePrice as PriceLevel)[selectedSize] || 0;
-          }
+        if (!selectedSize || !checkinInput.value) return;
+        const servicePrice = prices[service];
+        if (servicePrice && selectedSize) {
+          subtotal = (servicePrice as PriceLevel)[selectedSize] || 0;
+        }
       }
 
       if (wantHappyBus.checked && happyBusZone.value) {
-          transport = transportPrices[happyBusZone.value] || 0;
-          const transportRow = document.getElementById('transportRow');
-          transportRow?.classList.remove('hidden');
-          transportRow?.classList.add('flex');
-          document.getElementById('transportValue')!.textContent = transport.toLocaleString();
+        transport = transportPrices[happyBusZone.value] || 0;
+        const transportRow = document.getElementById('transportRow');
+        transportRow?.classList.remove('hidden');
+        transportRow?.classList.add('flex');
+        document.getElementById('transportValue')!.textContent = transport.toLocaleString();
       } else {
-          const transportRow = document.getElementById('transportRow');
-          transportRow?.classList.add('hidden');
-          transportRow?.classList.remove('flex');
+        const transportRow = document.getElementById('transportRow');
+        transportRow?.classList.add('hidden');
+        transportRow?.classList.remove('flex');
+      }
+
+      if (mandatoryBath > 0) {
+        mandatoryBathRow?.classList.remove('hidden');
+        mandatoryBathRow?.classList.add('flex');
+        document.getElementById('mandatoryBathValue')!.textContent = mandatoryBath.toLocaleString();
+      } else {
+        mandatoryBathRow?.classList.add('hidden');
+        mandatoryBathRow?.classList.remove('flex');
+        document.getElementById('mandatoryBathValue')!.textContent = '0';
       }
 
       document.getElementById('subtotalValue')!.textContent = subtotal.toLocaleString();
-      summaryTotal!.textContent = (subtotal + transport).toLocaleString();
+      summaryTotal!.textContent = (subtotal + mandatoryBath + transport).toLocaleString();
       document.getElementById('priceSummary')?.classList.remove('hidden');
     };
 
-    // Event Listeners for Opening
     const openModal = (service: string) => {
-        const config = serviceConfigs[service];
-        if (!config) return;
+      const config = serviceConfigs[service];
+      if (!config) return;
 
-        serviceTypeInput.value = service;
-        document.getElementById('modalTitle')!.textContent = config.title;
-        document.getElementById('modalSubtitle')!.textContent = config.subtitle;
-        document.getElementById('checkinLabel')!.textContent = config.checkinLabel;
-        document.getElementById('summaryLabel')!.textContent = config.summaryPrefix;
+      form.reset();
+      serviceTypeInput.value = service;
+      document.getElementById('modalTitle')!.textContent = config.title;
+      document.getElementById('modalSubtitle')!.textContent = config.subtitle;
+      document.getElementById('checkinLabel')!.textContent = config.checkinLabel;
+      document.getElementById('summaryLabel')!.textContent = config.summaryPrefix;
+      timeSlotLabel.textContent = config.timeLabel;
 
-        document.getElementById('checkoutGroup')?.classList.toggle('hidden', !config.showCheckout);
-        document.getElementById('sizeSelectionGroup')?.classList.toggle('hidden', !config.showSize);
-        document.getElementById('vaccineSelectionGroup')?.classList.toggle('hidden', !config.showVaccines);
-        document.getElementById('happyBusSection')?.classList.toggle('hidden', !config.showHappyBus);
+      document.getElementById('checkoutGroup')?.classList.toggle('hidden', !config.showCheckout);
+      document.getElementById('sizeSelectionGroup')?.classList.toggle('hidden', !config.showSize);
+      document.getElementById('vaccineSelectionGroup')?.classList.toggle('hidden', !config.showVaccines);
+      document.getElementById('happyBusSection')?.classList.toggle('hidden', !config.showHappyBus);
+      timeSlotSection.classList.toggle('hidden', !config.showTimeSelection);
+      hotelTimeSection.classList.toggle('hidden', !config.showHotelTimeSelection);
 
-        if (config.showVaccines) {
-            (document.getElementById('vaccineType') as HTMLSelectElement).required = true;
-        }
+      if (config.showVaccines) {
+        (document.getElementById('vaccineType') as HTMLSelectElement).required = true;
+      }
 
-        wantHappyBus.checked = false;
-        document.getElementById('happyBusOptions')?.classList.add('hidden');
-        const hpSchedule = document.getElementById('happyBusSchedule');
-        if (hpSchedule) hpSchedule.innerHTML = happyBusSchedules[service] || '';
+      wantHappyBus.checked = false;
+      document.getElementById('happyBusOptions')?.classList.add('hidden');
+      const hpSchedule = document.getElementById('happyBusSchedule');
+      if (hpSchedule) hpSchedule.innerHTML = happyBusSchedules[service] || '';
 
-        form.reset();
-        document.getElementById('priceSummary')?.classList.add('hidden');
-        document.getElementById('formStatus')?.classList.add('hidden');
-        
-        modal.showModal();
-        document.body.style.overflow = 'hidden';
+      updateDateMinimums();
+      resetTimeSelection();
+      resetHotelTimeSelection();
+      updateHotelTimeVisibility();
+      hotelInfoShownForCurrentOpen = false;
+      document.getElementById('priceSummary')?.classList.add('hidden');
+      document.getElementById('formStatus')?.classList.add('hidden');
+
+      modal.showModal();
+      document.body.style.overflow = 'hidden';
+      maybeShowHotelInfo();
     };
 
     window.addEventListener('openBookingModal', ((e: Event) => {
@@ -398,143 +687,155 @@
       openModal(customEvent.detail.service);
     }) as EventListener);
 
-    // Support legacy buttons
-    document.querySelectorAll('.openHotelBooking').forEach(btn => {
-        btn.addEventListener('click', () => openModal('hotel'));
+    document.querySelectorAll('.openHotelBooking').forEach((btn) => {
+      btn.addEventListener('click', () => openModal('hotel'));
     });
 
-    // Form Interactions
-    form.querySelectorAll('input[name="petSize"]').forEach(r => r.addEventListener('change', calculateTotal));
-    checkinInput.addEventListener('change', () => {
-        const config = serviceConfigs[serviceTypeInput.value];
-        
-        // Bloqueo preventivo: la salida no puede ser antes de la entrada
-        if (config?.showCheckout && checkinInput.value) {
-            checkoutInput.min = checkinInput.value;
-            
-            // Si la salida actual es menor a la nueva entrada, la limpiamos
-            if (checkoutInput.value && checkoutInput.value < checkinInput.value) {
-                checkoutInput.value = '';
-            }
+    form.querySelectorAll('input[name="petSize"]').forEach((radio) => radio.addEventListener('change', calculateTotal));
+    updateDateMinimums();
 
-            setTimeout(() => {
-                if (typeof checkoutInput.showPicker === 'function') {
-                    checkoutInput.showPicker();
-                } else {
-                    checkoutInput.focus();
-                }
-            }, 100);
+    checkinInput.addEventListener('change', async () => {
+      const config = serviceConfigs[serviceTypeInput.value];
+
+      if (config?.showCheckout && checkinInput.value) {
+        checkoutInput.min = checkinInput.value;
+
+        if (checkoutInput.value && checkoutInput.value < checkinInput.value) {
+          checkoutInput.value = '';
         }
-        calculateTotal();
+
+        setTimeout(() => {
+          if (typeof checkoutInput.showPicker === 'function') {
+            checkoutInput.showPicker();
+          } else {
+            checkoutInput.focus();
+          }
+        }, 100);
+      }
+
+      calculateTotal();
+      await loadAvailability();
     });
+
     checkoutInput.addEventListener('change', calculateTotal);
-    wantHappyBus.addEventListener('change', () => {
-        document.getElementById('happyBusOptions')?.classList.toggle('hidden', !wantHappyBus.checked);
-        if (wantHappyBus.checked) loadGoogleMapsPlaces();
-        calculateTotal();
+    wantHappyBus.addEventListener('change', async () => {
+      document.getElementById('happyBusOptions')?.classList.toggle('hidden', !wantHappyBus.checked);
+      if (wantHappyBus.checked) loadGoogleMapsPlaces();
+      updateTimeSelectionVisibility();
+      updateHotelTimeVisibility();
+      if (!wantHappyBus.checked) maybeShowHotelInfo();
+      await loadAvailability();
+      calculateTotal();
     });
     happyBusZone.addEventListener('change', calculateTotal);
 
     document.getElementById('closeBookingModal')?.addEventListener('click', () => {
-        modal.close();
-        document.body.style.overflow = '';
+      modal.close();
+      document.body.style.overflow = '';
     });
 
     form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('submitBooking') as HTMLButtonElement;
-        const formStatus = document.getElementById('formStatus');
+      e.preventDefault();
+      const submitBtn = document.getElementById('submitBooking') as HTMLButtonElement;
+      const formStatus = document.getElementById('formStatus');
+      const config = serviceConfigs[serviceTypeInput.value];
 
-        // ── Happy Bus validation ──────────────────────────────────────────
-        if (wantHappyBus.checked) {
-          let happyBusValid = true;
+      if (wantHappyBus.checked) {
+        let happyBusValid = true;
 
-          const zone = happyBusZone.value;
-          const lat  = (document.getElementById('happyBusLat') as HTMLInputElement).value;
-          const lng  = (document.getElementById('happyBusLng') as HTMLInputElement).value;
+        const zone = happyBusZone.value;
+        const lat = (document.getElementById('happyBusLat') as HTMLInputElement).value;
+        const lng = (document.getElementById('happyBusLng') as HTMLInputElement).value;
 
-          if (!zone) {
-            document.getElementById('zoneError')?.classList.remove('hidden');
-            happyBusValid = false;
-          } else {
-            document.getElementById('zoneError')?.classList.add('hidden');
-          }
-
-          if (!lat || !lng) {
-            document.getElementById('addressError')?.classList.remove('hidden');
-            // Highlight the input wrapper
-            const wrapper = document.getElementById('addressInputWrapper');
-            wrapper?.classList.add('ring-2', 'ring-red-400', 'rounded-xl');
-            setTimeout(() => wrapper?.classList.remove('ring-2', 'ring-red-400', 'rounded-xl'), 3000);
-            happyBusValid = false;
-          } else {
-            document.getElementById('addressError')?.classList.add('hidden');
-          }
-
-          if (!happyBusValid) return;  // ← block submission
+        if (!zone) {
+          document.getElementById('zoneError')?.classList.remove('hidden');
+          happyBusValid = false;
+        } else {
+          document.getElementById('zoneError')?.classList.add('hidden');
         }
-        // ─────────────────────────────────────────────────────────────────
 
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
-
-        try {
-            const sizeEl = form.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
-            const totalValue = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
-            const serviceType = serviceTypeInput.value;
-            const happyBusAddress = normalizeHappyBusAddress(
-              (document.getElementById('happyBusAddressText') as HTMLInputElement).value
-            );
-
-            const reservationData = {
-                serviceType,
-                petName: (document.getElementById('petName') as HTMLInputElement).value,
-                ownerName: (document.getElementById('ownerName') as HTMLInputElement).value,
-                petSize: sizeEl?.value || null,
-                vaccineType: serviceType === 'vacunas' ? (document.getElementById('vaccineType') as HTMLSelectElement).value : null,
-                happyBus: {
-                    want: wantHappyBus.checked,
-                    zone: wantHappyBus.checked ? happyBusZone.value : null,
-                    address: wantHappyBus.checked ? happyBusAddress : null,
-                    lat: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLat') as HTMLInputElement).value) || null : null,
-                    lng: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLng') as HTMLInputElement).value) || null : null,
-                    cost: wantHappyBus.checked ? (transportPrices[happyBusZone.value] || 0) : 0
-                },
-                checkin: checkinInput.value,
-                checkout: serviceType === 'hotel' ? checkoutInput.value : checkinInput.value,
-                totalEstimado: totalValue,
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-
-            const reservationsListRef = ref(rtdb, 'reservations');
-            await set(push(reservationsListRef), reservationData);
-
-            formStatus!.classList.remove('hidden');
-            formStatus!.className = 'text-sm font-bold text-center p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 mt-4';
-            formStatus!.innerHTML = `¡Reserva enviada con éxito! 🐾`;
-            
-            setTimeout(() => {
-                modal.close();
-                document.body.style.overflow = '';
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Confirmar Reserva';
-            }, 3000);
-        } catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-            formStatus!.classList.remove('hidden');
-            formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-100 mt-4';
-            formStatus!.textContent = 'Hubo un error: ' + errorMessage;
-            submitBtn.disabled = false;
-            submitBtn.textContent = 'Intentar de nuevo';
+        if (!lat || !lng) {
+          document.getElementById('addressError')?.classList.remove('hidden');
+          const wrapper = document.getElementById('addressInputWrapper');
+          wrapper?.classList.add('ring-2', 'ring-red-400', 'rounded-xl');
+          setTimeout(() => wrapper?.classList.remove('ring-2', 'ring-red-400', 'rounded-xl'), 3000);
+          happyBusValid = false;
+        } else {
+          document.getElementById('addressError')?.classList.add('hidden');
         }
+
+        if (!happyBusValid) return;
+      }
+
+      if (shouldShowTimeSelection() && !appointmentTimeInput.value) {
+        document.getElementById('timeSlotError')?.classList.remove('hidden');
+        return;
+      }
+
+      if (shouldShowHotelTimeSelection() && (!hotelCheckinTime.value || !hotelCheckoutTime.value)) {
+        document.getElementById('hotelTimeError')?.classList.remove('hidden');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Enviando...';
+
+      try {
+        const sizeEl = form.querySelector('input[name="petSize"]:checked') as HTMLInputElement;
+        const totalValue = parseInt(summaryTotal?.textContent?.replace(/,/g, '') || '0');
+        const serviceType = serviceTypeInput.value;
+        const happyBusAddress = normalizeHappyBusAddress(
+          (document.getElementById('happyBusAddressText') as HTMLInputElement).value
+        );
+        const mandatoryBathCost = parseInt(document.getElementById('mandatoryBathValue')?.textContent?.replace(/,/g, '') || '0');
+
+        const reservationData = {
+          serviceType,
+          petName: (document.getElementById('petName') as HTMLInputElement).value,
+          ownerName: (document.getElementById('ownerName') as HTMLInputElement).value,
+          petSize: sizeEl?.value || null,
+          vaccineType: serviceType === 'vacunas' ? (document.getElementById('vaccineType') as HTMLSelectElement).value : null,
+          happyBus: {
+            want: wantHappyBus.checked,
+            zone: wantHappyBus.checked ? happyBusZone.value : null,
+            address: wantHappyBus.checked ? happyBusAddress : null,
+            lat: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLat') as HTMLInputElement).value) || null : null,
+            lng: wantHappyBus.checked ? parseFloat((document.getElementById('happyBusLng') as HTMLInputElement).value) || null : null,
+            cost: wantHappyBus.checked ? (transportPrices[happyBusZone.value] || 0) : 0
+          },
+          checkin: checkinInput.value,
+          checkout: serviceType === 'hotel' ? checkoutInput.value : checkinInput.value,
+          appointmentTime: config.showTimeSelection && !wantHappyBus.checked ? appointmentTimeInput.value : null,
+          checkinTime: serviceType === 'hotel' && !wantHappyBus.checked ? hotelCheckinTime.value : null,
+          checkoutTime: serviceType === 'hotel' && !wantHappyBus.checked ? hotelCheckoutTime.value : null,
+          mandatoryBathCost,
+          totalEstimado: totalValue,
+        };
+
+        await createReservationCallable(reservationData);
+
+        formStatus!.classList.remove('hidden');
+        formStatus!.className = 'text-sm font-bold text-center p-4 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-100 mt-4';
+        formStatus!.innerHTML = '¡Reserva enviada con éxito! 🐾';
+
+        setTimeout(() => {
+          modal.close();
+          document.body.style.overflow = '';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Confirmar Reserva';
+        }, 3000);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        formStatus!.classList.remove('hidden');
+        formStatus!.className = 'text-sm font-bold text-center p-3 rounded-lg bg-rose-50 text-rose-800 border border-rose-100 mt-4';
+        formStatus!.textContent = 'Hubo un error: ' + message;
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Intentar de nuevo';
+      }
     });
   }
 
-  // Use only astro:page-load to avoid double registration.
-  // Also guard inside setupBookingForm with a flag on the form element.
   document.addEventListener('astro:page-load', setupBookingForm);
-  // Fire once immediately in case the page already loaded (non-SPA navigation)
   if (document.readyState !== 'loading') setupBookingForm();
 </script>
 
@@ -584,5 +885,8 @@
   /* Ocultar el icono de pin en la barra de búsqueda */
   gmp-place-autocomplete::part(icon) {
     display: none;
+  }
+  .time-slot-btn[disabled] {
+    opacity: 1;
   }
 </style>

@@ -33,21 +33,18 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.booking = void 0;
-const admin = __importStar(require("firebase-admin"));
-// Inicializar la app de Admin UNA SOLA VEZ aquí en el archivo raíz.
-if (admin.apps.length === 0) {
-    admin.initializeApp({
-        databaseURL: "https://pet-u-fe87c-default-rtdb.firebaseio.com",
-    });
-}
-// ============================================
-// MODULOS DE FUNCIONES
-// ============================================
-// Exportamos todas las funciones dentro de la carpeta 'booking'
-// Aparecerán en Firebase identificadas como 'booking-onNewReservation'
-exports.booking = __importStar(require("./booking"));
-// En el futuro puedes agregar más:
-// export * as payments from './payments';
-// export * as users from './users';
+exports.onNewReservation = void 0;
+const database_1 = require("firebase-functions/v2/database");
+const logger = __importStar(require("firebase-functions/logger"));
+exports.onNewReservation = (0, database_1.onValueCreated)("/reservations/{pushId}", async (event) => {
+    const pushId = event.params.pushId;
+    // Legacy trigger intentionally disabled.
+    // Reservations are now created through booking-createReservation, which already:
+    // 1. validates availability,
+    // 2. creates the Google Calendar event,
+    // 3. stores calendarEventId in RTDB.
+    // Recreating the event here would duplicate entries in Google Calendar.
+    logger.info(`[RESERVATION TRIGGER OMITIDO] ID: ${pushId}`, { structuredData: true });
+    return null;
+});
 //# sourceMappingURL=index.js.map

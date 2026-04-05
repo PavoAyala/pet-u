@@ -115,6 +115,10 @@ import Layout from '../../layouts/Layout.astro';
              <span class="flex items-center gap-2">Alimento</span>
              <span class="font-bold text-gray-700" id="modal-cost-food-val"></span>
            </div>
+           <div id="modal-cost-mandatory-bath" class="justify-between items-center text-sm text-gray-600 hidden">
+             <span class="flex items-center gap-2">Baño obligatorio (+6 noches)</span>
+             <span class="font-bold text-gray-700" id="modal-cost-mandatory-bath-val"></span>
+           </div>
            <div id="modal-happybus" class="justify-between items-start text-sm text-gray-600 hidden gap-4">
              <span class="flex items-start gap-2 min-w-0">
                <span class="min-w-0">
@@ -218,6 +222,7 @@ import Layout from '../../layouts/Layout.astro';
         <td class="px-8 py-5">
            <div class="text-gray-500 font-bold">${r.checkin || '-'} <span class="text-gray-300 font-normal mx-1">al</span> ${r.checkout || '-'}</div>
            <div class="text-[10px] text-gray-400">Archivada</div>
+           ${r.arrivalMode === 'self_arrival' && r.appointmentTime ? `<div class="text-[10px] text-[#d2a265] font-bold mt-1">⏰ ${formatAppointmentTime(r.appointmentTime)}</div>` : ''}
         </td>
         <td class="px-8 py-5">
           <div class="flex items-center gap-3">
@@ -256,6 +261,15 @@ import Layout from '../../layouts/Layout.astro';
   const modal = document.getElementById('reservationModal')!;
   const modalBox = modal.querySelector('div')!;
   const closeModalEls = [document.getElementById('closeModal'), document.getElementById('closeModalBtn')];
+  function formatAppointmentTime(time?: string | null) {
+    if (!time) return null;
+    const [hourString, minuteString] = time.split(':');
+    const hour = Number(hourString);
+    const minute = Number(minuteString);
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    const normalizedHour = hour % 12 || 12;
+    return `${normalizedHour}:${String(minute).padStart(2, '0')} ${suffix}`;
+  }
   const formatMoney = (value: unknown) => `$${Number(value || 0).toLocaleString()} MXN`;
   const hasHappyBus = (happyBus: any) => happyBus?.want === true || happyBus?.want === 'true';
   const getHappyBusAddressLabel = (happyBus: any) => {
@@ -266,13 +280,14 @@ import Layout from '../../layouts/Layout.astro';
   const getBaseCost = (reserva: any) => {
     const total = Number(reserva.totalEstimado || 0);
     const food = Number(reserva.costAllFood || 0);
+    const mandatoryBathCost = Number(reserva.mandatoryBathCost || 0);
     const happyBusCost = Number(hasHappyBus(reserva.happyBus) ? reserva.happyBus?.cost || 0 : 0);
 
     if (reserva.costoCheckinCheckOut != null) {
       return Number(reserva.costoCheckinCheckOut || 0);
     }
 
-    return Math.max(total - food - happyBusCost, 0);
+    return Math.max(total - food - mandatoryBathCost - happyBusCost, 0);
   };
 
   function openModal(reserva: any) {
@@ -284,6 +299,7 @@ import Layout from '../../layouts/Layout.astro';
     document.getElementById('modal-tags')!.innerHTML = `
       <span class="px-3 py-1 bg-gray-100 text-gray-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.serviceType || 'General'}</span>
       <span class="px-3 py-1 bg-gray-50 border border-gray-100 text-gray-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.petSize || 'Sin tamaño'}</span>
+      ${reserva.arrivalMode === 'self_arrival' && reserva.appointmentTime ? `<span class="px-3 py-1 bg-[#f0e6d2] text-[#3C4F35] font-bold text-[10px] rounded-full uppercase tracking-wider">⏰ ${formatAppointmentTime(reserva.appointmentTime)}</span>` : ''}
     `;
     
     const formatDate = (dateStr: string) => {
@@ -304,6 +320,16 @@ import Layout from '../../layouts/Layout.astro';
     } else {
        foodWrap.classList.add('hidden');
        foodWrap.classList.remove('flex');
+    }
+
+    const mandatoryBathWrap = document.getElementById('modal-cost-mandatory-bath')!;
+    if (Number(reserva.mandatoryBathCost || 0) > 0) {
+       mandatoryBathWrap.classList.remove('hidden');
+       mandatoryBathWrap.classList.add('flex');
+       document.getElementById('modal-cost-mandatory-bath-val')!.innerHTML = `$${Number(reserva.mandatoryBathCost).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+    } else {
+       mandatoryBathWrap.classList.add('hidden');
+       mandatoryBathWrap.classList.remove('flex');
     }
 
     const happyBusWrap = document.getElementById('modal-happybus')!;

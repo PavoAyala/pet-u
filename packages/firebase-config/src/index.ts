@@ -3,11 +3,13 @@ import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
 import { getAuth, connectAuthEmulator } from 'firebase/auth';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getDatabase, connectDatabaseEmulator } from 'firebase/database';
+import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUxDf0vZMM0v4YRzuFiZcIabezjgDyerQ",
   authDomain: "pet-u-fe87c.firebaseapp.com",
   projectId: "pet-u-fe87c",
+  databaseURL: "https://pet-u-fe87c-default-rtdb.firebaseio.com",
   storageBucket: "pet-u-fe87c.firebasestorage.app",
   messagingSenderId: "636517114119",
   appId: "1:636517114119:web:b642d82fdb291d999d25a2",
@@ -19,6 +21,7 @@ export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfi
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const rtdb = getDatabase(app);
+export const functions = getFunctions(app);
 
 // Detectar si estamos en un entorno de desarrollo (cliente o servidor)
 const isDev = 
@@ -33,6 +36,7 @@ if (isDev) {
   connectFirestoreEmulator(db, host, 8080);
   connectAuthEmulator(auth, `http://${host}:9099`);
   connectDatabaseEmulator(rtdb, host, 9000);
+  connectFunctionsEmulator(functions, host, 5001);
 }
 
 let analyticsInstance: any = null;
@@ -58,6 +62,10 @@ export {
   Timestamp,
   type DocumentData 
 } from 'firebase/firestore';
+
+export {
+  httpsCallable,
+} from 'firebase/functions';
 
 export * from './types';
 export type { Product } from './types';
