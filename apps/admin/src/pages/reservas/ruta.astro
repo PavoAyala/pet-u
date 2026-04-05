@@ -96,7 +96,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+  import { getRtdb, ref, onValue } from '@pet-u/firebase-config';
 
   // PET-U Origin
   const PETU_ORIGIN = { lat: 25.6653039, lng: -100.4054094, label: 'PET-U (Origen)' };
@@ -237,6 +237,7 @@ import Layout from '../../layouts/Layout.astro';
 
   // Listen to RTDB
   function loadReservations() {
+    const rtdb = getRtdb();
     const reservationsRef = ref(rtdb, 'reservations');
     onValue(reservationsRef, (snapshot) => {
       allReservations = [];
