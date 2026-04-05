@@ -1,0 +1,50 @@
+name: Check Firebase Functions
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'apps/firebase_functions/**'
+      - 'packages/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - 'pnpm-workspace.yaml'
+      - 'pnpm-lock.yaml'
+      - '.github/workflows/check-firebase-functions.yml'
+      - '.github/workflows/deploy-firebase-functions.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Firebase Functions
+        run: pnpm --filter=pet-u-functions build
+
+      - name: Verify build output
+        run: |
+          if [ -f "apps/firebase_functions/lib/index.js" ]; then
+            echo "Functions build output found."
+          else
+            echo "ERROR: apps/firebase_functions/lib/index.js was not generated."
+            find apps/firebase_functions -maxdepth 3 -type f | sort
+            exit 1
+          fi

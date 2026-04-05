@@ -1,0 +1,45 @@
+name: Deploy RTDB Rules
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'database.rules.json'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/deploy-rtdb-rules.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - 'database.rules.json'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/deploy-rtdb-rules.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate RTDB rules file
+        run: node -e "JSON.parse(require('fs').readFileSync('database.rules.json', 'utf8'))"
+
+  deploy:
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Deploy RTDB Rules
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --only database --project pet-u-fe87c
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PET_U_FE87C }}
