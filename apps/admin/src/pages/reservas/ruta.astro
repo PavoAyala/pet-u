@@ -1,0 +1,517 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Ruta de Recolección - Happy Bus">
+  <!-- Header -->
+  <div class="bg-white/80 border-b border-brand-500/10 px-10 py-6 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+    <div class="flex items-center gap-4">
+      <a href="/reservas" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-50 border border-gray-200 hover:bg-gray-100 transition-colors text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+      </a>
+      <div>
+        <h1 class="text-2xl font-serif font-bold text-brand-500 flex items-center gap-2">
+          🚌 Ruta Happy Bus del Día
+        </h1>
+        <p class="text-gray-400 text-xs mt-0.5 font-medium">Recolecciones optimizadas automáticamente</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <input type="date" id="routeDate" class="border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white text-brand-500 font-bold focus:outline-none focus:ring-2 focus:ring-brand-500 cursor-pointer shadow-sm" />
+      <a id="openInMaps" href="#" target="_blank"
+        class="hidden items-center gap-2 bg-brand-500 text-white px-5 py-2.5 rounded-full font-bold text-sm hover:bg-[#2D3B28] transition-all shadow-lg shadow-brand-500/20">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Navegar en Maps
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Content: Split Layout -->
+  <div class="flex h-[calc(100vh-88px)]">
+    <!-- Left Panel: Stops List -->
+    <div class="w-[400px] shrink-0 bg-white border-r border-brand-500/10 flex flex-col overflow-hidden">
+
+      <!-- Shift Tabs -->
+      <div class="shrink-0 px-4 pt-4 pb-0 bg-white">
+        <div class="flex rounded-2xl bg-gray-100/80 p-1 gap-1">
+          <!-- Tab Mañana -->
+          <button id="tabManana" class="shift-tab flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all active-tab" data-shift="manana">
+            <span class="text-base">🌅</span>
+            <span>Mañana</span>
+            <span id="countManana" class="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-amber-400/20 text-amber-600 text-[10px] font-black">0</span>
+          </button>
+          <!-- Tab Tarde -->
+          <button id="tabTarde" class="shift-tab flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-bold transition-all inactive-tab" data-shift="tarde">
+            <span class="text-base">🌆</span>
+            <span>Tarde</span>
+            <span id="countTarde" class="ml-1 w-5 h-5 flex items-center justify-center rounded-full bg-brand-500/10 text-brand-500 text-[10px] font-black">0</span>
+          </button>
+        </div>
+        <!-- Shift label -->
+        <div class="mt-2 px-1">
+          <p id="shiftLabel" class="text-[10px] font-bold text-amber-600 uppercase tracking-widest">⏰ Recolección: 8:30 AM</p>
+        </div>
+      </div>
+
+      <!-- Summary bar -->
+      <div class="px-6 py-3 bg-[#fdfbf7] border-b border-brand-500/10 shrink-0 mt-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Paradas turno</p>
+            <p id="stopCount" class="text-2xl font-serif font-bold text-brand-500">0</p>
+          </div>
+          <div class="text-right">
+            <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Recauda estimado</p>
+            <p id="routeRevenue" class="text-2xl font-serif font-bold text-emerald-600">$0</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stops List -->
+      <div id="stopList" class="overflow-y-auto flex-1 custom-scrollbar p-4 space-y-2">
+        <!-- Empty state — always stays in DOM, shown/hidden via class -->
+        <div id="emptyState" class="flex flex-col items-center justify-center h-full text-center py-12">
+          <div class="w-16 h-16 rounded-full bg-[#f0e6d2]/50 flex items-center justify-center mb-4">
+            <span class="text-3xl">🚌</span>
+          </div>
+          <p class="text-gray-400 font-medium text-sm leading-relaxed max-w-[200px]">
+            Sin recolecciones Happy Bus para este turno.
+          </p>
+        </div>
+        <!-- Cards container — only this gets overwritten -->
+        <div id="stopsContainer" class="space-y-2"></div>
+      </div>
+    </div>
+
+    <!-- Right: Map -->
+    <div class="flex-1 relative">
+      <div id="map" class="w-full h-full bg-gray-100"></div>
+      <!-- Map loading overlay -->
+      <div id="mapLoading" class="absolute inset-0 bg-white/80 flex flex-col items-center justify-center">
+        <div class="w-10 h-10 rounded-full border-4 border-brand-500/10 border-t-brand-500 animate-spin mb-4"></div>
+        <p class="text-sm font-semibold text-gray-400 uppercase tracking-wide">Cargando mapa...</p>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+
+  // PET-U Origin
+  const PETU_ORIGIN = { lat: 25.6653039, lng: -100.4054094, label: 'PET-U (Origen)' };
+  const MAPS_API_KEY = import.meta.env.PUBLIC_GOOGLE_MAPS_KEY;
+
+  let map: any = null;
+  let routePolyline: any = null;
+  let stopMarkers: any[] = [];   // Track stop markers so we can remove them on shift/date change
+  let allReservations: any[] = [];
+  let orderedStops: any[] = [];
+  let currentShift: 'manana' | 'tarde' = 'manana';
+
+  // Mañana: daycare (8:15–10:30 AM), spa (11:00 AM)
+  // Tarde:  hotel (4:30 PM)
+  const MANANA_SERVICES = ['daycare', 'spa'];
+  const TARDE_SERVICES  = ['hotel'];
+
+  const SHIFT_CONFIG = {
+    manana: {
+      label: '⏰ Recolección: 8:30 AM',
+      pinColor: '#d2a265',
+      routeColor: '#d97706',
+    },
+    tarde: {
+      label: '⏰ Recolección: 4:30 PM',
+      pinColor: '#3C4F35',
+      routeColor: '#3C4F35',
+    }
+  };
+
+  // Set today's date as default
+  const routeDate = document.getElementById('routeDate') as HTMLInputElement;
+  const today = new Date();
+  const yyyy = today.getFullYear();
+  const mm = String(today.getMonth() + 1).padStart(2, '0');
+  const dd = String(today.getDate()).padStart(2, '0');
+  routeDate.value = `${yyyy}-${mm}-${dd}`;
+
+  // Tab switch
+  document.querySelectorAll('.shift-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const shift = btn.getAttribute('data-shift') as 'manana' | 'tarde';
+      if (shift === currentShift) return;
+      currentShift = shift;
+      updateTabUI();
+      if (map) {
+        clearMap();
+        renderCurrentShift();
+      }
+    });
+  });
+
+  function updateTabUI() {
+    const cfg = SHIFT_CONFIG[currentShift];
+    document.getElementById('shiftLabel')!.textContent = cfg.label;
+
+    // Tab styles
+    document.querySelectorAll('.shift-tab').forEach(btn => {
+      const shift = btn.getAttribute('data-shift');
+      if (shift === currentShift) {
+        btn.classList.remove('inactive-tab');
+        btn.classList.add('active-tab');
+      } else {
+        btn.classList.remove('active-tab');
+        btn.classList.add('inactive-tab');
+      }
+    });
+  }
+
+  // Load Google Maps (Modern Loader)
+  async function loadMaps() {
+    if (!(window as any).google?.maps?.importLibrary) {
+      (function(g: Record<string, string>){
+          let h: Promise<void>;
+          const p="The Google Maps JavaScript API", c="google", l="importLibrary", q="__ib__", m=document, b=window as any;
+          const googleObj = (b[c] || (b[c]={}));
+          const d = (googleObj.maps || (googleObj.maps={})) as Record<string, unknown>;
+          const r = new Set<string>();
+          const e = new URLSearchParams();
+          const u = () => h || (h = new Promise((f, n) => {
+              const a = m.createElement("script");
+              e.set("libraries", [...r].join(","));
+              for (const k in g) if (Object.prototype.hasOwnProperty.call(g, k)) e.set(k.replace(/[A-Z]/g, (t) => "_" + t[0].toLowerCase()), g[k]);
+              e.set("callback", c + ".maps." + q);
+              a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+              d[q] = f;
+              a.onerror = () => { n(Error(p + " could not load.")); };
+              a.nonce = (m.querySelector("script[nonce]") as HTMLScriptElement)?.nonce || "";
+              m.head.append(a);
+          }));
+          if (d[l]) { console.warn(p + " only loads once."); } else {
+              d[l] = (f: string, ...n: unknown[]) => r.add(f) && u().then(() => (d[l] as (f: string, ...n: unknown[]) => Promise<void>)(f, ...n));
+          }
+      })({
+          key: MAPS_API_KEY,
+          v: "weekly",
+          language: "es"
+      });
+    }
+
+    await initMap();
+  }
+
+  async function initMap() {
+    const { Map, Polyline } =
+      await (window as any).google.maps.importLibrary('maps') as any;
+
+    const { AdvancedMarkerElement, PinElement } =
+      await (window as any).google.maps.importLibrary('marker') as any;
+
+    document.getElementById('mapLoading')?.classList.add('hidden');
+    map = new Map(document.getElementById('map'), {
+      center: PETU_ORIGIN,
+      zoom: 13,
+      mapId: 'petu_route_map',
+      colorScheme: 'LIGHT',
+      disableDefaultUI: false,
+    });
+
+    routePolyline = new Polyline({
+      strokeColor: SHIFT_CONFIG[currentShift].routeColor,
+      strokeWeight: 5,
+      strokeOpacity: 0.8,
+      map
+    });
+
+    // Origin marker
+    const originPin = new PinElement({ background: '#2563EB', borderColor: '#fff', glyphColor: '#fff', glyphText: '🏠' });
+    new AdvancedMarkerElement({
+      position: PETU_ORIGIN,
+      map,
+      title: 'PET-U — Punto de Partida',
+      content: originPin
+    });
+
+    loadReservations();
+  }
+
+  // Listen to RTDB
+  function loadReservations() {
+    const reservationsRef = ref(rtdb, 'reservations');
+    onValue(reservationsRef, (snapshot) => {
+      allReservations = [];
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        allReservations = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+      }
+      updateBadgeCounts(routeDate.value);
+      renderCurrentShift();
+    });
+  }
+
+  function getShiftStops(date: string): any[] {
+    const services = currentShift === 'manana' ? MANANA_SERVICES : TARDE_SERVICES;
+    return allReservations.filter(r => {
+      const want = r.happyBus?.want === true || r.happyBus?.want === 'true';
+      const sameDate = r.checkin === date;
+      const hasCoords = r.happyBus?.lat && r.happyBus?.lng;
+      const correctService = services.includes(r.serviceType);
+      return want && sameDate && hasCoords && correctService;
+    });
+  }
+
+  // Always keeps both tab badge counters in sync with the selected date
+  function updateBadgeCounts(date: string) {
+    const isHappyBusStop = (r: any) => {
+      const want = r.happyBus?.want === true || r.happyBus?.want === 'true';
+      const sameDate = r.checkin === date;
+      const hasCoords = r.happyBus?.lat && r.happyBus?.lng;
+      return want && sameDate && hasCoords;
+    };
+    const allDateStops = allReservations.filter(isHappyBusStop);
+    const mananaCount = allDateStops.filter(r => MANANA_SERVICES.includes(r.serviceType)).length;
+    const tardeCount  = allDateStops.filter(r => TARDE_SERVICES.includes(r.serviceType)).length;
+    document.getElementById('countManana')!.textContent = String(mananaCount);
+    document.getElementById('countTarde')!.textContent  = String(tardeCount);
+  }
+
+  function renderCurrentShift() {
+    // Update polyline color
+    if (routePolyline) {
+      routePolyline.setOptions({ strokeColor: SHIFT_CONFIG[currentShift].routeColor });
+    }
+    filterAndRender(routeDate.value);
+  }
+
+  async function filterAndRender(date: string) {
+    const stops = getShiftStops(date);
+
+    // Keep both tab badges in sync on every render
+    updateBadgeCounts(date);
+
+    // Update revenue + stop count for the current shift
+    const revenue = stops.reduce((sum: number, r: any) => sum + (r.happyBus?.cost || 0), 0);
+    document.getElementById('routeRevenue')!.textContent = `$${revenue.toLocaleString()}`;
+    document.getElementById('stopCount')!.textContent = String(stops.length);
+
+    if (stops.length === 0) {
+      renderStopList([]);
+      clearMap();
+      document.getElementById('openInMaps')?.classList.add('hidden');
+      document.getElementById('openInMaps')?.classList.remove('flex');
+      return;
+    }
+
+    if (stops.length === 1) {
+      orderedStops = stops;
+      renderStopList(orderedStops);
+      renderMarkersOnly(orderedStops);
+      buildMapsUrl(orderedStops);
+      return;
+    }
+
+    // Optimized route via DirectionsService
+    const { DirectionsService, TravelMode } =
+      await (window as any).google.maps.importLibrary('routes') as any;
+    const { encoding } =
+      await (window as any).google.maps.importLibrary('geometry') as any;
+    const directionsService = new DirectionsService();
+
+    const waypoints = stops.slice(1).map((s: any) => ({
+      location: new (window as any).google.maps.LatLng(
+        parseFloat(s.happyBus.lat), parseFloat(s.happyBus.lng)
+      ),
+      stopover: true
+    }));
+
+    directionsService.route({
+      origin: new (window as any).google.maps.LatLng(
+        PETU_ORIGIN.lat, PETU_ORIGIN.lng
+      ),
+      destination: new (window as any).google.maps.LatLng(
+        parseFloat(stops[0].happyBus.lat), parseFloat(stops[0].happyBus.lng)
+      ),
+      waypoints,
+      optimizeWaypoints: true,
+      travelMode: TravelMode.DRIVING
+    }, (result: any, status: any) => {
+      if (status === 'OK') {
+        const overviewPath = encoding.decodePath(
+          result.routes[0].overview_polyline
+        );
+        routePolyline.setPath(overviewPath);
+
+        const waypointOrder = result.routes[0].waypoint_order;
+        const reordered = [stops[0], ...waypointOrder.map((i: number) => stops.slice(1)[i])];
+        orderedStops = reordered;
+        renderStopList(reordered);
+        renderNumberedMarkers(reordered);
+        buildMapsUrl(reordered);
+      } else {
+        orderedStops = stops;
+        renderStopList(stops);
+        renderMarkersOnly(stops);
+        buildMapsUrl(stops);
+      }
+    });
+  }
+
+  function clearMap() {
+    if (routePolyline) routePolyline.setPath([]);
+    // Remove all stop markers from the map
+    stopMarkers.forEach(m => { m.map = null; });
+    stopMarkers = [];
+  }
+
+  async function placeStopMarkers(stops: any[]) {
+    if (!map) return;
+    const { AdvancedMarkerElement, PinElement } =
+      await (window as any).google.maps.importLibrary('marker') as any;
+
+    const pinColor = SHIFT_CONFIG[currentShift].pinColor;
+
+    stops.forEach((stop: any, i: number) => {
+      const pin = new PinElement({
+        background: pinColor,
+        borderColor: '#fff',
+        glyphColor: '#fff',
+        glyphText: String(i + 1)
+      });
+      const marker = new AdvancedMarkerElement({
+        position: { lat: parseFloat(stop.happyBus.lat), lng: parseFloat(stop.happyBus.lng) },
+        map,
+        title: `Parada ${i + 1}: ${stop.petName}`,
+        content: pin
+      });
+      stopMarkers.push(marker);
+    });
+  }
+
+  async function renderMarkersOnly(stops: any[]) {
+    clearMap();
+    await placeStopMarkers(stops);
+  }
+
+  async function renderNumberedMarkers(stops: any[]) {
+    await placeStopMarkers(stops);
+  }
+
+  function renderStopList(stops: any[]) {
+    // emptyState is a permanent DOM node — never overwrite it with innerHTML
+    const empty = document.getElementById('emptyState')!;
+    const container = document.getElementById('stopsContainer')!;
+
+    if (stops.length === 0) {
+      container.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+
+    empty.classList.add('hidden');
+
+    const zoneLabels: Record<string, string> = {
+      'A': 'Zona A', 'B': 'Zona B', 'C': 'Zona C'
+    };
+    const zoneColors: Record<string, string> = {
+      'A': 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      'B': 'bg-blue-50 text-blue-700 border-blue-100',
+      'C': 'bg-purple-50 text-purple-700 border-purple-100'
+    };
+
+    const pinColor = currentShift === 'manana' ? '#d2a265' : '#3C4F35';
+
+    const serviceLabels: Record<string, string> = {
+      hotel: '🏨 Hotel',
+      daycare: '☀️ Daycare',
+      spa: '✂️ Spa',
+    };
+
+    container.innerHTML = stops.map((stop: any, i: number) => `
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 hover:border-brand-500/20 transition-all cursor-pointer stop-card" data-index="${i}">
+        <div class="flex items-start gap-3">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-sm" style="background:${pinColor}">
+            ${i + 1}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 mb-1">
+              <p class="font-bold text-brand-500 capitalize truncate">${stop.petName || 'Mascota'}</p>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold border ${zoneColors[stop.happyBus?.zone] || 'bg-gray-50 text-gray-500 border-gray-100'}">
+                ${zoneLabels[stop.happyBus?.zone] || stop.happyBus?.zone || '—'}
+              </span>
+            </div>
+            <p class="text-xs text-gray-400 italic">De: ${stop.ownerName || 'Desconocido'}</p>
+            <p class="text-xs text-gray-600 mt-1.5 leading-tight">
+              <svg class="w-3 h-3 inline text-gray-400 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/></svg>
+              ${(!stop.happyBus?.address || stop.happyBus.address === 'n/a') ? 'Sin dirección' : stop.happyBus.address}
+            </p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-[10px] bg-brand-500/5 text-brand-500 px-2 py-0.5 rounded-full font-bold uppercase">${serviceLabels[stop.serviceType] || stop.serviceType || 'Servicio'}</span>
+              <span class="text-sm font-bold text-[#d2a265]">+$${stop.happyBus?.cost || 0}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    // Click to center map on stop
+    container.querySelectorAll('.stop-card').forEach(card => {
+      card.addEventListener('click', () => {
+        const idx = parseInt(card.getAttribute('data-index') || '0');
+        const stop = orderedStops[idx];
+        if (map && stop?.happyBus?.lat) {
+          map.panTo({ lat: stop.happyBus.lat, lng: stop.happyBus.lng });
+          map.setZoom(16);
+        }
+      });
+    });
+  }
+
+  function buildMapsUrl(stops: any[]) {
+    const btn = document.getElementById('openInMaps') as HTMLAnchorElement;
+    if (!btn || stops.length === 0) return;
+
+    const origin = `${PETU_ORIGIN.lat},${PETU_ORIGIN.lng}`;
+    const dest = `${stops[stops.length - 1].happyBus.lat},${stops[stops.length - 1].happyBus.lng}`;
+    const waypoints = stops.slice(0, -1).map((s: any) => `${s.happyBus.lat},${s.happyBus.lng}`).join('|');
+
+    let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
+    if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;
+
+    btn.href = url;
+    btn.classList.remove('hidden');
+    btn.classList.add('flex');
+  }
+
+  // Date picker change
+  routeDate.addEventListener('change', () => {
+    if (map) {
+      clearMap();
+      updateBadgeCounts(routeDate.value);
+      filterAndRender(routeDate.value);
+    }
+  });
+
+  // Init
+  loadMaps();
+</script>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background: #3C4F35; border-radius: 10px; }
+
+  /* Tab active state */
+  .active-tab {
+    background: white;
+    color: #3C4F35;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  }
+  .inactive-tab {
+    color: #9ca3af;
+    background: transparent;
+  }
+  .inactive-tab:hover {
+    background: white/50;
+    color: #6b7280;
+  }
+</style>
