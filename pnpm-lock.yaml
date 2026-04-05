@@ -63,9 +63,6 @@ importers:
 
   apps/firebase_functions:
     dependencies:
-      '@pet-u/firebase-config':
-        specifier: workspace:*
-        version: link:../../packages/firebase-config
       firebase-admin:
         specifier: ^12.6.0
         version: 12.7.0
