@@ -60,12 +60,24 @@ jobs:
 
       - name: Validate Snyk token
         run: |
+          echo "event_name=${GITHUB_EVENT_NAME}"
+          echo "ref=${GITHUB_REF}"
+          echo "repository=${GITHUB_REPOSITORY}"
+
+          if [ -n "${SNYK_TOKEN_VAR}" ]; then
+            echo "Found vars.SNYK_TOKEN. This workflow expects a secret, not a variable."
+          fi
+
           if [ -z "${SNYK_TOKEN}" ]; then
             echo "SNYK_TOKEN is not configured for this workflow."
+            echo "Verify that Actions secret 'SNYK_TOKEN' exists in this repository or is available from the organization."
             exit 1
           fi
+
+          echo "SNYK_TOKEN secret is available."
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN_VAR: ${{ vars.SNYK_TOKEN }}
 
       - name: Run Snyk scan
         uses: snyk/actions/node@master
@@ -76,7 +88,7 @@ jobs:
 
       - name: Upload Snyk results to GitHub Code Scanning
         uses: github/codeql-action/upload-sarif@v4
-        if: ${{ always() }}
+        if: ${{ always() && hashFiles('snyk.sarif') != '' }}
         continue-on-error: true
         with:
           sarif_file: snyk.sarif
