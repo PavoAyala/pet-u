@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Página no encontrada">
+  <div class="min-h-[80vh] flex flex-col items-center justify-center p-10 text-center">
+    <div class="mb-8">
+      <div class="text-[120px] font-serif font-bold text-[#3C4F35]/20 leading-none">404</div>
+      <div class="text-[#3C4F35] font-bold text-2xl mt-4">Oops, esta ruta no existe</div>
+    </div>
+    
+    <p class="text-gray-500 max-w-md mx-auto mb-10">
+      Parece que te has perdido en el panel de administración. La página que estás buscando ya no existe o cambió de dirección.
+    </p>
+
+    <a href="/reservas" class="px-8 py-4 bg-[#3C4F35] text-white rounded-full font-bold shadow-lg hover:shadow-xl hover:bg-[#2b3a26] transition-all flex items-center gap-3">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+      Regresar al Panel Principal
+    </a>
+  </div>
+</Layout>

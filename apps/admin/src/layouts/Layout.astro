@@ -1,4 +1,5 @@
 ---
+import Sidebar from '../components/Sidebar.astro';
 import '../styles/global.css';
 
 export interface Props {
@@ -23,41 +24,7 @@ const { title = 'Pet-U Admin' } = Astro.props;
   </head>
   <body class="min-h-screen text-[#2D3B28]">
     <div class="flex min-h-screen">
-      <!-- Sidebar Estilo Boutique -->
-      <aside class="w-68 bg-[#3C4F35] flex flex-col shrink-0 shadow-2xl z-20">
-        <!-- Logo -->
-        <div class="px-8 py-10 border-b border-white/10">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 rounded-2xl bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/20">
-              <img src="/images/logo_circular.png" alt="PET-U" class="w-12 h-12 object-contain filter brightness-0 invert" />
-            </div>
-            <div>
-              <p class="font-bold text-white text-lg tracking-tight">Pet-U</p>
-              <p class="text-xs text-white/50 font-medium">Panel Admin</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Nav con mejor espaciado -->
-        <nav class="flex-1 px-4 py-8 space-y-2">
-          <a href="/" id="nav-dashboard" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-white/60 hover:text-white hover:bg-white/5">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
-            Dashboard
-          </a>
-          <a href="/productos" id="nav-products" class="flex items-center gap-4 px-4 py-3.5 rounded-2xl text-sm font-semibold transition-all text-white/60 hover:text-white hover:bg-white/5">
-            <svg class="w-5 h-5 opacity-70" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
-            Productos de Tienda
-          </a>
-        </nav>
-
-        <div class="px-8 pb-10 border-t border-white/10 pt-8">
-          <p class="text-[10px] text-white/30 font-bold uppercase tracking-widest mb-4">v1.2.0 • Boutique Edition</p>
-          <button id="logout-btn" class="w-full flex items-center justify-center gap-2 bg-rose-500/10 hover:bg-rose-500 text-rose-500 hover:text-white px-4 py-3 rounded-2xl text-[10px] font-bold uppercase tracking-wider transition-all border border-rose-500/20">
-            Cerrar Sesión
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
-          </button>
-        </div>
-      </aside>
+      <Sidebar />
 
       <!-- Main content -->
       <main class="flex-1 flex flex-col overflow-hidden bg-[#fdfbf7]">
@@ -83,6 +50,8 @@ const { title = 'Pet-U Admin' } = Astro.props;
           const activePath = window.location.pathname;
           if (activePath === '/') document.getElementById('nav-dashboard')?.classList.add('bg-white/10', 'text-white');
           if (activePath.includes('/productos')) document.getElementById('nav-products')?.classList.add('bg-white/10', 'text-white');
+          if (activePath === '/reservas' || activePath.includes('/reservas/historial')) document.getElementById('nav-reservas')?.classList.add('bg-white/10', 'text-white');
+          if (activePath.includes('/reservas/ruta')) document.getElementById('nav-route')?.classList.add('bg-white/10', 'text-white');
         }
       });
 

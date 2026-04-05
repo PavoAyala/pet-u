@@ -1,0 +1,482 @@
+---
+import Layout from '../../layouts/Layout.astro';
+---
+
+<Layout title="Control de Reservas">
+  <!-- Header Boutique -->
+  <div class="bg-white/80 border-b border-brand-500/10 px-10 py-8 flex items-center justify-between sticky top-0 z-10 backdrop-blur-sm">
+    <div>
+      <h1 class="text-3xl font-serif font-bold text-brand-500">Reservas Entrantes</h1>
+      <p class="text-gray-400 text-sm mt-1 font-medium italic">Monitoreo en tiempo real (RTDB)</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <a href="/reservas/ruta" class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-brand-500 text-white hover:bg-[#2D3B28] transition-all font-bold text-sm shadow-lg shadow-brand-500/20 cursor-pointer group">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        🚌 Ruta del Día
+      </a>
+      <a href="/reservas/historial" class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-white text-gray-500 hover:bg-gray-50 hover:text-gray-800 transition-all font-bold text-sm border border-brand-500/10 shadow-sm cursor-pointer group">
+        <svg class="w-4 h-4 text-gray-400 group-hover:text-gray-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        Buscar Anteriores
+      </a>
+      <div class="animate-pulse flex items-center gap-2 bg-emerald-50 text-emerald-600 px-4 py-2.5 rounded-full text-xs font-bold border border-emerald-100 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        En vivo
+      </div>
+    </div>
+  </div>
+
+  <div class="px-10 py-10 max-w-[1400px] mx-auto">
+    
+    <!-- Stats Row -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+       <div class="bg-white p-6 rounded-3xl border border-brand-500/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Total Entrantes</p>
+         <p id="stat-total" class="text-3xl font-serif font-bold text-brand-500">0</p>
+       </div>
+       <div class="bg-white p-6 rounded-3xl border border-brand-500/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Status: Pendientes</p>
+         <p id="stat-pending" class="text-3xl font-serif font-bold text-amber-500">0</p>
+       </div>
+       <div class="bg-white p-6 rounded-3xl border border-brand-500/10 shadow-sm">
+         <p class="text-gray-400 text-[10px] font-bold uppercase tracking-widest mb-1">Mascotas en Casa</p>
+         <p id="stat-active" class="text-3xl font-serif font-bold text-blue-500">0</p>
+       </div>
+    </div>
+
+    <!-- Table -->
+    <div class="bg-white rounded-[32px] border border-brand-500/10 shadow-xl shadow-brand-500/5 overflow-hidden">
+      <div id="loading" class="flex flex-col items-center justify-center py-32 text-gray-400 space-y-4 w-full">
+        <div class="w-8 h-8 rounded-full border-4 border-brand-500/10 border-t-brand-500 animate-spin"></div>
+        <p class="text-sm font-semibold tracking-wide uppercase">Cargando reservas...</p>
+      </div>
+
+      <div id="empty" class="hidden flex-col items-center justify-center py-32 text-center px-6 mx-auto w-full">
+        <div class="w-20 h-20 rounded-full bg-[#fdfbf7] flex items-center justify-center mb-6">
+           <svg class="w-10 h-10 text-brand-500/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+        </div>
+        <p class="text-gray-400 max-w-sm font-medium italic">Aún no hay reservas. Cuando un cliente cotice en la web, aparecerá aquí instantáneamente.</p>
+      </div>
+
+      <table id="table" class="hidden w-full text-left border-collapse">
+        <thead class="bg-[#fdfbf7]">
+          <tr>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Fecha Llegada</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Mascota / Dueño</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest">Servicio</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-center">Status</th>
+            <th class="px-8 py-5 text-gray-400 text-[10px] font-bold uppercase tracking-widest text-right">Cotización</th>
+            <th class="px-8 py-5 text-transparent w-10">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tbody" class="divide-y divide-brand-500/5"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal de Detalles de Reserva -->
+  <div id="reservationModal" class="fixed inset-0 z-50 hidden bg-brand-500/40 backdrop-blur-sm items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-[32px] w-full max-w-lg shadow-2xl transform translate-y-4 transition-transform duration-300 overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Modal Header -->
+      <div class="relative bg-linear-to-r from-brand-500 to-[#4A6142] p-8 text-white shrink-0">
+        <button id="closeModal" class="absolute top-6 right-6 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <h2 class="text-3xl font-serif font-bold tracking-tight">Detalles de Reserva</h2>
+        <p class="text-[#f0e6d2] text-sm flex items-center gap-1.5 mt-2 opacity-90"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg> ID: <span id="modal-id" class="font-mono text-xs font-semibold tracking-wider"></span></p>
+      </div>
+      
+      <!-- Modal Body -->
+      <div class="p-8 overflow-y-auto w-full custom-scrollbar">
+        <!-- Main details -->
+        <div class="flex items-start gap-5 mb-8">
+           <div class="w-20 h-20 rounded-2xl bg-[#f0e6d2]/50 border border-[#f0e6d2] flex items-center justify-center text-brand-500 font-bold font-serif text-4xl shrink-0 shadow-inner" id="modal-avatar">
+              ?
+           </div>
+           <div>
+             <h3 class="text-2xl font-bold text-brand-500 capitalize" id="modal-pet"></h3>
+             <p class="text-sm text-gray-500 font-medium italic mt-1" id="modal-owner"></p>
+             <div class="flex flex-wrap gap-2 mt-3" id="modal-tags"></div>
+           </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+           <div class="bg-[#fcfaf7] p-5 rounded-3xl border border-brand-500/5 relative overflow-hidden">
+             <div class="absolute right-0 top-0 w-16 h-16 bg-brand-500/5 rounded-bl-full -mr-4 -mt-4"></div>
+             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Check-in</span>
+             <p class="text-brand-500 font-bold text-lg" id="modal-checkin"></p>
+           </div>
+           <div class="bg-[#fcfaf7] p-5 rounded-3xl border border-brand-500/5 relative overflow-hidden">
+             <div class="absolute right-0 top-0 w-16 h-16 bg-amber-500/5 rounded-bl-full -mr-4 -mt-4"></div>
+             <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Check-out</span>
+             <p class="text-brand-500 font-bold text-lg" id="modal-checkout"></p>
+           </div>
+        </div>
+
+        <div class="space-y-4">
+           <h4 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest border-b border-gray-100 pb-2 mb-4">Desglose de Cotización</h4>
+           <div class="flex justify-between items-center text-sm text-gray-600">
+             <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg> Hospedaje</span>
+             <span class="font-bold text-brand-500" id="modal-cost-nights"></span>
+           </div>
+           <div id="modal-cost-food" class="justify-between items-center text-sm text-gray-600 hidden">
+             <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path></svg> Alimento</span>
+             <span class="font-bold text-brand-500" id="modal-cost-food-val"></span>
+           </div>
+           <div id="modal-cost-mandatory-bath" class="justify-between items-center text-sm text-gray-600 hidden">
+             <span class="flex items-center gap-2"><svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 6h6M7 10h10M8 14h8M9 18h6"></path></svg> Baño obligatorio (+6 noches)</span>
+             <span class="font-bold text-brand-500" id="modal-cost-mandatory-bath-val"></span>
+           </div>
+           <div id="modal-happybus" class="justify-between items-start text-sm text-gray-600 hidden gap-4">
+             <span class="flex items-start gap-2 min-w-0">
+               <svg class="w-4 h-4 text-gray-400 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 6v6m8-6v6M6 18h12M7 3h10a2 2 0 012 2v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2zm0 0v15"></path></svg>
+               <span class="min-w-0">
+                 <span class="block">Servicio Happy Bus</span>
+                 <span id="modal-happybus-address" class="block text-xs text-gray-400 mt-1 break-words"></span>
+               </span>
+             </span>
+             <span class="font-bold text-brand-500 text-right shrink-0" id="modal-happybus-cost"></span>
+           </div>
+           <div class="flex justify-between items-center pt-5 border-t border-gray-100 mt-5">
+             <span class="font-serif font-bold text-lg text-gray-400">Total</span>
+             <span id="modal-total" class="font-serif font-bold text-3xl text-brand-500"></span>
+           </div>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="p-6 bg-[#fcfaf7] border-t border-gray-100 flex justify-end shrink-0">
+         <button id="closeModalBtn" class="px-8 py-3 rounded-full bg-white border border-brand-500/10 text-brand-500 font-bold text-sm hover:bg-brand-500 hover:text-white transition-all shadow-sm">Entendido</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Pago Completado -->
+  <div id="statusModal" class="fixed inset-0 z-50 hidden bg-brand-500/40 backdrop-blur-sm items-center justify-center p-4 opacity-0 transition-opacity duration-300">
+    <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl transform translate-y-4 transition-transform duration-300 overflow-hidden flex flex-col relative z-10">
+      <div class="p-8 text-center pt-10 relative">
+        <div class="absolute top-0 left-0 w-full h-24 bg-blue-50/50 -z-10 rounded-b-[40px]"></div>
+        <div class="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 border-4 border-white shadow-sm">
+          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        </div>
+        <h3 class="text-2xl font-serif font-bold text-brand-500 mb-2">Ingreso de Mascota</h3>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">Confirma que el cliente ya abonó el servicio y estás recibiendo a su mascota en las instalaciones.</p>
+        <button id="btnConfirmPaid" class="w-full py-3.5 rounded-full bg-blue-600 text-white font-bold tracking-wide hover:bg-blue-700 hover:shadow-lg transition-all shadow-blue-500/30 shadow-md cursor-pointer">Pago Completado</button>
+        <button id="btnCancelStatus" class="w-full py-3 mt-3 rounded-full text-gray-400 font-bold text-sm tracking-wide hover:bg-gray-50 transition-colors cursor-pointer">Cancelar y Volver</button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  import { rtdb, ref, onValue, remove, update } from '@pet-u/firebase-config';
+
+  const loading = document.getElementById('loading')!;
+  const empty = document.getElementById('empty')!;
+  const table = document.getElementById('table')!;
+  const tbody = document.getElementById('tbody')!;
+  
+  const statTotal = document.getElementById('stat-total')!;
+  const statPending = document.getElementById('stat-pending')!;
+  const statActive = document.getElementById('stat-active')!;
+
+  const reservationsRef = ref(rtdb, 'reservations');
+  let allReservations: any[] = [];
+
+  onValue(reservationsRef, (snapshot) => {
+    loading.classList.add('hidden');
+    
+    if (!snapshot.exists()) {
+      table.classList.add('hidden');
+      empty.classList.remove('hidden');
+      empty.classList.add('flex');
+      statTotal.textContent = '0';
+      statPending.textContent = '0';
+      statActive.textContent = '0';
+      return;
+    }
+
+    const data = snapshot.val();
+    // Convert object to array, filter out 'completed', and sort by createdAt descending
+    allReservations = Object.keys(data).map(key => ({
+      id: key,
+      ...data[key]
+    }))
+    .filter(r => r.status !== 'completed')
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    render(allReservations);
+    
+    statTotal.textContent = String(allReservations.length);
+    statPending.textContent = String(allReservations.filter(r => r.status === 'pending').length);
+    statActive.textContent = String(allReservations.filter(r => r.status === 'active').length);
+  });
+
+  function render(data: any[]) {
+    if (data.length === 0) { 
+      table.classList.add('hidden'); 
+      empty.classList.remove('hidden'); 
+      empty.classList.add('flex');
+      return; 
+    }
+    
+    empty.classList.add('hidden'); 
+    empty.classList.remove('flex');
+    table.classList.remove('hidden');
+    
+    tbody.innerHTML = data.map(r => {
+      let isDeliveryDay = false;
+      const todayNum = new Date().setHours(0,0,0,0);
+      if (r.checkout) {
+         const [y, m, d] = r.checkout.split('-');
+         const checkOutDate = new Date(Number(y), Number(m) - 1, Number(d)).setHours(0,0,0,0);
+         isDeliveryDay = todayNum >= checkOutDate;
+      }
+
+      return `
+      <tr class="group hover:bg-[#fdfbf7]/50 transition-colors">
+        <td class="px-8 py-5">
+           <div class="text-brand-500 font-bold">${r.checkin || 'N/A'}</div>
+           <div class="text-[10px] text-gray-400">Creado: ${new Date(r.createdAt).toLocaleDateString()}</div>
+           ${r.arrivalMode === 'self_arrival' && r.appointmentTime ? `<div class="text-[10px] text-[#d2a265] font-bold mt-1">⏰ ${formatAppointmentTime(r.appointmentTime)}</div>` : ''}
+        </td>
+        <td class="px-8 py-5">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 rounded-full bg-brand-500/10 flex items-center justify-center text-brand-500 font-bold font-serif text-lg">
+                ${r.petName ? r.petName.charAt(0).toUpperCase() : '?'}
+             </div>
+             <div>
+               <p class="font-bold text-brand-500 text-base capitalize">${r.petName || 'Sin Nombre'}</p>
+               <p class="text-[11px] text-gray-400 italic">De: ${r.ownerName || 'Desconocido'}</p>
+             </div>
+          </div>
+        </td>
+        <td class="px-8 py-5">
+          <span class="px-3 py-1.5 rounded-full bg-[#f0e6d2] text-brand-500 text-[10px] font-bold uppercase tracking-wider">${r.serviceType || 'General'}</span>
+          <div class="text-xs text-gray-500 mt-1 capitalize">${r.petSize || ''} - ${r.season || ''}</div>
+        </td>
+        <td class="px-8 py-5 text-center">
+            ${r.status === 'pending' 
+              ? '<span class="text-[10px] font-bold text-amber-500 bg-amber-50 px-3 py-1 rounded-full border border-amber-100 uppercase tracking-widest text-nowrap">⏳ Pendiente</span>'
+              : '<span class="text-[10px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full border border-blue-100 uppercase tracking-widest text-nowrap">✓ Pagada / En Casa</span>'
+            }
+        </td>
+        <td class="px-8 py-5 text-right font-serif font-bold text-brand-500 text-lg">
+          $${Number(r.totalEstimado || 0).toLocaleString()} <span class="text-[10px] font-sans font-normal text-gray-400">MXN</span>
+        </td>
+        <td class="px-6 py-5 text-right w-10 whitespace-nowrap">
+          ${r.status === 'pending'
+             ? `<button data-id="${r.id}" class="btn-status p-2 rounded-full text-blue-400 hover:text-white hover:bg-blue-500 transition-colors mr-1" title="Marcar Recibido y Pagar">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>`
+             : ''
+          }
+          ${r.status === 'active' && isDeliveryDay
+             ? `<button data-id="${r.id}" class="btn-complete p-2 rounded-full text-emerald-400 hover:text-white hover:bg-emerald-500 transition-colors mr-1 animate-pulse" title="Entregar y Finalizar">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>`
+             : ''
+          }
+          <button data-id="${r.id}" class="btn-view p-2 rounded-full text-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-colors mr-1" title="Ver Detalles">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+          </button>
+          <button data-id="${r.id}" class="btn-delete p-2 rounded-full text-red-400 hover:text-red-700 hover:bg-red-50 transition-colors" title="Eliminar Reserva y del Calendario">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          </button>
+        </td>
+      </tr>
+      `;
+    }).join('');
+  }
+
+  // --- Modal Logic ---
+  const modal = document.getElementById('reservationModal')!;
+  const modalBox = modal.querySelector('div')!;
+  const closeModalEls = [document.getElementById('closeModal'), document.getElementById('closeModalBtn')];
+  function formatAppointmentTime(time?: string | null) {
+    if (!time) return null;
+    const [hourString, minuteString] = time.split(':');
+    const hour = Number(hourString);
+    const minute = Number(minuteString);
+    const suffix = hour >= 12 ? 'PM' : 'AM';
+    const normalizedHour = hour % 12 || 12;
+    return `${normalizedHour}:${String(minute).padStart(2, '0')} ${suffix}`;
+  }
+  const formatMoney = (value: unknown) => `$${Number(value || 0).toLocaleString()} MXN`;
+  const hasHappyBus = (happyBus: any) => happyBus?.want === true || happyBus?.want === 'true';
+  const getHappyBusAddressLabel = (happyBus: any) => {
+    const address = happyBus?.address?.trim?.();
+    if (!address || address.toLowerCase() === 'n/a') return 'Ubicación seleccionada en mapa';
+    return address;
+  };
+  const getBaseCost = (reserva: any) => {
+    const total = Number(reserva.totalEstimado || 0);
+    const food = Number(reserva.costAllFood || 0);
+    const mandatoryBathCost = Number(reserva.mandatoryBathCost || 0);
+    const happyBusCost = Number(hasHappyBus(reserva.happyBus) ? reserva.happyBus?.cost || 0 : 0);
+
+    if (reserva.costoCheckinCheckOut != null) {
+      return Number(reserva.costoCheckinCheckOut || 0);
+    }
+
+    return Math.max(total - food - mandatoryBathCost - happyBusCost, 0);
+  };
+
+  function openModal(reserva: any) {
+    document.getElementById('modal-id')!.textContent = reserva.id;
+    document.getElementById('modal-avatar')!.textContent = reserva.petName ? reserva.petName.charAt(0).toUpperCase() : '?';
+    document.getElementById('modal-pet')!.textContent = reserva.petName || 'Sin Nombre';
+    document.getElementById('modal-owner')!.innerHTML = `Reservado por: <strong>${reserva.ownerName || 'Desconocido'}</strong>${reserva.ownerPhone ? '<br/>Tel: ' + reserva.ownerPhone : ''}`;
+    
+    document.getElementById('modal-tags')!.innerHTML = `
+      <span class="px-3 py-1 bg-brand-500/10 text-brand-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.serviceType || 'General'}</span>
+      <span class="px-3 py-1 bg-amber-50 border border-amber-100 text-amber-600 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.petSize || 'Sin tamaño'}</span>
+      <span class="px-3 py-1 bg-gray-100 text-gray-500 font-bold text-[10px] rounded-full uppercase tracking-wider">${reserva.season || 'Normal'}</span>
+      ${reserva.arrivalMode === 'self_arrival' && reserva.appointmentTime ? `<span class="px-3 py-1 bg-[#f0e6d2] text-brand-500 font-bold text-[10px] rounded-full uppercase tracking-wider">⏰ ${formatAppointmentTime(reserva.appointmentTime)}</span>` : ''}
+    `;
+    
+    const formatDate = (dateStr: string) => {
+      if (!dateStr) return '-';
+      return new Date(dateStr + 'T12:00:00').toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    };
+
+    document.getElementById('modal-checkin')!.textContent = formatDate(reserva.checkin);
+    document.getElementById('modal-checkout')!.textContent = formatDate(reserva.checkout);
+    
+    document.getElementById('modal-cost-nights')!.textContent = formatMoney(getBaseCost(reserva));
+    
+    const foodWrap = document.getElementById('modal-cost-food')!;
+    if (reserva.costAllFood && reserva.costAllFood > 0) {
+       foodWrap.classList.remove('hidden');
+       foodWrap.classList.add('flex');
+       document.getElementById('modal-cost-food-val')!.innerHTML = `$${Number(reserva.costAllFood).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+    } else {
+       foodWrap.classList.add('hidden');
+       foodWrap.classList.remove('flex');
+    }
+
+    const mandatoryBathWrap = document.getElementById('modal-cost-mandatory-bath')!;
+    if (Number(reserva.mandatoryBathCost || 0) > 0) {
+       mandatoryBathWrap.classList.remove('hidden');
+       mandatoryBathWrap.classList.add('flex');
+       document.getElementById('modal-cost-mandatory-bath-val')!.innerHTML = `$${Number(reserva.mandatoryBathCost).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+    } else {
+       mandatoryBathWrap.classList.add('hidden');
+       mandatoryBathWrap.classList.remove('flex');
+    }
+    
+    const happyBusWrap = document.getElementById('modal-happybus')!;
+    const hb = reserva.happyBus;
+    if (hasHappyBus(hb)) {
+       happyBusWrap.classList.remove('hidden');
+       happyBusWrap.classList.add('flex');
+       document.getElementById('modal-happybus-cost')!.innerHTML = `$${Number(hb.cost || 0).toLocaleString()} <span class="text-[10px] font-normal text-gray-400">MXN</span>`;
+       document.getElementById('modal-happybus-address')!.textContent = getHappyBusAddressLabel(hb);
+    } else {
+       happyBusWrap.classList.add('hidden');
+       happyBusWrap.classList.remove('flex');
+    }
+    
+    document.getElementById('modal-total')!.innerHTML = `$${Number(reserva.totalEstimado || 0).toLocaleString()} <span class="text-xs font-sans font-normal text-gray-400">MXN</span>`;
+    
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(() => {
+      modal.classList.remove('opacity-0');
+      modalBox.classList.remove('translate-y-4');
+    }, 10);
+  }
+  
+  function hideModal() {
+    modal.classList.add('opacity-0');
+    modalBox.classList.add('translate-y-4');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }, 300);
+  }
+
+  closeModalEls.forEach(el => el?.addEventListener('click', hideModal));
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) hideModal();
+  });
+
+  // --- Manejo de Estados (Status Workflow) ---
+  let currentTargetId = '';
+  const modalStat = document.getElementById('statusModal')!;
+  
+  document.getElementById('btnCancelStatus')?.addEventListener('click', () => {
+    modalStat.classList.add('opacity-0');
+    modalStat.querySelector('div')?.classList.add('translate-y-4');
+    setTimeout(() => {
+       modalStat.classList.add('hidden');
+       modalStat.classList.remove('flex');
+    }, 300);
+  });
+
+  document.getElementById('btnConfirmPaid')?.addEventListener('click', async () => {
+    if(currentTargetId) {
+      try {
+        await update(ref(rtdb, `reservations/${currentTargetId}`), { status: 'active' });
+        // Cierra el modal:
+        modalStat.classList.add('opacity-0');
+        modalStat.querySelector('div')?.classList.add('translate-y-4');
+        setTimeout(() => {
+          modalStat.classList.add('hidden');
+          modalStat.classList.remove('flex');
+        }, 300);
+      } catch (err) { alert('Error al actualizar'); }
+    }
+  });
+
+  tbody.addEventListener('click', async (e) => {
+    // 1. Boton Ver Detalles
+    const btnView = (e.target as Element).closest('.btn-view');
+    if (btnView) {
+      const id = btnView.getAttribute('data-id');
+      const reserva = allReservations.find(r => r.id === id);
+      if (reserva) openModal(reserva);
+      return;
+    }
+
+    // 2. Boton Avanzar a Recibido
+    const btnStatus = (e.target as Element).closest('.btn-status');
+    if (btnStatus) {
+       currentTargetId = btnStatus.getAttribute('data-id') || '';
+       modalStat.classList.remove('hidden');
+       modalStat.classList.add('flex');
+       setTimeout(() => {
+         modalStat.classList.remove('opacity-0');
+         modalStat.querySelector('div')?.classList.remove('translate-y-4');
+       }, 10);
+       return;
+    }
+
+    // 3. Boton Finalizar Y Entregar
+    const btnComplete = (e.target as Element).closest('.btn-complete');
+    if (btnComplete) {
+       if (confirm('🎉 ¿Confirmas entregar a la mascota a su dueño de forma exitosa? La reserva pasará al historial de sistema y liberará la pantalla principal.')) {
+           const id = btnComplete.getAttribute('data-id');
+           try {
+             await update(ref(rtdb, `reservations/${id}`), { status: 'completed' });
+           } catch {
+             alert('Asegúrate de tener permisos');
+           }
+       }
+       return;
+    }
+
+    // 4. Mantenemos la logica de Eliminación intacta
+    const btn = (e.target as Element).closest('.btn-delete');
+    if (btn) {
+      if (confirm('¿Confirmas eliminar esta reserva? Este espacio se liberará en tu Google Calendar automáticamente.')) {
+        const id = btn.getAttribute('data-id');
+        try {
+          await remove(ref(rtdb, `reservations/${id}`));
+        } catch (error) {
+          console.error(error);
+          alert('Hubo un error al intentar eliminar la reserva.');
+        }
+      }
+    }
+  });
+</script>

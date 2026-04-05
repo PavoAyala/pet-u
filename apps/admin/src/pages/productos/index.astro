@@ -49,7 +49,16 @@ import { type Product } from '@pet-u/firebase-config';
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
         </div>
-        <p class="text-gray-400 max-w-sm font-medium italic">Empieza a nutrir el inventario boutique de la tienda.</p>
+        <p class="text-gray-400 max-w-sm font-medium italic mb-6">Empieza a nutrir el inventario boutique de la tienda.</p>
+        <button
+          id="btn-add-empty"
+          class="inline-flex items-center gap-2 bg-[#3C4F35] hover:bg-[#2D3B28] text-white text-sm font-bold px-8 py-3.5 rounded-full shadow-lg shadow-[#3C4F35]/20 transition-all active:scale-95"
+        >
+          <svg class="w-5 h-5 font-bold" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+          </svg>
+          Agregar productos
+        </button>
       </div>
 
       <table id="table" class="hidden w-full text-left border-collapse">
@@ -138,6 +147,10 @@ import { type Product } from '@pet-u/firebase-config';
 
   // UI Events
   document.getElementById('btn-add')!.onclick = () => {
+    window.dispatchEvent(new CustomEvent('open-product-modal'));
+  };
+
+  document.getElementById('btn-add-empty')!.onclick = () => {
     window.dispatchEvent(new CustomEvent('open-product-modal'));
   };
 
