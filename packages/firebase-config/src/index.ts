@@ -13,6 +13,12 @@ import {
   httpsCallable,
 } from "firebase/functions";
 
+// Ensure side-effects are loaded for service registration
+import "firebase/auth";
+import "firebase/database";
+import "firebase/firestore";
+import "firebase/functions";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAUxDf0vZMM0v4YRzuFiZcIabezjgDyerQ",
   authDomain: "pet-u-fe87c.firebaseapp.com",
@@ -35,12 +41,14 @@ export const functions = getFunctions(app);
 
 // Detectar si estamos en un entorno de desarrollo (cliente o servidor)
 const isDev =
-  (globalThis.window !== undefined &&
-    (globalThis.window.location.hostname === "localhost" ||
-      globalThis.window.location.hostname === "127.0.0.1")) ||
-  (typeof process !== "undefined" && process.env.NODE_ENV === "development");
+  (typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1")) ||
+  (typeof globalThis !== "undefined" && 
+   // @ts-ignore
+   globalThis.process?.env?.NODE_ENV === "development");
 
-// Lazy initialization for Realtime Database to avoid "Service database is not available"
+// Lazy initialization for Realtime Database to avoid issues during SSR
 let rtdbInstance: Database | undefined;
 export function getRtdb(): Database | undefined {
   if (!isBrowser) return undefined;
