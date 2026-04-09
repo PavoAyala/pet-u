@@ -17,8 +17,17 @@
       <!-- Hidden Service Type -->
       <input type="hidden" id="serviceTypeInput" name="serviceType" value="hotel">
       
+      <!-- Auth Pets Selector (Oculto si no hay sesion o mascotas) -->
+      <div id="authPetSelectorGroup" class="hidden mb-3 bg-[#fdfbf7] p-3 rounded-xl border border-[#d2a265]/30">
+        <label class="block text-[11px] font-bold uppercase tracking-wider mb-2 text-[#d2a265]">Selecciona tu mascota</label>
+        <select id="authPetSelector" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white text-[#3C4F35] font-bold">
+          <option value="" disabled selected>Elegir...</option>
+          <option value="new">+ Añadir nueva o escribir manual</option>
+        </select>
+      </div>
+
       <!-- Pet & Owner Info -->
-      <div class="grid grid-cols-2 gap-3">
+      <div class="grid grid-cols-2 gap-3" id="petManualInfoGroup">
         <div>
           <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-gray-400">Nombre de la mascota</label>
           <input type="text" id="petName" required placeholder="Ej. Firulais" class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#3C4F35] focus:border-transparent transition-all bg-gray-50/50" />
@@ -251,6 +260,9 @@
 <script>
   import { functions, httpsCallable } from '@pet-u/firebase-config';
   import { loadGoogleMaps, initPlaceAutocomplete } from '../utils/googleMaps';
+  import { userStore, type PetData, type UserProfile } from '../utils/userStore';
+  import { initAuth } from '../utils/authIntegration';
+  initAuth();
 
   async function loadGoogleMapsPlaces() {
     loadGoogleMaps(import.meta.env.PUBLIC_GOOGLE_MAPS_KEY);
@@ -408,6 +420,80 @@
     const timeSlotGrid = document.getElementById('timeSlotGrid')!;
     const timeSlotStatus = document.getElementById('timeSlotStatus')!;
     const appointmentTimeInput = document.getElementById('appointmentTime') as HTMLInputElement;
+
+    // Pet Selector Elements
+    const authPetSelectorGroup = document.getElementById('authPetSelectorGroup')!;
+    const authPetSelector = document.getElementById('authPetSelector') as HTMLSelectElement;
+    const ownerNameInput = document.getElementById('ownerName') as HTMLInputElement;
+    const petNameInput = document.getElementById('petName') as HTMLInputElement;
+
+    const populateUserData = () => {
+      const state = userStore.get();
+      const profile = state.profile as UserProfile | null;
+      
+      // Autocompletar nombre del dueño
+      if (!ownerNameInput.value || ownerNameInput.value === '' || ownerNameInput.value === 'Mi Perfil' || ownerNameInput.value === 'Ej. Juan Pérez') {
+        if (profile?.displayName) {
+          ownerNameInput.value = profile.displayName;
+        } else if (state.user?.displayName) {
+          ownerNameInput.value = state.user.displayName;
+        } else if (state.user?.email) {
+          ownerNameInput.value = state.user.email.split('@')[0];
+        }
+      }
+
+      if (profile?.address) {
+        const addressInput = document.getElementById('happyBusAddress') as HTMLInputElement;
+        if (addressInput && (!addressInput.value || addressInput.value === '')) {
+          addressInput.value = profile.address;
+          // Si el texto de la dirección está presente, también lo guardamos en el campo oculto
+          const addressTextHidden = document.getElementById('happyBusAddressText') as HTMLInputElement;
+          if (addressTextHidden) addressTextHidden.value = profile.address;
+
+          if (profile.lat && profile.lng) {
+            (document.getElementById('happyBusLat') as HTMLInputElement).value = profile.lat.toString();
+            (document.getElementById('happyBusLng') as HTMLInputElement).value = profile.lng.toString();
+          }
+        }
+      }
+    };
+
+    let localPets: PetData[] = [];
+    userStore.subscribe((state) => {
+      populateUserData();
+      
+      localPets = state.pets;
+      if (localPets.length > 0) {
+        authPetSelectorGroup.classList.remove('hidden');
+        
+        let targetOptions = `<option value="" disabled selected>Elegir de mi perfil...</option>`;
+        localPets.forEach(pet => {
+           targetOptions += `<option value="${pet.id}">${pet.name} (${pet.size})</option>`;
+        });
+        targetOptions += `<option value="new">+ Registrar manualmente</option>`;
+        
+        authPetSelector.innerHTML = targetOptions;
+      } else {
+        authPetSelectorGroup.classList.add('hidden');
+      }
+    });
+
+    authPetSelector.addEventListener('change', () => {
+       const selectedPet = localPets.find(p => p.id === authPetSelector.value);
+       if (selectedPet) {
+          petNameInput.value = selectedPet.name;
+          populateUserData(); // También asegurar nombre del usuario al seleccionar mascota
+          const radio = form.querySelector(`input[name="petSize"][value="${selectedPet.size}"]`) as HTMLInputElement;
+          if (radio) {
+             radio.checked = true;
+             calculateTotal(); // update pricing
+          }
+       } else if (authPetSelector.value === 'new') {
+          petNameInput.value = '';
+          const checkedRadio = form.querySelector(`input[name="petSize"]:checked`) as HTMLInputElement;
+          if (checkedRadio) checkedRadio.checked = false;
+       }
+    });
 
     let currentAvailabilityRequest = 0;
     let hotelInfoShownForCurrentOpen = false;
@@ -646,6 +732,7 @@
       if (!config) return;
 
       form.reset();
+      populateUserData(); // Re-poblar datos del usuario después del reset
       serviceTypeInput.value = service;
       document.getElementById('modalTitle')!.textContent = config.title;
       document.getElementById('modalSubtitle')!.textContent = config.subtitle;

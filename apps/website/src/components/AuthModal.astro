@@ -1,0 +1,344 @@
+---
+// src/components/AuthModal.astro
+---
+
+<div id="auth-modal" class="fixed inset-0 z-[110] hidden items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity opacity-0">
+  <div class="relative w-full max-w-md mx-4 bg-white rounded-[32px] shadow-2xl overflow-hidden transform scale-95 transition-transform duration-300">
+    <!-- Botón Cerrar -->
+    <button id="close-auth" class="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors z-10" aria-label="Cerrar modal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3C4F35" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+
+    <!-- Vista: Iniciar Sesión -->
+    <div id="login-view" class="p-8">
+      <div class="text-center mb-8">
+        <h2 class="text-2xl font-serif font-black tracking-tight text-[#3C4F35] uppercase">Bienvenido</h2>
+        <p class="text-[10px] text-gray-500 font-bold tracking-wider mt-1 uppercase">Ingresa a tu cuenta para continuar</p>
+      </div>
+
+      <form id="loginFormModal" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Correo Electrónico</label>
+          <input type="email" id="login-email" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="ejemplo@correo.com" />
+        </div>
+        
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Contraseña</label>
+          <input type="password" id="login-password" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="••••••••" />
+        </div>
+
+        <div id="loginErrorModal" class="hidden text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl border border-red-100"></div>
+
+        <button type="submit" id="loginSubmitBtn" class="w-full bg-[#3C4F35] text-white py-4 rounded-xl font-bold hover:bg-[#2D3B28] shadow-lg shadow-[#3C4F35]/20 transition-all active:scale-[0.98] mt-2">
+          Iniciar Sesión
+        </button>
+      </form>
+
+      <div class="relative mt-6 mb-6">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-[11px]">
+          <span class="px-2 bg-white text-gray-500 font-bold uppercase tracking-widest">O</span>
+        </div>
+      </div>
+
+      <button type="button" class="google-auth-btn w-full bg-white border border-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50 flex justify-center items-center gap-3 transition-colors shadow-sm">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Continuar con Google
+      </button>
+
+      <p class="text-center text-sm text-gray-500 mt-6 font-medium">
+        ¿No tienes una cuenta? <button id="switchToRegister" class="text-[#d2a265] font-bold hover:underline ml-1">Regístrate</button>
+      </p>
+    </div>
+
+    <!-- Vista: Registro -->
+    <div id="register-view" class="p-8 hidden">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-serif font-black tracking-tight text-[#3C4F35] uppercase">Crea tu Cuenta</h2>
+        <p class="text-[10px] text-gray-500 font-bold tracking-wider mt-1 uppercase">Únete a PET-U hoy</p>
+      </div>
+
+      <form id="registerFormModal" class="space-y-3">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Nombre Completo</label>
+          <input type="text" id="reg-name" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="Ej. Juan Pérez" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Teléfono</label>
+          <input type="tel" id="reg-phone" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="10 dígitos" pattern="[0-9]+" minlength="10" />
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Correo Electrónico</label>
+          <input type="email" id="reg-email" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="ejemplo@correo.com" />
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Contraseña</label>
+            <input type="password" id="reg-password" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="••••••" minlength="6" />
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Confirmar</label>
+            <input type="password" id="reg-confirm" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="••••••" minlength="6" />
+          </div>
+        </div>
+
+        <div id="registerErrorModal" class="hidden text-[11px] text-red-500 font-bold bg-red-50 p-3 rounded-xl border border-red-100"></div>
+
+        <button type="submit" id="registerSubmitBtn" class="w-full bg-[#d2a265] text-white py-4 rounded-xl font-bold hover:bg-[#b88645] shadow-lg shadow-[#d2a265]/20 transition-all active:scale-[0.98] mt-2">
+          Crear Cuenta
+        </button>
+      </form>
+
+      <div class="relative mt-5 mb-5">
+        <div class="absolute inset-0 flex items-center">
+          <div class="w-full border-t border-gray-200"></div>
+        </div>
+        <div class="relative flex justify-center text-[11px]">
+          <span class="px-2 bg-white text-gray-500 font-bold uppercase tracking-widest">O</span>
+        </div>
+      </div>
+
+      <button type="button" class="google-auth-btn w-full bg-white border border-gray-200 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50 flex justify-center items-center gap-3 transition-colors shadow-sm">
+        <svg class="w-5 h-5" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Registrarse con Google
+      </button>
+
+      <p class="text-center text-sm text-gray-500 mt-6 font-medium">
+        ¿Ya tienes cuenta? <button id="switchToLogin" class="text-[#3C4F35] font-bold hover:underline ml-1">Inicia sesión</button>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { 
+    signInWithEmailAndPassword, 
+    auth, 
+    signInWithPopup, 
+    GoogleAuthProvider, 
+    db, 
+    doc, 
+    getDoc, 
+    setDoc,
+    createUserWithEmailAndPassword,
+    updateProfile
+  } from '@pet-u/firebase-config';
+
+  document.addEventListener('astro:page-load', () => {
+    const modal = document.getElementById('auth-modal');
+    const closeBtn = document.getElementById('close-auth');
+    const loginView = document.getElementById('login-view');
+    const registerView = document.getElementById('register-view');
+    const switchToRegister = document.getElementById('switchToRegister');
+    const switchToLogin = document.getElementById('switchToLogin');
+    const modalContainer = modal?.firstElementChild;
+
+    // Elementos Login
+    const loginForm = document.getElementById('loginFormModal') as HTMLFormElement;
+    const loginError = document.getElementById('loginErrorModal')!;
+    const loginSubmit = document.getElementById('loginSubmitBtn') as HTMLButtonElement;
+
+    // Elementos Registro
+    const registerForm = document.getElementById('registerFormModal') as HTMLFormElement;
+    const registerError = document.getElementById('registerErrorModal')!;
+    const registerSubmit = document.getElementById('registerSubmitBtn') as HTMLButtonElement;
+
+    // Botones Google
+    const googleBtns = document.querySelectorAll('.google-auth-btn');
+
+    const openModal = (view = 'login') => {
+      if (!modal || !modalContainer) return;
+      
+      if (view === 'login') {
+        loginView?.classList.remove('hidden');
+        registerView?.classList.add('hidden');
+      } else {
+        loginView?.classList.add('hidden');
+        registerView?.classList.remove('hidden');
+      }
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+        modal.classList.add('opacity-100');
+        modalContainer.classList.remove('scale-95');
+        modalContainer.classList.add('scale-100');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    };
+
+    const closeModal = () => {
+      if (!modal || !modalContainer) return;
+      modal.classList.remove('opacity-100');
+      modal.classList.add('opacity-0');
+      modalContainer.classList.remove('scale-100');
+      modalContainer.classList.add('scale-95');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+      }, 300);
+    };
+
+    // Global listener to trigger modal
+    window.addEventListener('open-auth-modal', (e: Event) => {
+      const customEvent = e as CustomEvent;
+      openModal(customEvent.detail?.view || 'login');
+    });
+
+    // Reemplazado checkParams por checkAuthIntent para evitar usar Query Params
+    const checkAuthIntent = () => {
+      const intent = sessionStorage.getItem('openAuth');
+      if (intent === 'login' || intent === 'register') {
+        sessionStorage.removeItem('openAuth');
+        openModal(intent);
+      }
+    };
+    checkAuthIntent();
+
+    // Click links interceptor
+    document.querySelectorAll('a[href="/login"], a[href="/registro"]').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const view = (link as HTMLAnchorElement).pathname === '/registro' ? 'register' : 'login';
+        openModal(view);
+      });
+    });
+
+    closeBtn?.addEventListener('click', closeModal);
+    switchToRegister?.addEventListener('click', () => {
+      loginView?.classList.add('hidden');
+      registerView?.classList.remove('hidden');
+    });
+    switchToLogin?.addEventListener('click', () => {
+      registerView?.classList.add('hidden');
+      loginView?.classList.remove('hidden');
+    });
+
+    // Close on click outside
+    modal?.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Close on escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !modal?.classList.contains('hidden')) closeModal();
+    });
+
+    // logic: Google Login
+    googleBtns.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const button = btn as HTMLButtonElement;
+        button.disabled = true;
+        const originalText = button.innerHTML;
+        button.textContent = 'Procesando...';
+
+        try {
+          const provider = new GoogleAuthProvider();
+          const result = await signInWithPopup(auth, provider);
+          
+          const userRef = doc(db, "users", result.user.uid);
+          const docSnap = await getDoc(userRef);
+          if (!docSnap.exists()) {
+            await setDoc(userRef, {
+              displayName: result.user.displayName || '',
+              phoneNumber: result.user.phoneNumber || '',
+              email: result.user.email || '',
+              createdAt: new Date().toISOString()
+            });
+          }
+          
+          closeModal();
+          // if we are not on perfil, maybe redirect? User decided
+          if (window.location.pathname === '/' || window.location.pathname.startsWith('/servicios')) {
+             // stay here, UI updates via store
+          } else {
+             window.location.href = '/perfil';
+          }
+        } catch (error) {
+          console.error(error);
+          button.disabled = false;
+          button.innerHTML = originalText;
+        }
+      });
+    });
+
+    // logic: Email Login
+    loginForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      loginError.classList.add('hidden');
+      loginSubmit.disabled = true;
+      const originalText = loginSubmit.textContent;
+      loginSubmit.textContent = 'Iniciando...';
+
+      const email = (document.getElementById('login-email') as HTMLInputElement).value;
+      const password = (document.getElementById('login-password') as HTMLInputElement).value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        closeModal();
+      } catch (error: unknown) {
+        const err = error as { code?: string };
+        console.error(err);
+        loginError.textContent = err.code === 'auth/invalid-credential' 
+          ? 'Correo o contraseña incorrectos.' 
+          : 'Error al iniciar sesión.';
+        loginError.classList.remove('hidden');
+        loginSubmit.disabled = false;
+        loginSubmit.textContent = originalText;
+      }
+    });
+
+    // logic: Register
+    registerForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      registerError.classList.add('hidden');
+      
+      const name = (document.getElementById('reg-name') as HTMLInputElement).value;
+      const phone = (document.getElementById('reg-phone') as HTMLInputElement).value;
+      const email = (document.getElementById('reg-email') as HTMLInputElement).value;
+      const password = (document.getElementById('reg-password') as HTMLInputElement).value;
+      const confirm = (document.getElementById('reg-confirm') as HTMLInputElement).value;
+
+      if (password !== confirm) {
+        registerError.textContent = 'Las contraseñas no coinciden.';
+        registerError.classList.remove('hidden');
+        return;
+      }
+
+      registerSubmit.disabled = true;
+      const originalText = registerSubmit.textContent;
+      registerSubmit.textContent = 'Creando...';
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        await updateProfile(user, { displayName: name });
+        await setDoc(doc(db, "users", user.uid), {
+          displayName: name,
+          phoneNumber: phone,
+          email: email,
+          createdAt: new Date().toISOString()
+        });
+        closeModal();
+      } catch (error: unknown) {
+        const err = error as { code?: string };
+        console.error(err);
+        if (err.code === 'auth/email-already-in-use') {
+          registerError.textContent = 'Este correo ya está registrado.';
+        } else {
+          registerError.textContent = 'Error al registrarse.';
+        }
+        registerError.classList.remove('hidden');
+        registerSubmit.disabled = false;
+        registerSubmit.textContent = originalText;
+      }
+    });
+  });
+</script>

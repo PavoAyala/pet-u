@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
+import { getFirestore, connectFirestoreEmulator, getDoc, setDoc } from "firebase/firestore";
 import { getAuth, connectAuthEmulator } from "firebase/auth";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import {
@@ -82,6 +82,8 @@ export const analytics = analyticsInstance;
 export {
   collection,
   getDocs,
+  getDoc,
+  setDoc,
   addDoc,
   doc,
   updateDoc,
@@ -105,6 +107,11 @@ export {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  deleteUser,
+  signInWithPopup,
+  GoogleAuthProvider,
   type User,
 } from "firebase/auth";
 

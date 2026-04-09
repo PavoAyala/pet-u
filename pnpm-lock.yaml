@@ -103,6 +103,9 @@ importers:
       '@firebase/app':
         specifier: 0.14.10
         version: 0.14.10
+      '@firebase/database':
+        specifier: 1.1.2
+        version: 1.1.2
       '@fontsource-variable/inter':
         specifier: ^5.2.6
         version: 5.2.8
