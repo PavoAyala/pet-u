@@ -19,7 +19,6 @@ export function initAuth() {
           email: user.email,
           displayName: user.displayName,
           phoneNumber: user.phoneNumber,
-          address: "",
         };
 
         if (userDocSnap.exists()) {
