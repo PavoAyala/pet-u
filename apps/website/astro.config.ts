@@ -91,5 +91,17 @@ export default defineConfig({
         '~': path.resolve(__dirname, './src'),
       },
     },
+    ssr: {
+      noExternal: [
+        'firebase',
+        '@pet-u/firebase-config',
+        '@firebase/app',
+        '@firebase/firestore',
+        '@firebase/auth',
+        '@firebase/analytics',
+        '@firebase/database',
+        '@firebase/functions',
+      ],
+    },
   },
 });

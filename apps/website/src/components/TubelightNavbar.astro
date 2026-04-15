@@ -13,7 +13,8 @@ const navItems = [
   { name: 'Servicios', url: '/servicios', icon: 'tabler:paw' },
   { name: 'Instalaciones', url: '/instalaciones', icon: 'tabler:building' },
   { name: 'Contacto', url: '/contacto', icon: 'tabler:phone' },
-  { name: 'Tienda', url: '/tienda', icon: 'tabler:shopping-bag' }
+  { name: 'Tienda', url: '/tienda', icon: 'tabler:shopping-bag' },
+  { name: 'Mi Cuenta', url: '/perfil', icon: 'tabler:user' }
 ];
 ---
 
@@ -27,7 +28,8 @@ const navItems = [
       return (
         <a 
           href={item.url} 
-          data-astro-reload={item.url === '/instalaciones' ? "true" : undefined}
+          data-nav-profile={item.url === '/perfil' ? "true" : undefined}
+          data-astro-reload={item.url === '/instalaciones' || item.url === '/perfil' ? "true" : undefined}
           class={`relative flex items-center justify-center cursor-pointer px-4 xs:px-5 sm:px-6 py-2.5 sm:py-2 rounded-full transition-all duration-300 ${
             isActive ? "text-[#3C4F35]" : "text-gray-400 hover:text-[#3C4F35] hover:bg-[#f0e6d2]/30"
           }`}
@@ -38,7 +40,7 @@ const navItems = [
           <Icon name={item.icon} class="w-6 h-6 sm:hidden" />
           
           <!-- Vista Desktop: Texto -->
-          <span class="hidden sm:inline text-sm font-semibold">{item.name}</span>
+          <span class="hidden sm:inline text-sm font-semibold whitespace-nowrap" id={item.url === '/perfil' ? 'navProfileName' : undefined}>{item.name}</span>
           
           {isActive && (
             <div transition:name="tubelight" class="absolute inset-0 w-full bg-[#f0e6d2]/70 rounded-full -z-10">
@@ -52,6 +54,15 @@ const navItems = [
         </a>
       )
     })}
+
+    <!-- Logout Button (Solo visible si hay sesión) -->
+    <button 
+      id="navLogoutBtn" 
+      class="hidden items-center justify-center cursor-pointer px-3 sm:px-4 py-2 rounded-full text-red-500 hover:bg-red-50 transition-all duration-300"
+      title="Cerrar Sesión"
+    >
+      <Icon name="tabler:logout" class="w-5 h-5" />
+    </button>
   </div>
 </div>
 
@@ -61,3 +72,98 @@ const navItems = [
     <img src="/images/logo.png" alt="PET-U Logo" class="h-12 w-auto drop-shadow-sm" />
   </a>
 </div>
+
+<!-- Modal de Confirmación Logout -->
+<dialog id="logoutModal" class="p-0 rounded-[32px] backdrop:bg-black/80 backdrop:backdrop-blur-sm shadow-2xl w-[90%] max-w-sm border-0 overflow-hidden">
+  <div class="bg-white p-8">
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+        <Icon name="tabler:logout" class="w-8 h-8 text-red-500" />
+      </div>
+      <h3 class="text-xl font-serif font-black text-[#3C4F35] uppercase tracking-tight">Cerrar Sesión</h3>
+      <p class="text-xs text-gray-500 font-bold mt-2 uppercase tracking-wide">¿Estás seguro que deseas salir?</p>
+    </div>
+
+    <div class="flex gap-3">
+      <button id="cancelLogout" class="flex-1 bg-white border border-gray-200 text-gray-500 py-3.5 rounded-2xl font-bold hover:bg-gray-50 transition-all text-xs uppercase tracking-wider">
+        No, Volver
+      </button>
+      <button id="confirmLogout" class="flex-1 bg-red-600 text-white py-3.5 rounded-2xl font-bold hover:bg-red-700 transition-all text-xs shadow-lg shadow-red-600/20 uppercase tracking-wider">
+        Sí, Salir
+      </button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  import { userStore } from '../utils/userStore';
+  import { initAuth } from '../utils/authIntegration';
+  import { auth, signOut } from '@pet-u/firebase-config';
+  
+  initAuth();
+
+  function updateNav() {
+    const navProfileName = document.getElementById('navProfileName');
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    if (!navProfileName) return;
+
+    const state = userStore.get();
+    const profileLinks = document.querySelectorAll('a[data-nav-profile="true"]');
+    
+    if (state.user) {
+      if (state.profile?.displayName) {
+        navProfileName.textContent = state.profile.displayName.split(' ')[0];
+      }
+      navLogoutBtn?.classList.remove('hidden');
+      navLogoutBtn?.classList.add('flex');
+      profileLinks.forEach(link => { (link as HTMLAnchorElement).href = '/perfil'; });
+    } else {
+      navProfileName.textContent = 'Mi Cuenta';
+      navLogoutBtn?.classList.add('hidden');
+      navLogoutBtn?.classList.remove('flex');
+      profileLinks.forEach(link => { (link as HTMLAnchorElement).href = '#'; });
+    }
+  }
+
+  // Actualiza inmediatamente cuando cambia el estado de la sesión
+  userStore.subscribe(() => {
+    updateNav();
+  });
+
+  // Re-evalúa y enlaza en caso de que Astro use ViewTransitions al cambiar de página
+  document.addEventListener('astro:page-load', () => {
+    updateNav();
+
+    const navLogoutBtn = document.getElementById('navLogoutBtn');
+    const logoutModal = document.getElementById('logoutModal') as HTMLDialogElement;
+    const confirmLogout = document.getElementById('confirmLogout');
+    const cancelLogout = document.getElementById('cancelLogout');
+
+    navLogoutBtn?.addEventListener('click', () => {
+       logoutModal.showModal();
+    });
+
+    cancelLogout?.addEventListener('click', () => {
+       logoutModal.close();
+    });
+
+    confirmLogout?.addEventListener('click', async () => {
+       await signOut(auth);
+       logoutModal.close();
+       window.location.href = '/';
+    });
+
+    // Interceptar click en Mi Cuenta si no hay sesión
+    const profileLinks = document.querySelectorAll('a[data-nav-profile="true"]');
+    profileLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        const state = userStore.get();
+        if (!state.user) {
+          e.preventDefault();
+          e.stopPropagation();
+          window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }));
+        }
+      });
+    });
+  });
+</script>

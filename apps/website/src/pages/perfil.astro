@@ -1,0 +1,467 @@
+---
+import Layout from '~/layouts/PageLayout.astro';
+
+const metadata = {
+  title: 'Mi Perfil',
+};
+---
+
+<Layout metadata={metadata} hideCta={true}>
+  <section class="min-h-screen pt-8 sm:pt-12 pb-12 bg-[#fdfbf7]">
+    <div class="max-w-5xl mx-auto p-4 sm:p-6">
+      
+      <!-- Cargando... -->
+      <div id="loadingState" class="flex justify-center items-center py-20">
+        <div class="w-10 h-10 border-4 border-[#3C4F35]/20 border-t-[#3C4F35] rounded-full animate-spin"></div>
+      </div>
+
+      <!-- Contenido Principal (Oculto inicialmente) -->
+      <div id="profileContent" class="hidden space-y-6">
+        
+        <!-- Header Perfil -->
+        <div class="bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl shadow-[#3C4F35]/5 border border-[#f0e6d2] flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-gradient-to-tr from-[#3C4F35] to-[#4A6342] rounded-full flex items-center justify-center text-white text-2xl font-bold font-serif shadow-md">
+              <span id="userInitials">?</span>
+            </div>
+            <div>
+              <h1 class="text-2xl font-serif font-black tracking-tight text-[#3C4F35]" id="userNameDisplay">Cargando...</h1>
+              <p class="text-sm text-gray-500 font-medium" id="userEmailDisplay">...</p>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 mt-4 sm:mt-0 w-full sm:w-auto">
+            <a href="/" class="text-center px-5 py-2.5 bg-[#fdfbf7] text-[#3C4F35] font-bold text-sm rounded-xl hover:bg-[#f0e6d2] transition-colors border border-[#f0e6d2]">
+              Ir al Inicio
+            </a>
+            <button id="logoutBtn" class="px-5 py-2.5 bg-red-50 text-red-600 font-bold text-sm rounded-xl hover:bg-red-100 transition-colors border border-red-100">
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          
+          <!-- Info Basica -->
+          <div class="md:col-span-5 space-y-6">
+            <div class="bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl shadow-[#3C4F35]/5 border border-[#f0e6d2]">
+              <h2 class="text-lg font-serif font-black text-[#3C4F35] uppercase mb-4 tracking-wide">Información Básica</h2>
+              <div id="profileContainer" class="space-y-4">
+                <div>
+                  <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Nombre Completo</label>
+                  <p id="profileNameDisplayOnly" class="w-full border border-[#f0e6d2] rounded-xl px-4 py-3 text-sm text-[#3C4F35] font-bold bg-[#fdfbf7] min-h-[46px]"></p>
+                </div>
+                <div>
+                  <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Teléfono</label>
+                  <p id="profilePhoneDisplayOnly" class="w-full border border-[#f0e6d2] rounded-xl px-4 py-3 text-sm text-[#3C4F35] font-bold bg-[#fdfbf7] min-h-[46px]"></p>
+                </div>
+                <div class="mt-4">
+                  <button type="button" id="changePhoneBtn" class="w-full bg-[#d2a265] text-white py-3 rounded-xl font-bold hover:bg-[#b88645] transition-all text-xs shadow-md">
+                    Actualizar Teléfono
+                  </button>
+                </div>
+                <div id="profileMessage" class="hidden text-[11px] font-bold p-3 rounded-xl border mt-2"></div>
+              </div>
+            </div>
+            
+            <!-- Zona de Peligro -->
+            <div class="bg-red-50 rounded-[32px] p-6 sm:p-8 border border-red-100">
+              <h2 class="text-lg font-serif font-black text-red-700 uppercase mb-2 tracking-wide">Zona de Peligro</h2>
+              <p class="text-xs text-red-600/80 mb-4 font-medium">Una vez eliminada, tu cuenta y la información de tus mascotas no podrán ser recuperadas.</p>
+              <button id="deleteAccountBtn" class="w-full bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-all text-sm shadow-md">
+                Eliminar Mi Cuenta
+              </button>
+            </div>
+          </div>
+
+          <!-- Mis Mascotas -->
+          <div class="md:col-span-7 bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl shadow-[#3C4F35]/5 border border-[#f0e6d2]">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-lg font-serif font-black text-[#3C4F35] uppercase tracking-wide">Mis Mascotas</h2>
+              <button id="showAddPetBtn" class="w-8 h-8 rounded-full bg-[#d2a265] text-white flex items-center justify-center hover:bg-[#b88645] transition-colors shadow-md hover:scale-105">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              </button>
+            </div>
+
+            <!-- Listado de mascotas -->
+            <div id="petsList" class="space-y-3">
+              <div class="text-center py-8 text-gray-400 text-sm font-medium">Aún no has agregado mascotas.</div>
+            </div>
+
+            <!-- Formulario agregar mascota (Oculto) -->
+            <div id="addPetContainer" class="hidden mt-6 p-5 bg-[#fdfbf7] rounded-2xl border border-[#f0e6d2] shadow-inner">
+              <h3 class="text-sm font-bold uppercase text-[#3C4F35] mb-4 tracking-wider">Nueva Mascota</h3>
+              <form id="addPetForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Nombre</label>
+                    <input type="text" id="petNameInput" required class="w-full border border-[#f0e6d2] rounded-xl px-3 py-2 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white" placeholder="Ej. Firulais" />
+                  </div>
+                  <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Especie</label>
+                    <select id="petTypeInput" required class="w-full border border-[#f0e6d2] rounded-xl px-3 py-2 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white">
+                      <option value="" disabled selected>Elegir</option>
+                      <option value="perro">Perro</option>
+                      <option value="gato">Gato</option>
+                    </select>
+                  </div>
+                  <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Tamaño</label>
+                    <select id="petSizeInput" required class="w-full border border-[#f0e6d2] rounded-xl px-3 py-2 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white">
+                      <option value="" disabled selected>Elegir</option>
+                      <option value="chica">Chica</option>
+                      <option value="mediana">Mediana</option>
+                      <option value="grande">Grande</option>
+                      <option value="xl">Extra Grande</option>
+                    </select>
+                  </div>
+                  <div class="col-span-2 sm:col-span-1">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider mb-1 text-brand-500">Raza</label>
+                    <input type="text" id="petNotesInput" class="w-full border border-[#f0e6d2] rounded-xl px-3 py-2 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-white" placeholder="Ej. Poodle, Persa..." />
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button type="button" id="cancelAddPetBtn" class="flex-1 bg-white border border-[#f0e6d2] text-gray-600 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-all text-xs shadow-sm">Cancelar</button>
+                  <button type="submit" id="savePetBtn" class="flex-1 bg-[#3C4F35] text-white py-2.5 rounded-xl font-bold hover:bg-[#2D3B28] transition-all text-xs shadow-md">Guardar</button>
+                </div>
+              </form>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Modal para actualizar teléfono -->
+  <dialog id="phoneModal" class="p-0 rounded-[32px] backdrop:bg-black/80 backdrop:backdrop-blur-sm shadow-2xl w-[90%] max-w-sm border-0 overflow-hidden">
+    <div class="bg-white p-8">
+      <div class="text-center mb-6">
+        <h3 class="text-xl font-serif font-black text-[#3C4F35] uppercase tracking-tight">Editar Teléfono</h3>
+        <p class="text-[10px] text-gray-500 font-bold tracking-wider mt-1 uppercase">Ingresa tu número a 10 dígitos</p>
+      </div>
+
+      <form id="phoneForm" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-400">Nuevo Teléfono</label>
+          <input type="tel" id="newPhoneInput" required class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-black placeholder-gray-400 font-medium focus:outline-none focus:ring-2 focus:ring-[#3C4F35] bg-gray-50/50" placeholder="10 dígitos" pattern="[0-9]+" minlength="10" maxlength="10" />
+        </div>
+
+        <div id="phoneModalMessage" class="hidden text-[10px] font-bold p-3 rounded-xl border"></div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" id="closePhoneModal" class="flex-1 bg-white border border-gray-200 text-gray-500 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all text-xs">
+            Cancelar
+          </button>
+          <button type="submit" id="savePhoneModalBtn" class="flex-1 bg-[#d2a265] text-white py-3 rounded-xl font-bold hover:bg-[#b88645] transition-all text-xs shadow-md">
+            Guardar
+          </button>
+        </div>
+      </form>
+    </div>
+  </dialog>
+
+  <!-- Modal para eliminar cuenta -->
+  <dialog id="deleteAccountModal" class="p-0 rounded-[32px] backdrop:bg-black/80 backdrop:backdrop-blur-sm shadow-2xl w-[90%] max-w-sm border-0 overflow-hidden">
+    <div class="bg-white p-8">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        </div>
+        <h3 class="text-xl font-serif font-black text-[#3C4F35] uppercase tracking-tight">¿Eliminar Perfil?</h3>
+        <p class="text-xs text-gray-500 font-bold mt-2 uppercase tracking-wide px-2">Esta acción es irreversible y borrará todos los datos de tus mascotas.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold uppercase tracking-wider mb-2 text-red-600 text-center">Escribe <span class="bg-red-50 px-2 py-0.5 rounded italic">ELIMINAR</span> para confirmar</label>
+          <input type="text" id="confirmDeleteInput" class="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-center font-black text-red-600 focus:outline-none focus:ring-2 focus:ring-red-600 bg-gray-50/50 uppercase" placeholder="..." />
+        </div>
+
+        <div id="deleteModalMessage" class="hidden text-[10px] font-bold p-3 rounded-xl border"></div>
+
+        <div class="flex gap-2 pt-2">
+          <button type="button" id="closeDeleteModal" class="flex-1 bg-white border border-gray-200 text-gray-500 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all text-xs">
+            Cancelar
+          </button>
+          <button type="button" id="confirmDeleteAccountBtn" disabled class="flex-1 bg-red-600 text-white py-3 rounded-xl font-bold hover:bg-red-700 transition-all text-xs shadow-md disabled:opacity-30 disabled:cursor-not-allowed">
+            Entiendo, Borrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+</Layout>
+
+<script>
+  import { auth, db, signOut, doc, updateDoc, collection, addDoc, deleteDoc, deleteUser } from '@pet-u/firebase-config';
+  import { userStore, type PetData } from '../utils/userStore';
+  import { initAuth } from '../utils/authIntegration';
+
+  initAuth();
+
+  const loadingState = document.getElementById('loadingState')!;
+  const profileContent = document.getElementById('profileContent')!;
+
+  const userNameDisplay = document.getElementById('userNameDisplay')!;
+  const userEmailDisplay = document.getElementById('userEmailDisplay')!;
+  const userInitials = document.getElementById('userInitials')!;
+  const logoutBtn = document.getElementById('logoutBtn')!;
+  const deleteAccountBtn = document.getElementById('deleteAccountBtn')!;
+  
+  const profileNameDisplayOnly = document.getElementById('profileNameDisplayOnly')!;
+  const profilePhoneDisplayOnly = document.getElementById('profilePhoneDisplayOnly')!;
+  const changePhoneBtn = document.getElementById('changePhoneBtn') as HTMLButtonElement;
+  const profileMessage = document.getElementById('profileMessage')!;
+
+  const phoneModal = document.getElementById('phoneModal') as HTMLDialogElement;
+  const phoneForm = document.getElementById('phoneForm') as HTMLFormElement;
+  const newPhoneInput = document.getElementById('newPhoneInput') as HTMLInputElement;
+  const savePhoneModalBtn = document.getElementById('savePhoneModalBtn') as HTMLButtonElement;
+  const closePhoneModal = document.getElementById('closePhoneModal')!;
+  const phoneModalMessage = document.getElementById('phoneModalMessage')!;
+  
+  const deleteAccountModal = document.getElementById('deleteAccountModal') as HTMLDialogElement;
+  const confirmDeleteInput = document.getElementById('confirmDeleteInput') as HTMLInputElement;
+  const confirmDeleteAccountBtn = document.getElementById('confirmDeleteAccountBtn') as HTMLButtonElement;
+  const closeDeleteModal = document.getElementById('closeDeleteModal')!;
+  const deleteModalMessage = document.getElementById('deleteModalMessage')!;
+  
+  const petsList = document.getElementById('petsList')!;
+  const showAddPetBtn = document.getElementById('showAddPetBtn')!;
+  const addPetContainer = document.getElementById('addPetContainer')!;
+  const cancelAddPetBtn = document.getElementById('cancelAddPetBtn')!;
+  const addPetForm = document.getElementById('addPetForm') as HTMLFormElement;
+  const savePetBtn = document.getElementById('savePetBtn') as HTMLButtonElement;
+
+  userStore.subscribe((state) => {
+    if (state.loading) return;
+
+    if (!state.user) {
+      sessionStorage.setItem('openAuth', 'login');
+      window.location.href = '/';
+      return;
+    }
+
+    loadingState.classList.add('hidden');
+    profileContent.classList.remove('hidden');
+
+    userNameDisplay.textContent = state.profile?.displayName || 'Usuario';
+    userEmailDisplay.textContent = state.profile?.email || '';
+    userInitials.textContent = (state.profile?.displayName || 'U').charAt(0).toUpperCase();
+
+    profileNameDisplayOnly.textContent = state.profile?.displayName || 'Desconocido';
+    profilePhoneDisplayOnly.textContent = state.profile?.phoneNumber || 'No registrado';
+
+    renderPets(state.pets);
+  });
+
+  function renderPets(pets: PetData[]) {
+    if (pets.length === 0) {
+      petsList.innerHTML = '<div class="text-center py-6 text-gray-400 text-sm font-medium">Aún no has agregado mascotas.</div>';
+      return;
+    }
+
+    petsList.innerHTML = pets.map(pet => `
+      <div class="flex items-center justify-between p-4 bg-white border border-[#f0e6d2] shadow-sm rounded-2xl group hover:border-[#d2a265] hover:shadow-md transition-all">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 bg-[#fdfbf7] border border-[#f0e6d2] rounded-full flex items-center justify-center text-[#d2a265]">
+            ${pet.type === 'gato' ? 
+              `<svg class="w-5 h-5" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M20 3v10a8 8 0 1 1-16 0V3l3.432 3.432A7.96 7.96 0 0 1 12 5c1.769 0 3.403.574 4.728 1.546z"/><path d="M2 16h5l-4 4m19-4h-5l4 4m-10-4a1 1 0 1 0 2 0a1 1 0 1 0-2 0m-2-5v.01m6-.01v.01"/></g></svg>` 
+              :
+              `<svg class="w-5 h-5" viewBox="0 0 24 24"><g fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M11 5h2m6 7q-1 8-5 8h-4q-4 0-5-8"/><path d="M11 16q0 1 1 1c1 0 1-.333 1-1zm1 2v2m-2-9v.01m4-.01v.01M5 4l6 .97l-6.238 6.688a1.02 1.02 0 0 1-1.41.111a.95.95 0 0 1-.327-.954zm14 0l-6 .97l6.238 6.688c.358.408.989.458 1.41.111a.95.95 0 0 0 .327-.954z"/></g></svg>`
+            }
+          </div>
+          <div>
+            <h4 class="font-bold text-[#3C4F35] text-sm">${pet.name}</h4>
+            <p class="text-[11px] text-gray-500 uppercase font-medium tracking-wider">${pet.size} ${pet.notes ? `• ${pet.notes}` : ''}</p>
+          </div>
+        </div>
+        <button class="delete-pet-btn w-8 h-8 rounded-full bg-red-50 text-red-500 flex items-center justify-center hover:bg-red-100 transition-colors opacity-0 group-hover:opacity-100" data-id="${pet.id}">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+        </button>
+      </div>
+    `).join('');
+
+    document.querySelectorAll('.delete-pet-btn').forEach(btn => {
+      btn.addEventListener('click', async (_e) => {
+        const id = btn.getAttribute('data-id');
+        if (!id) return;
+        if (confirm('¿Estás seguro de eliminar esta mascota?')) {
+          try {
+            const user = auth.currentUser;
+            if (user) {
+              await deleteDoc(doc(db, "users", user.uid, "pets", id));
+              const currentPets = userStore.get().pets.filter(p => p.id !== id);
+              userStore.set({ pets: currentPets });
+              renderPets(currentPets);
+            }
+          } catch (error) {
+            console.error("Error al eliminar", error);
+            alert("No se pudo eliminar la mascota.");
+          }
+        }
+      });
+    });
+  }
+
+  logoutBtn?.addEventListener('click', async () => {
+    await signOut(auth);
+    window.location.href = '/';
+  });
+
+  changePhoneBtn?.addEventListener('click', () => {
+    const currentPhone = userStore.get().profile?.phoneNumber || '';
+    newPhoneInput.value = currentPhone;
+    phoneModalMessage.classList.add('hidden');
+    phoneModal.showModal();
+  });
+
+  closePhoneModal?.addEventListener('click', () => {
+    phoneModal.close();
+  });
+
+  phoneForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const newPhone = newPhoneInput.value;
+    if (newPhone.trim().length < 10) return;
+
+    phoneModalMessage.classList.add('hidden');
+    savePhoneModalBtn.disabled = true;
+    savePhoneModalBtn.textContent = '...';
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const userRef = doc(db, "users", user.uid);
+        await updateDoc(userRef, { phoneNumber: newPhone });
+
+        const currentProfile = userStore.get().profile;
+        if (currentProfile) {
+          userStore.set({ profile: { ...currentProfile, phoneNumber: newPhone }});
+        }
+
+        phoneModalMessage.textContent = '¡Teléfono actualizado!';
+        phoneModalMessage.className = 'text-[10px] font-bold p-3 rounded-xl border mt-2 bg-green-50 text-green-600 border-green-100 block';
+        
+        setTimeout(() => {
+          phoneModal.close();
+          profileMessage.textContent = 'Teléfono actualizado correctamente.';
+          profileMessage.className = 'text-[11px] font-bold p-3 rounded-xl border mt-2 bg-green-50 text-green-600 border-green-100 block';
+          profileMessage.classList.remove('hidden');
+        }, 1000);
+      } catch (error) {
+        console.error(error);
+        phoneModalMessage.textContent = 'Error al actualizar.';
+        phoneModalMessage.className = 'text-[10px] font-bold p-3 rounded-xl border mt-2 bg-red-50 text-red-600 border-red-100 block';
+      }
+    }
+    savePhoneModalBtn.disabled = false;
+    savePhoneModalBtn.textContent = 'Guardar';
+  });
+  showAddPetBtn?.addEventListener('click', () => {
+    addPetContainer.classList.remove('hidden');
+  });
+  cancelAddPetBtn?.addEventListener('click', () => {
+    addPetContainer.classList.add('hidden');
+    addPetForm.reset();
+  });
+
+  addPetForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    savePetBtn.disabled = true;
+    savePetBtn.textContent = '...';
+
+    const pName = (document.getElementById('petNameInput') as HTMLInputElement).value;
+    const pType = (document.getElementById('petTypeInput') as HTMLSelectElement).value;
+    const pSize = (document.getElementById('petSizeInput') as HTMLSelectElement).value;
+    const pNotes = (document.getElementById('petNotesInput') as HTMLInputElement).value;
+
+    const user = auth.currentUser;
+    if (user) {
+      try {
+        const petsRef = collection(db, "users", user.uid, "pets");
+        const docRef = await addDoc(petsRef, {
+          name: pName,
+          size: pSize,
+          type: pType || 'perro', // Por si acaso
+          notes: pNotes,
+          createdAt: new Date().toISOString()
+        });
+
+        const newPet: PetData = { 
+          id: docRef.id, 
+          name: pName, 
+          size: pSize as "chica" | "mediana" | "grande" | "xl", 
+          type: pType || 'perro', 
+          notes: pNotes 
+        };
+        const currentPets = userStore.get().pets;
+        const newPetsList = [...currentPets, newPet];
+        userStore.set({ pets: newPetsList });
+        renderPets(newPetsList);
+
+        addPetForm.reset();
+        addPetContainer.classList.add('hidden');
+      } catch (error) {
+        console.error("Error al agregar mascota", error);
+        alert("Fallo al agregar la mascota");
+      }
+    }
+
+    savePetBtn.disabled = false;
+    savePetBtn.textContent = 'Guardar';
+  });
+
+  // --- Eliminar Cuenta ---
+  deleteAccountBtn?.addEventListener('click', () => {
+    confirmDeleteInput.value = '';
+    confirmDeleteAccountBtn.disabled = true;
+    deleteModalMessage.classList.add('hidden');
+    deleteAccountModal.showModal();
+  });
+
+  confirmDeleteInput?.addEventListener('input', () => {
+    confirmDeleteAccountBtn.disabled = (confirmDeleteInput.value.trim().toUpperCase() !== 'ELIMINAR');
+  });
+
+  closeDeleteModal?.addEventListener('click', () => {
+    deleteAccountModal.close();
+  });
+
+  confirmDeleteAccountBtn?.addEventListener('click', async () => {
+    const user = auth.currentUser;
+    if (!user) return;
+
+    confirmDeleteAccountBtn.disabled = true;
+    confirmDeleteAccountBtn.textContent = 'Borrando...';
+    deleteModalMessage.classList.add('hidden');
+
+    try {
+      // 1. Borrar todas las mascotas primero
+      const pets = userStore.get().pets;
+      for (const pet of pets) {
+         await deleteDoc(doc(db, "users", user.uid, "pets", pet.id));
+      }
+
+      // 2. Borrar documento del usuario
+      await deleteDoc(doc(db, "users", user.uid));
+
+      // 3. Borrar usuario de Auth
+      await deleteUser(user);
+
+      // 4. Redirigir
+      window.location.href = '/?msg=account_deleted';
+    } catch (error: unknown) {
+      console.error(error);
+      const firebaseError = error as { code?: string };
+      if (firebaseError.code === 'auth/requires-recent-login') {
+         deleteModalMessage.textContent = 'Por seguridad, inicia sesión nuevamente antes de eliminar tu cuenta.';
+      } else {
+         deleteModalMessage.textContent = 'Error al eliminar la cuenta. Intenta cerrar y volver a iniciar sesión.';
+      }
+      deleteModalMessage.className = 'text-[10px] font-bold p-3 rounded-xl border mt-2 bg-red-50 text-red-600 border-red-100 block';
+      confirmDeleteAccountBtn.disabled = false;
+      confirmDeleteAccountBtn.textContent = 'Entiendo, Borrar';
+    }
+  });
+</script>

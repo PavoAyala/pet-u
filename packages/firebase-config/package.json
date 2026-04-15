@@ -4,11 +4,11 @@
   "type": "module",
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "dependencies": {},
   "peerDependencies": {
     "firebase": "^12.11.0"
   },
   "devDependencies": {
+    "@firebase/app": "0.14.10",
     "firebase": "^12.11.0"
   }
 }
