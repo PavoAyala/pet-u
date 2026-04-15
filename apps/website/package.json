@@ -27,6 +27,7 @@
     "@astrojs/vercel": "8.2.11",
     "@astrolib/analytics": "^0.6.1",
     "@astrolib/seo": "^1.0.0-beta.8",
+    "@firebase/app": "0.14.10",
     "@fontsource-variable/inter": "^5.2.6",
     "@pet-u/firebase-config": "workspace:*",
     "@vercel/analytics": "^2.0.1",
