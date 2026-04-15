@@ -91,5 +91,11 @@ export default defineConfig({
         '~': path.resolve(__dirname, './src'),
       },
     },
+    ssr: {
+      noExternal: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
+    },
+    optimizeDeps: {
+      include: ['firebase/app', 'firebase/database', 'firebase/auth', 'firebase/firestore'],
+    },
   },
 });
