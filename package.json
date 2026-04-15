@@ -6,17 +6,28 @@
   },
   "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "dev": "concurrently \"pnpm emulators\" \"turbo dev\"",
+    "dev": "pnpm emulators & turbo dev --parallel",
     "build": "turbo build",
     "check": "turbo check",
-    "emulators": "mkdir -p ./.firebase-emulators-data && firebase emulators:start --import=./.firebase-emulators-data --export-on-exit=./.firebase-emulators-data",
-    "emulators:export": "mkdir -p ./.firebase-emulators-data && firebase emulators:export --force ./.firebase-emulators-data"
-  },
+    "preemulators": "npx kill-port 9099 8080 5001 9000 4000 4400 4500 9150 || true",
+    "emulators": "firebase emulators:start --import=.firebase-emulators-data --export-on-exit=.firebase-emulators-data",
+    "emulators:export": "firebase emulators:export --force .firebase-emulators-data"
+},
   "devDependencies": {
     "concurrently": "^9.2.1",
     "eslint": "^9.0.0",
+    "kill-port": "^2.0.1",
     "prettier": "^3.0.0",
     "turbo": "^2.8.20",
     "typescript": "^5.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@firebase/util",
+      "esbuild",
+      "protobufjs",
+      "sharp",
+      "unrs-resolver"
+    ]
   }
 }

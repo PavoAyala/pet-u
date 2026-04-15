@@ -45,4 +45,5 @@ firestore-debug.log*
 pubsub-debug.log*
 ui-debug.log*
 .firebase-emulators-data/
+firebase-export-*
 *service-account*.json
