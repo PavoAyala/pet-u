@@ -90,12 +90,23 @@ export default defineConfig({
       alias: {
         '~': path.resolve(__dirname, './src'),
       },
+      dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
     },
     ssr: {
-      external: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
+      noExternal: ['@pet-u/firebase-config'],
     },
     optimizeDeps: {
-      exclude: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
+      include: [
+        'firebase/app',
+        'firebase/auth', 
+        'firebase/firestore',
+        'firebase/database',
+        'firebase/functions',
+        'firebase/analytics',
+      ],
+      esbuildOptions: {
+        target: 'esnext',
+      },
     },
   },
 });
