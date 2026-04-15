@@ -4,7 +4,7 @@ import { userStore, type PetData, type UserProfile } from "./userStore";
 let initialized = false;
 
 export function initAuth() {
-  if (typeof window === "undefined" || initialized) return;
+  if (globalThis.window === undefined || initialized) return;
   initialized = true;
 
   onAuthStateChanged(auth, async (user) => {
