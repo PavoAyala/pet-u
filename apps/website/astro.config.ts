@@ -92,10 +92,10 @@ export default defineConfig({
       },
     },
     ssr: {
-      noExternal: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
+      external: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
     },
     optimizeDeps: {
-      include: ['firebase/app', 'firebase/database', 'firebase/auth', 'firebase/firestore'],
+      exclude: ['firebase', '@firebase/app', '@firebase/database', '@firebase/auth', '@firebase/firestore'],
     },
   },
 });
