@@ -265,7 +265,8 @@
   initAuth();
 
   async function loadGoogleMapsPlaces() {
-    loadGoogleMaps(import.meta.env.PUBLIC_GOOGLE_MAPS_KEY);
+    const envData = import.meta as unknown as { env: { PUBLIC_GOOGLE_MAPS_KEY: string } };
+    loadGoogleMaps(envData.env.PUBLIC_GOOGLE_MAPS_KEY);
 
     await initPlaceAutocomplete({
       containerId: 'happyBusAddressContainer',
@@ -442,20 +443,7 @@
         }
       }
 
-      if (profile?.address) {
-        const addressInput = document.getElementById('happyBusAddress') as HTMLInputElement;
-        if (addressInput && (!addressInput.value || addressInput.value === '')) {
-          addressInput.value = profile.address;
-          // Si el texto de la dirección está presente, también lo guardamos en el campo oculto
-          const addressTextHidden = document.getElementById('happyBusAddressText') as HTMLInputElement;
-          if (addressTextHidden) addressTextHidden.value = profile.address;
 
-          if (profile.lat && profile.lng) {
-            (document.getElementById('happyBusLat') as HTMLInputElement).value = profile.lat.toString();
-            (document.getElementById('happyBusLng') as HTMLInputElement).value = profile.lng.toString();
-          }
-        }
-      }
     };
 
     let localPets: PetData[] = [];
