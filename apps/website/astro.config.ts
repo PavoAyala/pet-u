@@ -92,7 +92,16 @@ export default defineConfig({
       },
     },
     ssr: {
-      noExternal: ['firebase', '@pet-u/firebase-config', /^@firebase\//],
+      noExternal: [
+        'firebase',
+        '@pet-u/firebase-config',
+        '@firebase/app',
+        '@firebase/firestore',
+        '@firebase/auth',
+        '@firebase/analytics',
+        '@firebase/database',
+        '@firebase/functions',
+      ],
     },
   },
 });
