@@ -92,6 +92,17 @@ export default defineConfig({
       },
       dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
     },
+    build: {
+      rollupOptions: {
+        external: [
+          '@firebase/database',
+          '@firebase/util',
+          '@firebase/component',
+          '@firebase/logger',
+          'protobufjs',
+        ],
+      },
+    },
     ssr: {
       noExternal: ['@pet-u/firebase-config'],
     },
@@ -100,7 +111,6 @@ export default defineConfig({
         'firebase/app',
         'firebase/auth', 
         'firebase/firestore',
-        'firebase/database',
         'firebase/functions',
         'firebase/analytics',
       ],
