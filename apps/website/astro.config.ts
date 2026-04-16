@@ -91,9 +91,10 @@ export default defineConfig({
         '~': path.resolve(__dirname, './src'),
       },
       dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
+      preserveSymlinks: true,
     },
     ssr: {
-      noExternal: ['@pet-u/firebase-config', 'firebase', /^@firebase\/.*/],
+      noExternal: ['@pet-u/firebase-config', 'firebase', /^@firebase\/.*/, /^firebase\/.*/],
     },
     optimizeDeps: {
       include: [
@@ -103,14 +104,21 @@ export default defineConfig({
         'firebase/functions',
         'firebase/analytics',
         'firebase/database',
+        '@firebase/database',
+        '@firebase/app',
+        '@firebase/auth',
+        '@firebase/firestore',
+        '@firebase/functions',
+        '@firebase/analytics',
       ],
       esbuildOptions: {
         target: 'esnext',
       },
     },
     build: {
-      rollupOptions: {
-        external: [],
+      commonjsOptions: {
+        include: [/firebase/, /@firebase/, /node_modules/],
+        transformMixedEsModules: true,
       },
     },
   },
