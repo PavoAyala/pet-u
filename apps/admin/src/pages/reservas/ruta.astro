@@ -96,7 +96,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+  import { getRtdb, ref, onValue } from '@pet-u/firebase-config';
 
   // PET-U Origin
   const PETU_ORIGIN = { lat: 25.6653039, lng: -100.4054094, label: 'PET-U (Origen)' };
@@ -237,6 +237,11 @@ import Layout from '../../layouts/Layout.astro';
 
   // Listen to RTDB
   function loadReservations() {
+    const rtdb = getRtdb();
+    if (!rtdb) {
+      console.error('RTDB no está inicializada o disponible.');
+      return;
+    }
     const reservationsRef = ref(rtdb, 'reservations');
     onValue(reservationsRef, (snapshot) => {
       allReservations = [];
@@ -302,22 +307,14 @@ import Layout from '../../layouts/Layout.astro';
       return;
     }
 
-    if (stops.length === 1) {
-      orderedStops = stops;
-      renderStopList(orderedStops);
-      renderMarkersOnly(orderedStops);
-      buildMapsUrl(orderedStops);
-      return;
-    }
-
-    // Optimized route via DirectionsService
+    // Optimized route via DirectionsService (ida y vuelta siempre, incluso con 1 parada)
     const { DirectionsService, TravelMode } =
       await (window as any).google.maps.importLibrary('routes') as any;
     const { encoding } =
       await (window as any).google.maps.importLibrary('geometry') as any;
     const directionsService = new DirectionsService();
 
-    const waypoints = stops.slice(1).map((s: any) => ({
+    const waypoints = stops.map((s: any) => ({
       location: new (window as any).google.maps.LatLng(
         parseFloat(s.happyBus.lat), parseFloat(s.happyBus.lng)
       ),
@@ -329,7 +326,7 @@ import Layout from '../../layouts/Layout.astro';
         PETU_ORIGIN.lat, PETU_ORIGIN.lng
       ),
       destination: new (window as any).google.maps.LatLng(
-        parseFloat(stops[0].happyBus.lat), parseFloat(stops[0].happyBus.lng)
+        PETU_ORIGIN.lat, PETU_ORIGIN.lng
       ),
       waypoints,
       optimizeWaypoints: true,
@@ -342,7 +339,7 @@ import Layout from '../../layouts/Layout.astro';
         routePolyline.setPath(overviewPath);
 
         const waypointOrder = result.routes[0].waypoint_order;
-        const reordered = [stops[0], ...waypointOrder.map((i: number) => stops.slice(1)[i])];
+        const reordered = waypointOrder.map((i: number) => stops[i]);
         orderedStops = reordered;
         renderStopList(reordered);
         renderNumberedMarkers(reordered);
@@ -471,8 +468,8 @@ import Layout from '../../layouts/Layout.astro';
     if (!btn || stops.length === 0) return;
 
     const origin = `${PETU_ORIGIN.lat},${PETU_ORIGIN.lng}`;
-    const dest = `${stops[stops.length - 1].happyBus.lat},${stops[stops.length - 1].happyBus.lng}`;
-    const waypoints = stops.slice(0, -1).map((s: any) => `${s.happyBus.lat},${s.happyBus.lng}`).join('|');
+    const dest = origin;
+    const waypoints = stops.map((s: any) => `${s.happyBus.lat},${s.happyBus.lng}`).join('|');
 
     let url = `https://www.google.com/maps/dir/?api=1&origin=${origin}&destination=${dest}&travelmode=driving`;
     if (waypoints) url += `&waypoints=${encodeURIComponent(waypoints)}`;

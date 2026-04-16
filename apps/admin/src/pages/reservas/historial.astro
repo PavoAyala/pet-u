@@ -144,7 +144,7 @@ import Layout from '../../layouts/Layout.astro';
 </Layout>
 
 <script>
-  import { rtdb, ref, onValue, remove } from '@pet-u/firebase-config';
+  import { getRtdb, ref, onValue, remove } from '@pet-u/firebase-config';
 
   const loading = document.getElementById('loading')!;
   const empty = document.getElementById('empty')!;
@@ -154,6 +154,8 @@ import Layout from '../../layouts/Layout.astro';
   const statTotal = document.getElementById('stat-total')!;
   const statIngresos = document.getElementById('stat-ingresos')!;
   const searchInput = document.getElementById('searchInput') as HTMLInputElement;
+
+  const rtdb = getRtdb();
 
   const reservationsRef = ref(rtdb, 'reservations');
   let allReservations: any[] = [];

@@ -1,9 +1,23 @@
-import { initializeApp, getApps, getApp } from 'firebase/app';
-import { getFirestore, connectFirestoreEmulator } from 'firebase/firestore';
-import { getAuth, connectAuthEmulator } from 'firebase/auth';
-import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getDatabase, connectDatabaseEmulator, type Database } from 'firebase/database';
-import { getFunctions, connectFunctionsEmulator, httpsCallable } from 'firebase/functions';
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { getFirestore, connectFirestoreEmulator, getDoc, setDoc } from "firebase/firestore";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getAnalytics, isSupported } from "firebase/analytics";
+import {
+  getDatabase,
+  connectDatabaseEmulator,
+  type Database,
+} from "firebase/database";
+import {
+  getFunctions,
+  connectFunctionsEmulator,
+  httpsCallable,
+} from "firebase/functions";
+
+// Ensure side-effects are loaded for service registration
+import "firebase/auth";
+import "firebase/database";
+import "firebase/firestore";
+import "firebase/functions";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAUxDf0vZMM0v4YRzuFiZcIabezjgDyerQ",
@@ -13,34 +27,45 @@ const firebaseConfig = {
   storageBucket: "pet-u-fe87c.firebasestorage.app",
   messagingSenderId: "636517114119",
   appId: "1:636517114119:web:b642d82fdb291d999d25a2",
-  measurementId: "G-XQVFNSWM9B"
+  measurementId: "G-XQVFNSWM9B",
 };
 
 // Initialize Firebase efficiently for SSR/Client
-export const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
-const isBrowser = typeof window !== 'undefined';
+export const app =
+  getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
+const isBrowser = typeof window !== "undefined";
 
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-// Astro evaluates imported modules during SSR/prerender. Avoid constructing RTDB there.
-export const rtdb = (isBrowser ? getDatabase(app) : undefined) as Database;
 export const functions = getFunctions(app);
 
 // Detectar si estamos en un entorno de desarrollo (cliente o servidor)
-const isDev = 
-  (globalThis.window !== undefined && (globalThis.window.location.hostname === 'localhost' || globalThis.window.location.hostname === '127.0.0.1')) ||
-  // @ts-expect-error: process no está definido globalmente en los tipos del navegador
-  (typeof process !== 'undefined' && process.env.NODE_ENV === 'development');
+const isDev =
+  (typeof window !== "undefined" &&
+    (window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1")) ||
+  (typeof globalThis !== "undefined" && 
+   // @ts-ignore
+   globalThis.process?.env?.NODE_ENV === "development");
+
+// Lazy initialization for Realtime Database to avoid issues during SSR
+let rtdbInstance: Database | undefined;
+export function getRtdb(): Database | undefined {
+  if (!isBrowser) return undefined;
+  if (!rtdbInstance) {
+    rtdbInstance = getDatabase(app);
+    if (isDev) {
+      connectDatabaseEmulator(rtdbInstance, "127.0.0.1", 9000);
+    }
+  }
+  return rtdbInstance;
+}
 
 if (isDev) {
-  console.log('--- CONECTANDO A EMULADORES DE FIREBASE ---');
-  // En el servidor (SSR), usamos la IP interna o localhost
-  const host = '127.0.0.1';
+  console.log("--- CONECTANDO A EMULADORES DE FIREBASE ---");
+  const host = "127.0.0.1";
   connectFirestoreEmulator(db, host, 8080);
   connectAuthEmulator(auth, `http://${host}:9099`);
-  if (isBrowser) {
-    connectDatabaseEmulator(rtdb, host, 9000);
-  }
   connectFunctionsEmulator(functions, host, 5001);
 }
 
@@ -54,26 +79,26 @@ if (isBrowser) {
 
 export const analytics = analyticsInstance;
 
-export { 
-  collection, 
-  getDocs, 
-  addDoc, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
-  serverTimestamp, 
-  query, 
-  orderBy, 
-  Timestamp,
-  type DocumentData 
-} from 'firebase/firestore';
-
 export {
-  httpsCallable,
-} from 'firebase/functions';
+  collection,
+  getDocs,
+  getDoc,
+  setDoc,
+  addDoc,
+  doc,
+  updateDoc,
+  deleteDoc,
+  serverTimestamp,
+  query,
+  orderBy,
+  Timestamp,
+  type DocumentData,
+} from "firebase/firestore";
 
-export * from './types';
-export type { Product } from './types';
+export { httpsCallable } from "firebase/functions";
+
+export * from "./types";
+export type { Product } from "./types";
 
 export {
   signInWithEmailAndPassword,
@@ -82,8 +107,13 @@ export {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
-  type User
-} from 'firebase/auth';
+  createUserWithEmailAndPassword,
+  updateProfile,
+  deleteUser,
+  signInWithPopup,
+  GoogleAuthProvider,
+  type User,
+} from "firebase/auth";
 
 export {
   ref,
@@ -94,5 +124,5 @@ export {
   onChildAdded,
   remove,
   update,
-  child
-} from 'firebase/database';
+  child,
+} from "firebase/database";

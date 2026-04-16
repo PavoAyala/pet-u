@@ -94,7 +94,7 @@ import Layout from '../layouts/Layout.astro';
 
 <script>
   import { db, collection, getDocs, type DocumentData } from '@pet-u/firebase-config';
-  import { rtdb, ref, onValue } from '@pet-u/firebase-config';
+  import { getRtdb, ref, onValue } from '@pet-u/firebase-config';
 
   // Stats Firestore (Tienda)
   const snap = await getDocs(collection(db, 'productos'));
@@ -103,6 +103,7 @@ import Layout from '../layouts/Layout.astro';
   document.getElementById('in-stock')!.textContent = String(products.filter((p: any) => (p.stock || 0) > 0 || p.nombre).length);
 
   // Stats RTDB (Reservas)
+  const rtdb = getRtdb();
   const reservationsRef = ref(rtdb, 'reservations');
   onValue(reservationsRef, (snapshot) => {
     if (snapshot.exists()) {

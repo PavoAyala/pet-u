@@ -23,7 +23,7 @@ const whenExternalScripts = (items: (() => AstroIntegration) | (() => AstroInteg
   hasExternalScripts ? (Array.isArray(items) ? items.map((item) => item()) : [items()]) : [];
 
 export default defineConfig({
-  output: 'server',
+  output: 'static',
   adapter: vercel({
     webAnalytics: { enabled: true },
   }),
@@ -89,6 +89,33 @@ export default defineConfig({
     resolve: {
       alias: {
         '~': path.resolve(__dirname, './src'),
+      },
+      dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
+    },
+    build: {
+      rollupOptions: {
+        external: [
+          '@firebase/database',
+          '@firebase/util',
+          '@firebase/component',
+          '@firebase/logger',
+          'protobufjs',
+        ],
+      },
+    },
+    ssr: {
+      noExternal: ['@pet-u/firebase-config'],
+    },
+    optimizeDeps: {
+      include: [
+        'firebase/app',
+        'firebase/auth', 
+        'firebase/firestore',
+        'firebase/functions',
+        'firebase/analytics',
+      ],
+      esbuildOptions: {
+        target: 'esnext',
       },
     },
   },
