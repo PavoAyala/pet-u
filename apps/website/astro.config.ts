@@ -90,11 +90,33 @@ export default defineConfig({
       alias: {
         '~': path.resolve(__dirname, './src'),
       },
+      dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
+    },
+    build: {
+      rollupOptions: {
+        external: [
+          '@firebase/database',
+          '@firebase/util',
+          '@firebase/component',
+          '@firebase/logger',
+          'protobufjs',
+        ],
+      },
     },
     ssr: {
-      noExternal: [
-        '@pet-u/firebase-config',
+      noExternal: ['@pet-u/firebase-config'],
+    },
+    optimizeDeps: {
+      include: [
+        'firebase/app',
+        'firebase/auth', 
+        'firebase/firestore',
+        'firebase/functions',
+        'firebase/analytics',
       ],
+      esbuildOptions: {
+        target: 'esnext',
+      },
     },
   },
 });
