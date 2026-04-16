@@ -33,6 +33,7 @@
     "astro": "5.18.1",
     "astro-embed": "^0.9.0",
     "astro-icon": "^1.1.5",
+    "@firebase/database": "1.0.18",
     "firebase": "12.10.0",
     "limax": "4.1.0",
     "lodash.merge": "^4.6.2",
