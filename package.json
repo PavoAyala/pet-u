@@ -30,7 +30,7 @@
       "unrs-resolver"
     ],
     "overrides": {
-      "firebase": "^12.11.0",
+      "firebase": "12.10.0",
       "@firebase/app": "^0.13.0",
       "@firebase/auth": "^1.10.0",
       "@firebase/firestore": "^4.8.0",
