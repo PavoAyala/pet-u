@@ -92,19 +92,9 @@ export default defineConfig({
       },
       dedupe: ['firebase', '@firebase/app', '@firebase/auth', '@firebase/firestore', '@firebase/database', '@firebase/functions', '@firebase/analytics'],
     },
-    build: {
-      rollupOptions: {
-        external: [
-          '@firebase/database',
-          '@firebase/util',
-          '@firebase/component',
-          '@firebase/logger',
-          'protobufjs',
-        ],
-      },
-    },
     ssr: {
       noExternal: ['@pet-u/firebase-config'],
+      external: ['@firebase/database', '@firebase/util', '@firebase/component', '@firebase/logger', 'protobufjs'],
     },
     optimizeDeps: {
       include: [
@@ -113,6 +103,7 @@ export default defineConfig({
         'firebase/firestore',
         'firebase/functions',
         'firebase/analytics',
+        'firebase/database',
       ],
       esbuildOptions: {
         target: 'esnext',
