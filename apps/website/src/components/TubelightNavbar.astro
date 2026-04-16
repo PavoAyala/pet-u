@@ -29,7 +29,7 @@ const navItems = [
         <a 
           href={item.url} 
           data-nav-profile={item.url === '/perfil' ? "true" : undefined}
-          data-astro-reload={item.url === '/instalaciones' || item.url === '/perfil' ? "true" : undefined}
+          data-astro-reload={item.url === '/instalaciones' ? "true" : undefined}
           class={`relative flex items-center justify-center cursor-pointer px-4 xs:px-5 sm:px-6 py-2.5 sm:py-2 rounded-full transition-all duration-300 ${
             isActive ? "text-[#3C4F35]" : "text-gray-400 hover:text-[#3C4F35] hover:bg-[#f0e6d2]/30"
           }`}
@@ -105,23 +105,24 @@ const navItems = [
   function updateNav() {
     const navProfileName = document.getElementById('navProfileName');
     const navLogoutBtn = document.getElementById('navLogoutBtn');
-    if (!navProfileName) return;
-
-    const state = userStore.get();
     const profileLinks = document.querySelectorAll('a[data-nav-profile="true"]');
+    const state = userStore.get();
     
+    // Si hay usuario, actualizamos UI
     if (state.user) {
-      if (state.profile?.displayName) {
+      if (navProfileName && state.profile?.displayName) {
         navProfileName.textContent = state.profile.displayName.split(' ')[0];
       }
       navLogoutBtn?.classList.remove('hidden');
       navLogoutBtn?.classList.add('flex');
       profileLinks.forEach(link => { (link as HTMLAnchorElement).href = '/perfil'; });
     } else {
-      navProfileName.textContent = 'Mi Cuenta';
+      if (navProfileName) {
+        navProfileName.textContent = 'Mi Cuenta';
+      }
       navLogoutBtn?.classList.add('hidden');
       navLogoutBtn?.classList.remove('flex');
-      profileLinks.forEach(link => { (link as HTMLAnchorElement).href = '#'; });
+      profileLinks.forEach(link => { (link as HTMLAnchorElement).href = 'javascript:void(0)'; });
     }
   }
 
@@ -156,14 +157,20 @@ const navItems = [
     // Interceptar click en Mi Cuenta si no hay sesión
     const profileLinks = document.querySelectorAll('a[data-nav-profile="true"]');
     profileLinks.forEach(link => {
-      link.addEventListener('click', (e) => {
-        const state = userStore.get();
-        if (!state.user) {
-          e.preventDefault();
-          e.stopPropagation();
-          window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }));
-        }
-      });
+      // Remover listener previo si existiera (evita duplicados con ViewTransitions)
+      link.removeEventListener('click', handleProfileClick);
+      link.addEventListener('click', handleProfileClick);
     });
   });
+
+  // Manejador centralizado para el click en perfil
+  function handleProfileClick(e: Event) {
+    const state = userStore.get();
+    if (!state.user) {
+      e.preventDefault();
+      e.stopPropagation();
+      window.dispatchEvent(new CustomEvent('open-auth-modal', { detail: { view: 'login' } }));
+      return false;
+    }
+  }
 </script>
