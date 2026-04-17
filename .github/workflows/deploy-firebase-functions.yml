@@ -36,6 +36,18 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Create .env file
+        env:
+          GOOGLE_CALENDAR_CREDENTIALS: ${{ secrets.GOOGLE_CALENDAR_CREDENTIALS }}
+          GOOGLE_CALENDAR_ID: ${{ secrets.GOOGLE_CALENDAR_ID }}
+          VACUNAS_CALENDAR_ID: ${{ secrets.VACUNAS_CALENDAR_ID }}
+          PUBLIC_PET_U_MAPS: ${{ secrets.PUBLIC_PET_U_MAPS }}
+        run: |
+          echo "GOOGLE_CALENDAR_CREDENTIALS='$GOOGLE_CALENDAR_CREDENTIALS'" > apps/firebase_functions/.env
+          echo "GOOGLE_CALENDAR_ID=\"$GOOGLE_CALENDAR_ID\"" >> apps/firebase_functions/.env
+          echo "VACUNAS_CALENDAR_ID=\"$VACUNAS_CALENDAR_ID\"" >> apps/firebase_functions/.env
+          echo "PUBLIC_PET_U_MAPS=\"$PUBLIC_PET_U_MAPS\"" >> apps/firebase_functions/.env
+
       - name: Build Firebase Functions
         run: pnpm --filter=pet-u-functions build
 
