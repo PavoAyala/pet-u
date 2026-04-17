@@ -1,3 +1,6 @@
+---
+const mapsKey = import.meta.env.PUBLIC_PET_U_MAPS;
+---
 <dialog id="bookingModal" class="p-0 rounded-[32px] backdrop:bg-black/80 backdrop:backdrop-blur-sm shadow-2xl w-[95%] max-w-lg mx-auto overflow-hidden text-[#3C4F35] font-sans border-0 transition-all duration-300">
   <div id="bookingModalContent" class="bg-white w-full rounded-[32px] overflow-hidden flex flex-col max-h-[90vh]">
     
@@ -13,7 +16,7 @@
     </div>
 
     <!-- Content Area Scrollable -->
-    <form id="bookingForm" class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 bg-white">
+    <form id="bookingForm" data-maps-key={mapsKey} class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1 bg-white">
       <!-- Hidden Service Type -->
       <input type="hidden" id="serviceTypeInput" name="serviceType" value="hotel">
       
@@ -265,8 +268,15 @@
   initAuth();
 
   async function loadGoogleMapsPlaces() {
-    const envData = import.meta as unknown as { env: { PUBLIC_PET_U_MAPS: string } };
-    loadGoogleMaps(envData.env.PUBLIC_PET_U_MAPS);
+    const form = document.getElementById('bookingForm') as HTMLFormElement;
+    const mapsKey = form?.dataset.mapsKey;
+    
+    if (!mapsKey) {
+      console.warn("Google Maps API Key not found in data-maps-key");
+      return;
+    }
+
+    loadGoogleMaps(mapsKey);
 
     await initPlaceAutocomplete({
       containerId: 'happyBusAddressContainer',
