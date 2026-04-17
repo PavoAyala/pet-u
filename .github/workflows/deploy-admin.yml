@@ -61,6 +61,7 @@ jobs:
         run: pnpm build --filter=pet-u-admin
         env:
           TURBO_CACHE_DIR: .turbo
+          PUBLIC_PET_U_MAPS: ${{ secrets.PUBLIC_PET_U_MAPS }}
 
       - name: Verify build output
         run: |

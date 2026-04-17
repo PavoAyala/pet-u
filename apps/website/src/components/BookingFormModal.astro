@@ -265,8 +265,8 @@
   initAuth();
 
   async function loadGoogleMapsPlaces() {
-    const envData = import.meta as unknown as { env: { PUBLIC_GOOGLE_MAPS_KEY: string } };
-    loadGoogleMaps(envData.env.PUBLIC_GOOGLE_MAPS_KEY);
+    const envData = import.meta as unknown as { env: { PUBLIC_PET_U_MAPS: string } };
+    loadGoogleMaps(envData.env.PUBLIC_PET_U_MAPS);
 
     await initPlaceAutocomplete({
       containerId: 'happyBusAddressContainer',
