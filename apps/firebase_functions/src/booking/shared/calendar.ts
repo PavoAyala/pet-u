@@ -4,8 +4,21 @@ import { HOTEL_CALENDAR_ID, MONTERREY_TIMEZONE, SLOT_DURATION_MIN, VACUNAS_CALEN
 import type { ArrivalMode, HappyBusPayload, ReservationPayload } from "./types";
 
 export function getCalendarClient() {
-  const keyPath = process.env.GOOGLE_CALENDAR_CREDENTIALS || process.env.GOOGLE_APPLICATION_CREDENTIALS || "";
-  const certs = JSON.parse(fs.readFileSync(keyPath, "utf8"));
+  const credentialsString = process.env.GOOGLE_CALENDAR_CREDENTIALS || process.env.GOOGLE_APPLICATION_CREDENTIALS || "";
+  
+  let certs;
+  try {
+    if (credentialsString.trim().startsWith("{")) {
+      certs = JSON.parse(credentialsString);
+    } else if (credentialsString) {
+      certs = JSON.parse(fs.readFileSync(credentialsString, "utf8"));
+    } else {
+      throw new Error("No Google Calendar credentials found in environment variables.");
+    }
+  } catch (error) {
+    console.error("Error parsing Google Calendar credentials:", error);
+    throw error;
+  }
 
   const auth = new google.auth.GoogleAuth({
     credentials: {

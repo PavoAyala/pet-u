@@ -42,8 +42,23 @@ const googleapis_1 = require("googleapis");
 const fs = __importStar(require("fs"));
 const config_1 = require("./config");
 function getCalendarClient() {
-    const keyPath = process.env.GOOGLE_CALENDAR_CREDENTIALS || process.env.GOOGLE_APPLICATION_CREDENTIALS || "";
-    const certs = JSON.parse(fs.readFileSync(keyPath, "utf8"));
+    const credentialsString = process.env.GOOGLE_CALENDAR_CREDENTIALS || process.env.GOOGLE_APPLICATION_CREDENTIALS || "";
+    let certs;
+    try {
+        if (credentialsString.trim().startsWith("{")) {
+            certs = JSON.parse(credentialsString);
+        }
+        else if (credentialsString) {
+            certs = JSON.parse(fs.readFileSync(credentialsString, "utf8"));
+        }
+        else {
+            throw new Error("No Google Calendar credentials found in environment variables.");
+        }
+    }
+    catch (error) {
+        console.error("Error parsing Google Calendar credentials:", error);
+        throw error;
+    }
     const auth = new googleapis_1.google.auth.GoogleAuth({
         credentials: {
             client_email: certs.client_email,
