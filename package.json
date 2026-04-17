@@ -1,6 +1,7 @@
 {
   "name": "pet-u-monorepo",
   "private": true,
+  "license": "MIT",
   "engines": {
     "node": ">=18.17.1"
   },
