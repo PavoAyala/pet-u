@@ -1,165 +1,165 @@
 # PET-U Daycare & Hotel 🐶
 
-Bienvenido al repositorio oficial del sitio web de **PET-U Daycare & Hotel**, la guardería y hotel boutique donde los consentidos de cuatro patas descansan "#JustLikeHome".
+Welcome to the official repository for **PET-U Daycare & Hotel**, the boutique daycare and hotel where pampered four-legged companions rest in a "#JustLikeHome" environment.
 
-Este proyecto ha sido desarrollado como una **Aplicación Astro moderna** con estética de marca personalizada y un sistema de rutas optimizadas (Multi-Page Application ultra veloz).
+This project was developed as a **modern Astro application** with a custom brand aesthetic and an optimized routing system (ultra-fast multi-page application).
 
-## 🚀 Tecnologías Principales
+## 🚀 Main Technologies
 
-*   [Astro](https://astro.build/) - Framework web para entregar sitios con cero JavaScript innecesario.
-*   [Tailwind CSS](https://tailwindcss.com/) - Framework CSS para los estilos modernos y utilitarios.
-*   **Componentes Nativos Astro** - Toda la UI fue reensamblada en módulos estáticos (e.j. la barra `TubelightNavbar`) previniendo cuellos de botella e incompatibilidad de paquetes React pesados. 
+*   [Astro](https://astro.build/) - Web framework for delivering sites with zero unnecessary JavaScript.
+*   [Tailwind CSS](https://tailwindcss.com/) - CSS framework for modern utility styling.
+*   **Native Astro Components** - The entire UI was rebuilt using static modules (for example, the `TubelightNavbar` bar) to avoid bottlenecks and incompatibility with heavy React packages.
 
-## 🎨 Diseño y Branding
+## 🎨 Design and Branding
 
-La interfaz grafica e identidad visual utiliza la gama botánica de PET-U:
-- **Off-white / Hueso**: Tono cálido para todos los fondos orgánicos en vez de blanco médico puro. (#fdfbf7)
-- **Cream / Beige**: Usado sutilmente como tarjeta de contraste de diseño boutique. (#f0e6d2)
-- **Forest Green / Olive**: Identidad núcleo usada en fuentes, el fondo del encabezado y CTAs principales. (#3C4F35)
+The visual interface and brand identity use PET-U's botanical palette:
+- **Off-white / Bone**: Warm tone for all organic backgrounds instead of pure clinical white. (#fdfbf7)
+- **Cream / Beige**: Used subtly as a boutique contrast card. (#f0e6d2)
+- **Forest Green / Olive**: Core identity used in typography, header backgrounds, and primary CTAs. (#3C4F35)
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
-El sitio consta actualmente del sistema modular limpiado:
-- `/` - **Portada (Index)**: El "Hero section" con el branding principal de ingreso rápido.
-- `/servicios` - **Nuestros Planes**: El desglose tabular en diseño Grid con precios (Fun Day, Funny Days, Happy Bus, Social Club y VIP).
-- `/contacto` - **Ruta Directa**: Conexión real con WhatsApp al (81) 4549-3733 y ubicación anclada con Google Maps en San Pedro Garza Garcia.
+The site currently includes a cleaned modular system:
+- `/` - **Landing Page (Index)**: The hero section with the main branding and quick entry.
+- `/servicios` - **Our Plans**: A grid layout with pricing details (Fun Day, Funny Days, Happy Bus, Social Club, and VIP).
+- `/contacto` - **Direct Route**: Real WhatsApp connection at (81) 4549-3733 and a pinned Google Maps location in San Pedro Garza García.
 
-## 🧞 Comandos Locales (Desarrollo)
+## 🧞 Local Development Commands
 
-Asegúrate de ejecutar tus comandos de compilación usando `pnpm`, el gestor predilecto actual:
+Make sure to run your build commands using `pnpm`, the current preferred package manager:
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `pnpm install`            | Instala y sincroniza las dependencias.           |
-| `pnpm run dev`            | Lanza el servidor local en modo desarrollo.      |
-| `pnpm run build`          | Empaqueta y minifica tu proyecto para producción.|
-| `pnpm run preview`        | Crea una vista previa rápida del build final.    |
-| `pnpm run astro ...`      | Invoca el analizador de línea de Astro directo.  |
+| Command | Action |
+| :--- | :--- |
+| `pnpm install` | Installs and syncs dependencies. |
+| `pnpm run dev` | Starts the local development server. |
+| `pnpm run build` | Bundles and minifies the project for production. |
+| `pnpm run preview` | Creates a quick preview of the final build. |
+| `pnpm run astro ...` | Invokes the Astro CLI directly. |
 
-## 📝 Notas de Versión
-*   Todo el material visual perteneciente a la plantilla generadora inicial (AstroWind) ha sido depurado. Únicamente se conservan las bases tecnológicas y los layout nativos. Todo elemento es totalmente personalizado.
+## 📝 Release Notes
+*   All visual material from the initial generator template (AstroWind) has been cleaned up. Only the underlying technology and native layouts remain. Every element is fully customized.
 
-## 📄 Servicios, Precios, Términos y Condiciones (Extraído del PDF 2026)
+## 📄 Services, Pricing, Terms, and Conditions (Excerpt from the 2026 PDF)
 
-**VIVIR COMO EQUIPO. UN TIEMPO PARA SÍ MISMO.**
-Hola, llevas una vida de constante trabajo, salidas de la ciudad, compromisos, viajes. Pero como nosotros adoras a tus mascotas y te gustaría que las cuidaran en un lugar que les den cariño, amor y que te de confianza. Te presentamos a PET-U !
+**LIVE AS A TEAM. TIME FOR YOURSELF.**
+You lead a busy life filled with work, outings, commitments, and travel. But since we love your pets and would like them cared for in a place that offers affection, love, and trust, we present PET-U!
 
-PET-U ofrece servicios de Hotel y Daycare y Grooming para tus perrunos, contamos con personal altamente capacitado y con instalaciones de primer nivel adecuadas y seguras para que cada día que tu mascota este en PET-U sea un día especial.
+PET-U offers hotel, daycare, and grooming services for your dogs, with highly trained staff and first-class facilities that are safe and appropriate so that every day your pet spends at PET-U is a special day.
 
-**Enfocados en la felicidad de tu mascota**
-En PET-U Sabemos que nada es más importante que el bienestar de tu compañero . Por eso ofrecemos un lugar donde sean ellos mismos , jueguen, convivan e interactúen siempre supervisados por nuestro personal.
+**Focused on your pet's happiness**
+At PET-U we know nothing is more important than the well-being of your companion. That is why we offer a place where they can be themselves, play, socialize, and interact while always being supervised by our staff.
 
 **Together our way**
-Nos mueve el amor por los animales. Ponernos en el lugar de toda mascota. Toda nuestra atención y dedicación es para lograr que para ellos PET-U también sea su hogar.
+We are moved by love for animals. We put ourselves in the place of every pet. All our attention and dedication is focused on making PET-U feel like home for them too.
 
-Todo el que acude a PET-U sabe lo importante que es dedicarle el cuidado y tiempo a su mascota, por eso nos sentimos honrados de que nos elijas y compartas de ese tiempo. Te garantizamos que tu mascota te lo agradecerá.
+Everyone who comes to PET-U knows how important it is to dedicate care and time to their pet, which is why we feel honored that you choose us and share part of that time. We guarantee your pet will thank you.
 
-### Horarios
-- **Lunes a Viernes:** 8:00 AM a 7:00 PM
-- **Sábado:** 8:00 AM a 4:00 PM
+### Hours
+- **Monday to Friday:** 8:00 AM to 7:00 PM
+- **Saturday:** 8:00 AM to 4:00 PM
 
 ---
 
 ### Funday (Daycare)
-*Dale a tu mascota un día lleno de juegos y socialización en un ambiente seguro!*
+*Give your pet a day full of play and socialization in a safe environment!*
 
-En nuestro espacio, tu mascota vivirá una experiencia inolvidable, como si estuviera contigo. Ofrecemos paseos por el parque, juegos emocionantes y la oportunidad de socializar con otros amigos peludos. Además, contamos con acogedoras salas de TV para esos momentos relax. Aquí, cada día está lleno de diversiones, amor y descanso. Porque en nuestro hogar, tu mascota es parte de la familia y vive la experiencia. "Just Like Home".
+In our space, your pet will enjoy an unforgettable experience as if they were with you. We offer park walks, exciting games, and the opportunity to socialize with other furry friends. We also have cozy TV rooms for those relaxed moments. Here, every day is filled with fun, love, and rest. Because in our home, your pet is part of the family and lives the experience. "Just Like Home".
 
-**Costos por día:**
-- Mascotas de 0 a 30 kg: **$220**
-- Mascotas de 30 kg o más: **$300**
+**Daily cost:**
+- Pets from 0 to 30 kg: **$220**
+- Pets from 30 kg and up: **$300**
 
 ---
 
 ### Hotel
-*Nos encargamos de cuidar a tu mascota en un ambiente cómodo, seguro y amigable para que disfrutes de tus compromisos.*
+*We take care of your pet in a comfortable, safe, and friendly environment so you can enjoy your commitments.*
 
-La misión de nuestro hotel es cuidar a los peludos de la mejor manera posible mientras cumples con tus compromisos, nosotros les brindaremos amor, diversión, atención y tranquilidad a cada uno de ellos para que esperen felizmente tu regreso. Tu confianza en nosotros será la tranquilidad en tus viajes.
+Our hotel mission is to care for your furry friends in the best way possible while you fulfill your commitments. We provide love, fun, attention, and tranquility to each of them so they can happily await your return. Your trust in us will be the peace of mind in your travels.
 
-**Precios por Noche:**
+**Nightly Rates:**
 
-| Tamaño (Peso) | Temporada Baja | Temporada Alta |
+| Size (Weight) | Low Season | High Season |
 | :--- | :--- | :--- |
-| Chica (0 a 15 kg) | $280 | $380 |
-| Mediana (15 a 25 kg) | $350 | $450 |
-| Grande (25 a 50 kg) | $430 | $500 |
-| XL (50 kg o más) | $520 | $620 |
+| Small (0 to 15 kg) | $280 | $380 |
+| Medium (15 to 25 kg) | $350 | $450 |
+| Large (25 to 50 kg) | $430 | $500 |
+| XL (50 kg or more) | $520 | $620 |
 
-**Horarios de Hotel:**
-- **Check-in:** 11:00 AM a 7:00 PM
-- **Check-out:** 10:00 AM a 2:00 PM
-- *Early check in o late check out tendrá un costo de $100 pesos extra.*
+**Hotel Hours:**
+- **Check-in:** 11:00 AM to 7:00 PM
+- **Check-out:** 10:00 AM to 2:00 PM
+- *Early check-in or late check-out carries an additional cost of $100 pesos.*
 
-**Requisitos para ingreso:**
-- **Obligatorio:**
+**Entry Requirements:**
+- **Mandatory:**
   - Bravecto
-  - Vacunas (séxtuple, giardia, bordatella, rabia)
-  - Desparasitación interna
+  - Vaccines (sextuple, giardia, bordatella, rabies)
+  - Internal deworming
   - Collar
-  - Platos
-  - Comida
-  - Prenda con olor al dueño
-- **Sugerido:**
-  - Cama
-  - Cobija
-  - Juguetes
-  - Correa
-  - Premios
-  - Ropa
+  - Bowls
+  - Food
+  - Clothing with the owner's scent
+- **Suggested:**
+  - Bed
+  - Blanket
+  - Toys
+  - Leash
+  - Treats
+  - Clothes
 
-> **Nota:** Costo adicional de $100 MXN por incumplimiento de horarios. Estancias de 6 noches o más se agregará un baño obligatorio con costo.
+> **Note:** Additional cost of $100 MXN for missed check-in/check-out times. Stays of 6 nights or more will include a mandatory bath with a fee.
 
 ---
 
-### Paquetes de Daycare
+### Daycare Packages
 
 #### Happy Tails Pass
-*Mañanas y tardes llenas de diversión, amor y cuidado para tu mascota. En PET-U tenemos todo lo que tu mascota necesita para que tus días ocupados se conviertan en uno de los mejores días de su vida!*
+*Mornings and evenings full of fun, love, and care for your pet. At PET-U we have everything your pet needs so that your busy days become one of the best days of their life!*
 
-**Mascota chica:**
-- Daycare 2 días a la semana: **$1,496 al mes.**
-- Daycare 3 días a la semana: **$2,244 al mes.**
-- Daycare 5 días a la semana: **$3,740 al mes.**
+**Small pet:**
+- Daycare 2 days a week: **$1,496 per month.**
+- Daycare 3 days a week: **$2,244 per month.**
+- Daycare 5 days a week: **$3,740 per month.**
 
-**Mascota grande:**
-- Daycare 2 días a la semana: **$2,040 al mes.**
-- Daycare 3 días a la semana: **$3,060 al mes.**
-- Daycare 5 días a la semana: **$5,100 al mes.**
+**Large pet:**
+- Daycare 2 days a week: **$2,040 per month.**
+- Daycare 3 days a week: **$3,060 per month.**
+- Daycare 5 days a week: **$5,100 per month.**
 
-> **Beneficios:** Descuento del 20% en transporte al contratar cualquiera de estos paquetes.
+> **Benefits:** 20% discount on transportation when contracting any of these packages.
 
 #### Pawtastic Days
-*Incluye: DAYCARE de Lunes a Viernes, 4 noches de hotel (temporada baja), 1 baño gratis.*
+*Includes: DAYCARE Monday to Friday, 4 hotel nights (low season), 1 free bath.*
 
-**Costo Mensual:**
-- **Mascota Chica:** $5,185 ($4,880 con cargo domiciliado TDC)
-- **Mascota Grande:** $6,945 ($6,536 con cargo domiciliado TDC)
+**Monthly Cost:**
+- **Small Pet:** $5,185 ($4,880 with direct debit on TDC)
+- **Large Pet:** $6,945 ($6,536 with direct debit on TDC)
 
-> **Beneficios:** Descuento del 30% en transporte y 20% en servicios adicionales.
+> **Benefits:** 30% discount on transportation and 20% on additional services.
 
 #### Pawflex Days
-*Un paquete hecho a tu medida. Días de daycare que puedes usar durante todo el mes, el día que sea de tu agrado!*
+*A package made just for you. Daycare days you can use throughout the month, whenever you want!*
 
-**Costos mascota chica:**
-- 5 días: $950
-- 10 días: $1,900
-- 15 días: $2,805
+**Small pet costs:**
+- 5 days: $950
+- 10 days: $1,900
+- 15 days: $2,805
 
-**Costos mascota grande:**
-- 5 días: $1,275
-- 10 días: $2,550
-- 15 días: $3,825
+**Large pet costs:**
+- 5 days: $1,275
+- 10 days: $2,550
+- 15 days: $3,825
 
-> **Beneficios:** Descuento del 30% en transporte y 20% en servicios adicionales.
+> **Benefits:** 30% discount on transportation and 20% on additional services.
 
 ---
 
-### Adicionales y Cuidados Especiales
+### Additional and Special Care
 
-#### Vacunas
-- Séxtuple: $350
-- Bordatella: $350
-- Rabia: $350
+#### Vaccines
+- Sextuple: $350
+- Bordetella: $350
+- Rabies: $350
 - Giardia: $430
 
 #### Bravecto
@@ -170,30 +170,30 @@ La misión de nuestro hotel es cuidar a los peludos de la mejor manera posible m
 - 1400mg (40-56kg): $1,230
 
 #### Grooming & Spa
-- Raza chica pelo corto: $150
-- Raza mediana pelo corto: $250
-- Raza grande pelo corto: $400
-- Raza chica pelo largo: $200
-- Raza mediana pelo largo: $350
-- Raza grande pelo largo: $450
-- Corte de uñas: $100
-- Lavado dental: $100
-- Corte higiénico: $100
-- Deslanado: $100
-- Corte de pelo: desde $100
+- Small short-haired breed: $150
+- Medium short-haired breed: $250
+- Large short-haired breed: $400
+- Small long-haired breed: $200
+- Medium long-haired breed: $350
+- Large long-haired breed: $450
+- Nail trim: $100
+- Dental wash: $100
+- Hygienic trim: $100
+- Deshedding: $100
+- Haircut: from $100
 
-#### Adiestramiento Canino
-- Adiestramiento básico (3 clases): $3,500
-- Clases de educación en casa (3 clases): $3,500
-- Adiestramiento avanzado (3 clases): $4,000
+#### Canine Training
+- Basic training (3 classes): $3,500
+- In-home education classes (3 classes): $3,500
+- Advanced training (3 classes): $4,000
 
 ---
 
-### 📞 Contacto
+### 📞 Contact
 
-**¡Ven y conoce todos los servicios que tenemos para ti y tu mejor amigo!**
-*Pregunta por nuestras promociones mensuales y precios especiales para nuestros clientes distinguidos.*
+**Come and learn about all the services we have for you and your best friend!**
+*Ask about our monthly promotions and special prices for our distinguished clients.*
 
 - **WhatsApp:** 81 4549 3733
 - **Instagram:** @pet.uhotel
-- **Ubicación:** Hidalgo 316, Casco Urbano, 66200 San Pedro Garza García, N.L.
+- **Location:** Hidalgo 316, Casco Urbano, 66200 San Pedro Garza García, N.L.

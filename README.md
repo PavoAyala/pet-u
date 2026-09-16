@@ -1,61 +1,60 @@
 # PET-U Project
 
-Este es un monorepo desarrollado con **Astro**, **Turborepo** y **Firebase** para el proyecto PET-U.
+This is a monorepo built with **Astro**, **Turborepo**, and **Firebase** for the PET-U project.
 
-## Estructura del Proyecto
+## Project Structure
 
-El proyecto se divide en diferentes paquetes bajo la carpeta `apps/` y `packages/`:
+The project is divided into different packages under the `apps/` and `packages/` folders:
 
-### Aplicaciones (`apps/`)
+### Applications (`apps/`)
 
--   **`website`**: La página principal del sitio web de PET-U.
-    -   **Tecnología**: Astro 5 (con modo **SSR** habilitado para Vercel).
-    -   **Funcionalidad**: Muestra la tienda boutique, catálogo de productos y servicios en tiempo real desde Firestore.
--   **`admin`**: El panel de administración para gestionar el inventario.
-    -   **Tecnología**: Astro (Client-side rendering).
-    -   **Funcionalidad**: Permite crear, editar y eliminar productos de la boutique.
+-   **`website`**: The main PET-U website.
+    -   **Technology**: Astro 5 (with **SSR** enabled for Vercel).
+    -   **Functionality**: Displays the boutique store, product catalog, and services in real time from Firestore.
+-   **`admin`**: The administration panel for managing inventory.
+    -   **Technology**: Astro (client-side rendering).
+    -   **Functionality**: Allows creating, editing, and deleting boutique products.
 
-### Paquetes Compartidos (`packages/`)
+### Shared Packages (`packages/`)
 
--   **`firebase-config`**: Configuración centralizada de Firebase para que todas las aplicaciones usen la misma base de datos.
+-   **`firebase-config`**: Centralized Firebase configuration so all applications use the same database.
 
-## Configuración de Firebase
+## Firebase Configuration
 
--   **Proyecto ID**: `pet-u-fe87c`
--   **Colecciones principales**:
-    -   `productos`: Almacena los artículos de la boutique (nombre, marca, precio, descripción, imagen, stock).
+-   **Project ID**: `pet-u-fe87c`
+-   **Main collections**:
+    -   `productos`: Stores boutique items (name, brand, price, description, image, stock).
 
-## Cómo empezar
+## Getting Started
 
-### Requisitos
+### Requirements
 
 -   Node.js (v20+)
 -   pnpm (v10+)
 
-### Instalación
+### Installation
 
 ```bash
 pnpm install
 ```
 
-### Desarrollo Local
+### Local Development
 
-Para correr ambas aplicaciones (admin y website) junto con los emuladores localmente:
+To run both applications (admin and website) together with the local emulators:
 
 ```bash
 pnpm dev
 ```
 
-Este comando inicia automáticamente:
--   **Terminal 1**: Emuladores de Firebase (Auth, Firestore, UI).
--   **Terminal 2**: Servidores de desarrollo para `website` y `admin`.
+This command automatically starts:
+-   **Terminal 1**: Firebase emulators (Auth, Firestore, UI).
+-   **Terminal 2**: Development servers for `website` and `admin`.
 
+### Deployment
 
-### Despliegue
-
-El proyecto está configurado para desplegarse automáticamente:
--   **Website**: Desplegado en **Vercel** (`https://pet-u.vercel.app`).
--   **Admin**: Desplegado en **Firebase Hosting** (`https://pet-u-admin.web.app`).
+The project is configured to deploy automatically:
+-   **Website**: Deployed on **Vercel** (`https://pet-u.vercel.app`).
+-   **Admin**: Deployed on **Firebase Hosting** (`https://pet-u-admin.web.app`).
 
 ---
-Desarrollado para PET-U.
+Built for PET-U.
